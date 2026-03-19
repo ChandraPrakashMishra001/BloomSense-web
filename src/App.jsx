@@ -1,0 +1,722 @@
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { 
+  Leaf, ArrowUpRight, Play, Zap, Shield, Microscope, 
+  Cpu, Cloud, Database, Scan, Beaker, ChevronDown, 
+  Layers, Focus, Activity, X, Loader2, CheckCircle, AlertTriangle, Search, Sparkles
+} from 'lucide-react';
+
+const AmaniaChatbot = () => {
+  useEffect(() => {
+    if (document.querySelector('script[src="https://cpmishra.lovable.app/embed.js"]')) {
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = "https://cpmishra.lovable.app/embed.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
+  return null;
+};
+
+const AmaniaBadge = () => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8, delay: 0.5 }}
+    className="fixed bottom-6 left-6 z-[60] flex items-center gap-3 liquid-glass px-4 py-2 rounded-full cursor-pointer hover:scale-105 transition-all shadow-xl hover:shadow-pink-500/20 border border-pink-200/50 bg-white/40"
+  >
+    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center shadow-inner">
+      <Sparkles className="w-4 h-4 text-white" />
+    </div>
+    <div className="flex flex-col justify-center pr-3">
+      <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-emerald-800/60 leading-none mb-1">Powered By</span>
+      <span className="font-heading italic text-2xl bg-gradient-to-r from-pink-600 to-purple-700 bg-clip-text text-transparent leading-none">Amania AI</span>
+    </div>
+  </motion.div>
+);
+
+const floraDatabase = [
+  {
+    id: 1,
+    name: "Ashwagandha",
+    scientificName: "Withania somnifera",
+    image: "/ashwagandha.png",
+    properties: ["Adaptogenic", "Anti-inflammatory", "Stress Relief"],
+    diseasesTargeted: ["Insomnia", "Anxiety", "Arthritis"],
+    cures: "Used to lower cortisol levels and improve brain function. Often consumed as a root powder mixed with warm milk.",
+  },
+  {
+    id: 2,
+    name: "Tulsi (Holy Basil)",
+    scientificName: "Ocimum tenuiflorum",
+    image: "/tulsi.png",
+    properties: ["Antibacterial", "Antiviral", "Immunity Booster"],
+    diseasesTargeted: ["Common Cold", "Asthma", "Fever"],
+    cures: "Leaves are boiled in water to extract essential oils, acting as a powerful expectorant for respiratory illnesses.",
+  },
+  {
+    id: 3,
+    name: "Neem",
+    scientificName: "Azadirachta indica",
+    image: "/neem.png",
+    properties: ["Antifungal", "Blood Purifier", "Detoxifying"],
+    diseasesTargeted: ["Acne", "Eczema", "Dental Plaque"],
+    cures: "Neem paste is applied directly to the skin to cure fungal infections and acne. Chewing twigs improves oral hygiene.",
+  },
+  {
+    id: 4,
+    name: "Brahmi",
+    scientificName: "Bacopa monnieri",
+    image: "/brahmi.png",
+    properties: ["Nootropic", "Antioxidant", "Neuroprotective"],
+    diseasesTargeted: ["Memory Loss", "ADHD", "Anxiety"],
+    cures: "Enhances cognitive function and memory retention. Extracted as an oil for scalp massage or consumed as a dietary supplement.",
+  },
+  {
+    id: 5,
+    name: "Turmeric",
+    scientificName: "Curcuma longa",
+    image: "/turmeric.png",
+    properties: ["Curcumin", "Anti-inflammatory", "Antioxidant"],
+    diseasesTargeted: ["Joint Pain", "Digestive Issues", "Wounds"],
+    cures: "Curcumin compound reduces inflammation at the molecular level. Applied topically to wounds for rapid healing.",
+  },
+  {
+    id: 6,
+    name: "Aloe Vera",
+    scientificName: "Aloe barbadensis miller",
+    image: "/aloe vera.png",
+    properties: ["Hydrating", "Healing", "Antimicrobial"],
+    diseasesTargeted: ["Sunburn", "Psoriasis", "Acid Reflux"],
+    cures: "The clear gel inside the leaves provides instant relief for burns and skin irritations. Juice aids in digestive health.",
+  },
+  {
+    id: 7,
+    name: "Peppermint",
+    scientificName: "Mentha piperita",
+    image: "/peppermint.jpeg",
+    properties: ["Cooling", "Digestive", "Antibacterial"],
+    diseasesTargeted: ["IBS", "Headaches", "Nausea"],
+    cures: "Menthol compound soothes upset stomachs and provides relief for tension headaches when applied as oil.",
+  },
+  {
+    id: 8,
+    name: "Lavender",
+    scientificName: "Lavandula angustifolia",
+    image: "/lavender.png",
+    properties: ["Calming", "Sedative", "Antiseptic"],
+    diseasesTargeted: ["Insomnia", "Anxiety", "Restlessness"],
+    cures: "Widely used in aromatherapy and sleep aids due to its profound soothing and nervous system-regulating effects.",
+  },
+  {
+    id: 9,
+    name: "Ginger",
+    scientificName: "Zingiber officinale",
+    image: "/ginger.jpeg",
+    properties: ["Anti-nausea", "Anti-inflammatory", "Warming"],
+    diseasesTargeted: ["Motion Sickness", "Morning Sickness", "Osteoarthritis"],
+    cures: "Contains gingerol, a substance with powerful anti-inflammatory and antioxidant properties, used to treat all forms of nausea.",
+  },
+  {
+    id: 10,
+    name: "Ginseng",
+    scientificName: "Panax ginseng",
+    image: "https://images.unsplash.com/photo-1528659556209-66c10ff5fb82?auto=format&fit=crop&q=80&w=800",
+    properties: ["Energy Boosting", "Cognitive", "Immune Booster"],
+    diseasesTargeted: ["Fatigue", "Brain Fog", "Weak Immunity"],
+    cures: "Revered in traditional medicine for giving a sustained energy lift without jitters and bolstering white blood cell function.",
+  },
+  {
+    id: 11,
+    name: "Echinacea",
+    scientificName: "Echinacea purpurea",
+    image: "/echinacea.png",
+    properties: ["Immune Stimulant", "Antiviral", "Pain Relief"],
+    diseasesTargeted: ["Common Cold", "Upper Respiratory Infections", "Sore Throat"],
+    cures: "Increases the number of white blood cells which fight infections; heavily utilized preventatively during flu seasons.",
+  },
+  {
+    id: 12,
+    name: "Chamomile",
+    scientificName: "Matricaria chamomilla",
+    image: "https://images.unsplash.com/photo-1621217631317-a169b50ceba7?auto=format&fit=crop&q=80&w=800",
+    properties: ["Relaxing", "Spasmolytic", "Anti-inflammatory"],
+    diseasesTargeted: ["Sleeplessness", "Muscle Spasms", "Skin Irritation"],
+    cures: "Apigenin, a natural antioxidant in the flower, binds to specific brain receptors that decrease anxiety and initiate sleep.",
+  }
+];
+
+const customEase = [0.16, 1, 0.3, 1];
+
+const BlurText = ({ text, className = "" }) => {
+  const words = text.split(" ");
+  return (
+    <motion.span
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      variants={{ visible: { transition: { staggerChildren: 0.05 } }, hidden: {} }}
+      className={`inline-block ${className}`}
+    >
+      {words.map((word, index) => (
+        <span key={index} className="inline-block overflow-hidden whitespace-nowrap">
+          <motion.span
+            variants={{
+              hidden: { filter: 'blur(12px)', opacity: 0, y: 40 },
+              visible: { filter: 'blur(0px)', opacity: 1, y: 0, transition: { duration: 0.8, ease: customEase } }
+            }}
+            className="inline-block mr-[0.25em]"
+          >
+            {word}
+          </motion.span>
+        </span>
+      ))}
+    </motion.span>
+  );
+};
+
+const ScrollReveal = ({ children, className = "", delay = 0 }) => (
+  <motion.div
+    initial={{ opacity: 0, filter: 'blur(12px)', y: 40 }}
+    whileInView={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+    viewport={{ once: true, margin: "-50px" }}
+    transition={{ duration: 0.8, delay, ease: customEase }}
+    className={className}
+    style={{ willChange: "transform, opacity, filter" }}
+  >
+    {children}
+  </motion.div>
+);
+
+const MixedFlora = () => {
+  const elements = useMemo(() => Array.from({ length: 45 }).map((_, i) => ({
+    id: i,
+    left: `${Math.random() * 100}%`,
+    duration: Math.random() * 12 + 12,
+    delay: Math.random() * -20,
+    scale: Math.random() * 0.45 + 0.3,
+    xDrift: (Math.random() - 0.5) * 350,
+    isPink: Math.random() > 0.4 
+  })), []);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
+      {elements.map((el) => (
+        <motion.div
+           key={el.id}
+           className={`absolute drop-shadow-md ${el.isPink ? 'text-pink-400/80' : 'text-emerald-500/70'}`}
+           style={{ left: el.left, top: '-10%', willChange: "transform" }}
+          animate={{
+            y: ['0vh', '115vh'],
+            x: [0, el.xDrift, -el.xDrift, 0],
+            rotate: [0, 180, 360],
+          }}
+          transition={{
+            y: { duration: el.duration, repeat: Infinity, ease: "linear", delay: el.delay },
+            x: { duration: el.duration * 0.7, repeat: Infinity, ease: "easeInOut", yoyo: true },
+            rotate: { duration: el.duration * 0.5, repeat: Infinity, ease: "linear" }
+          }}
+        >
+          {el.isPink ? (
+            <svg style={{ transform: `scale(${el.scale})` }} width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12,2 C15,-3 25,6 18,14 C15,18 12,22 12,22 C12,22 9,18 6,14 C-1,6 9,-3 12,2 Z" />
+            </svg>
+          ) : (
+            <Leaf style={{ transform: `scale(${el.scale})` }} />
+          )}
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
+const FloraArchive = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  useEffect(() => {
+    if (selectedImage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => document.body.style.overflow = 'unset';
+  }, [selectedImage]);
+
+  const filteredPlants = floraDatabase.filter(plant => {
+    if (searchTerm.trim() === "") {
+      return plant.id <= 6; // Only show the main featured plants when not searching
+    }
+    return plant.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      plant.diseasesTargeted.some(disease => disease.toLowerCase().includes(searchTerm.toLowerCase()));
+  });
+
+  return (
+    <section id="flora" className="py-32 px-6 lg:px-12 max-w-[1400px] mx-auto z-10 relative">
+      <ScrollReveal className="text-center mb-16">
+        <h2 className="font-heading italic text-6xl tracking-tight mb-8 text-emerald-950">Botanical Archive</h2>
+        
+        <div className="max-w-xl mx-auto relative group">
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 opacity-70 group-hover:opacity-100 transition-opacity" />
+          <input 
+            type="text" 
+            placeholder="Search by plant name or disease (e.g., Anxiety)..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full liquid-glass rounded-full pl-14 pr-6 py-4 text-emerald-950 placeholder:text-emerald-800/50 outline-none focus:bg-white/80 transition-colors border border-emerald-900/10 shadow-lg font-body font-semibold"
+          />
+        </div>
+      </ScrollReveal>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <AnimatePresence>
+          {filteredPlants.map((plant, i) => (
+            <motion.div 
+              key={plant.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.4, delay: i * 0.05 }}
+              className="liquid-glass rounded-3xl overflow-hidden group border border-emerald-200/50 flex flex-col h-full hover:-translate-y-2 transition-transform duration-500"
+            >
+              <div 
+                className="h-56 overflow-hidden relative border-b border-emerald-900/5 cursor-pointer group/img"
+                onClick={() => setSelectedImage(plant)}
+              >
+                <div className="absolute inset-0 bg-emerald-950/20 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center backdrop-blur-[2px]">
+                  <div className="bg-white/90 p-3 rounded-full shadow-lg transform scale-90 group-hover/img:scale-100 transition-transform">
+                    <Scan className="w-6 h-6 text-emerald-700" />
+                  </div>
+                </div>
+                <img 
+                  src={plant.image} 
+                  alt={plant.name} 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-pink-50 via-pink-50/20 to-transparent" />
+                <h3 className="absolute bottom-4 left-6 font-heading italic text-4xl text-emerald-950 drop-shadow-sm">{plant.name}</h3>
+              </div>
+              
+              <div className="p-6 flex-1 flex flex-col gap-5 bg-white/40">
+                <p className="text-emerald-600 text-xs font-bold uppercase tracking-[0.2em]">{plant.scientificName}</p>
+                
+                <div>
+                  <h4 className="text-emerald-800/50 text-xs uppercase tracking-[0.2em] mb-2 font-bold">Key Properties</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {plant.properties.map(prop => (
+                      <span key={prop} className="text-xs border border-emerald-500/20 bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full font-bold">
+                        {prop}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-emerald-800/50 text-xs uppercase tracking-[0.2em] mb-2 font-bold">Treats</h4>
+                  <p className="text-sm text-emerald-900 font-bold">{plant.diseasesTargeted.join(", ")}</p>
+                </div>
+
+                <div className="mt-auto pt-5 border-t border-emerald-900/10">
+                  <p className="text-sm text-emerald-800/80 leading-relaxed font-semibold">
+                    {plant.cures}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+      
+      {filteredPlants.length === 0 && (
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          className="text-center text-emerald-800/50 py-12 font-body text-lg font-bold"
+        >
+          No botanical records found matching "{searchTerm}".
+        </motion.div>
+      )}
+
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-emerald-950/70 backdrop-blur-md p-4 md:p-8 cursor-pointer"
+            onClick={() => setSelectedImage(null)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative max-w-5xl w-full max-h-[95vh] overflow-y-auto flex flex-col bg-white rounded-[2.5rem] shadow-2xl border border-emerald-200/50 cursor-default"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setSelectedImage(null)} 
+                className="absolute top-5 right-5 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center backdrop-blur-md text-emerald-900 transition-transform hover:scale-110 z-30 shadow-lg border border-emerald-100"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              
+              <div className="w-full relative bg-pink-50/50 flex items-center justify-center min-h-[30vh]">
+                <img 
+                  src={selectedImage.image} 
+                  alt={selectedImage.name} 
+                  className="w-full max-h-[50vh] object-contain p-4"
+                />
+              </div>
+              
+              <div className="px-8 py-6 text-center w-full bg-white border-t border-emerald-50 relative z-20">
+                <span className="text-pink-500 font-bold uppercase tracking-[0.2em] text-xs mb-1 block">{selectedImage.scientificName}</span>
+                <h3 className="font-heading italic text-4xl text-emerald-950 mb-3">{selectedImage.name}</h3>
+                <p className="text-sm text-emerald-800/80 font-medium max-w-2xl mx-auto">{selectedImage.cures}</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
+  );
+};
+
+export default function App() {
+  const { scrollY } = useScroll();
+  const heroY = useTransform(scrollY, [0, 1000], [0, 200]);
+  const heroOpacity = useTransform(scrollY, [0, 800], [1, 0]);
+  const heroScale = useTransform(scrollY, [0, 800], [1, 1.05]);
+
+
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(true);
+  const [showAmaniaCamera, setShowAmaniaCamera] = useState(false);
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (email) {
+      setSubscribed(true);
+      setEmail('');
+      setTimeout(() => setSubscribed(false), 4000);
+    }
+  };
+
+  const handleScanClick = () => {
+    setShowAmaniaCamera(true);
+  };
+
+
+
+  return (
+    <div className="bg-pink-50 min-h-screen text-emerald-950 selection:bg-emerald-200 selection:text-emerald-950 overflow-x-hidden font-body leaf-pattern-bg">
+
+
+      <nav className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-4 flex justify-between items-center bg-pink-50/80 backdrop-blur-md border-b border-emerald-900/10 shadow-sm transition-all duration-300">
+        <div className="flex items-center gap-4">
+          <button className="liquid-glass w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-300 shadow-sm border border-emerald-200/50">
+            <Leaf className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
+          </button>
+          <div className="flex flex-col drop-shadow-sm">
+            <span className="font-heading italic text-3xl md:text-4xl text-emerald-950 leading-none">BloomSense</span>
+            <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 mt-1 pl-1">A part of Neural Leaf</span>
+          </div>
+        </div>
+        
+        <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full liquid-glass">
+          {['Home', 'Technology', 'Flora', 'Research', 'Lab'].map((item) => (
+            <a key={item} href={`#${item.toLowerCase()}`} className="px-6 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
+              {item}
+            </a>
+          ))}
+          <button onClick={() => setShowAnimation(!showAnimation)} className="p-2 rounded-full hover:bg-emerald-100 transition-colors mx-1" title="Toggle Falling Leaves">
+            <Leaf className={`w-5 h-5 ${showAnimation ? 'text-emerald-600' : 'text-emerald-600/30'}`} />
+          </button>
+          <button onClick={handleScanClick} className="bg-emerald-600/90 text-white px-7 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 hover:bg-emerald-700 transition-colors ml-2 shadow-lg hover:shadow-emerald-500/30">
+            Scan Sample <ArrowUpRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="md:hidden flex items-center gap-2">
+          <button onClick={() => setShowAnimation(!showAnimation)} className="p-2 rounded-full bg-white/50 border border-emerald-900/10 shadow-sm transition-colors" title="Toggle Falling Leaves">
+            <Leaf className={`w-5 h-5 ${showAnimation ? 'text-emerald-600' : 'text-emerald-600/30'}`} />
+          </button>
+          <button onClick={handleScanClick} className="bg-emerald-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-emerald-700 transition-colors">
+            <Scan className="w-5 h-5" />
+          </button>
+        </div>
+      </nav>
+
+      <main>
+        <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden bg-pink-50">
+          {showAnimation && <MixedFlora />}
+
+          <motion.div 
+            style={{ y: heroY, opacity: heroOpacity, scale: heroScale }}
+            className="absolute inset-0 w-full h-full z-0 bg-[url('/bg.png')] bg-cover bg-center"
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-pink-50/40 to-emerald-50/90 pointer-events-none" />
+          </motion.div>
+
+          <div className="relative z-20 text-center px-6 max-w-5xl mx-auto mt-20">
+            <h1 className="font-heading italic text-5xl md:text-6xl lg:text-7xl tracking-tight text-balance leading-[0.9] mb-6 text-emerald-950 text-shadow-sm">
+              <BlurText text="Decode Nature's Secrets with Precision AI" />
+            </h1>
+            
+            <ScrollReveal delay={0.2}>
+              <p className="text-base md:text-lg text-emerald-800/90 font-body leading-relaxed max-w-2xl mx-auto mb-10 text-balance font-medium">
+                Advanced computer vision meets traditional phytochemistry. Ensure the quality, potency, and purity of herbal medicines with unparalleled microscopic accuracy in a bright, modern ecosystem.
+              </p>
+            </ScrollReveal>
+
+            <ScrollReveal delay={0.3} className="flex flex-col sm:flex-row items-center justify-center gap-5">
+              <button onClick={handleScanClick} className="bg-emerald-600 text-white px-12 py-5 rounded-full text-lg font-extrabold flex items-center gap-3 hover:bg-emerald-700 hover:scale-105 transition-all shadow-xl shadow-emerald-600/30">
+                Initiate Analysis <Scan className="w-5 h-5" />
+              </button>
+            </ScrollReveal>
+          </div>
+        </section>
+
+        <FloraArchive />
+
+        <section id="technology" className="py-24 px-6 lg:px-12 max-w-[1400px] mx-auto relative">
+          <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
+            <ScrollReveal className="group relative h-[650px] rounded-[2.5rem] liquid-glass overflow-hidden border border-emerald-900/10 shadow-xl">
+              <img 
+                src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1600&auto=format&fit=crop" 
+                alt="Pink and Green Leaf Pattern Botanical" 
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-900/20 to-transparent transition-opacity duration-500" />
+              <div className="absolute bottom-10 left-10 right-10 transform translate-y-0 group-hover:-translate-y-2 transition-transform duration-500">
+                <p className="text-emerald-100 text-sm uppercase tracking-[0.25em] mb-3 font-bold bg-white/20 backdrop-blur-md border border-white/30 inline-block px-4 py-1.5 rounded-full shadow-sm">Vision System</p>
+                <h3 className="font-heading italic text-6xl text-white mt-2 drop-shadow-md">The Apex Sensor</h3>
+              </div>
+            </ScrollReveal>
+
+            <div className="relative">
+              {/* Ambient Glow for Glassmorphism */}
+              <div className="absolute -inset-10 bg-gradient-to-tr from-pink-300/30 to-emerald-300/20 blur-3xl rounded-full opacity-50 pointer-events-none -z-10" />
+              
+              <ScrollReveal>
+                <h2 className="font-heading italic text-5xl mb-10 tracking-tight text-emerald-950">Unrivaled Botanical Engineering</h2>
+              </ScrollReveal>
+              <div className="grid sm:grid-cols-2 gap-6">
+                {[
+                  { icon: Microscope, label: 'Micro-Resolution', val: '0.5 μm' },
+                  { icon: Cpu, label: 'Neural Processing', val: '0.12s' },
+                  { icon: Focus, label: 'Classification', val: '99.8%' },
+                  { icon: Beaker, label: 'Phytochemistry', val: 'Spectral' },
+                  { icon: Shield, label: 'Contamination', val: 'Zero-Tol' },
+                  { icon: Cloud, label: 'Edge Sync', val: 'Real-time' },
+                ].map((stat, i) => (
+                  <ScrollReveal key={i} delay={i * 0.1}>
+                    <div className="liquid-glass p-8 rounded-3xl group cursor-default hover:-translate-y-2 hover:bg-white/90 hover:shadow-xl hover:shadow-emerald-900/5 transition-all duration-500 border border-white/60 hover:border-emerald-200/50 relative overflow-hidden">
+                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-400 to-emerald-400 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out" />
+                      <stat.icon className="w-8 h-8 text-pink-500 mb-5 group-hover:scale-110 transition-transform duration-500" />
+                      <p className="text-emerald-700/80 text-xs font-bold mb-1 uppercase tracking-[0.15em]">{stat.label}</p>
+                      <p className="text-4xl font-heading italic text-emerald-950 group-hover:text-emerald-700 transition-colors duration-300">{stat.val}</p>
+                    </div>
+                  </ScrollReveal>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="research" className="relative py-32 px-6 lg:px-12 max-w-[1400px] mx-auto">
+          <ScrollReveal className="text-center mb-20 relative z-10">
+            <h2 className="font-heading italic text-6xl tracking-tight text-emerald-950">Engineering Botanical Clarity</h2>
+          </ScrollReveal>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
+            {[
+              { icon: Layers, title: 'Morphology Tracking', desc: 'Analyzes leaf structure, vein patterns, and surface texture to authenticate species instantaneously.' },
+              { icon: Zap, title: 'Phytochemical AI', desc: 'Correlates visual markers with historical potency data to estimate grading without destructive testing.' },
+              { icon: Activity, title: 'Quality Grading', desc: 'Automatically sorts samples into Grade A, B, or C based on moisture damage or structural integrity.' },
+              { icon: Shield, title: 'Contamination Alert', desc: 'Identifies foreign matter, fungal spots, and adulterants that traditional human inspection misses.' },
+              { icon: Database, title: 'Seamless API', desc: 'Integrates directly with your existing supply chain software or LIMS via our ultra-fast RESTful API.' },
+              { icon: Cpu, title: 'Edge Computing', desc: 'Run models locally on offline hardware in remote farms or dense jungle processing centers.' },
+            ].map((feature, i) => (
+              <ScrollReveal key={i} delay={i * 0.1}>
+                <div className="liquid-glass p-2 rounded-3xl group hover:-translate-y-2 transition-transform duration-500 h-full">
+                  <div className="bg-white/40 rounded-2xl p-8 h-full group-hover:bg-white/60 transition-colors">
+                    <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mb-6 shadow-inner">
+                      <feature.icon className="w-6 h-6 text-emerald-600" />
+                    </div>
+                    <h3 className="text-3xl font-heading italic mb-3 tracking-tight text-emerald-900">{feature.title}</h3>
+                    <p className="text-emerald-800/80 leading-relaxed text-sm font-medium">{feature.desc}</p>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </section>
+
+        <section id="lab" className="py-32 px-6 max-w-5xl mx-auto relative">
+          <ScrollReveal className="text-center mb-24">
+            <h2 className="font-heading italic text-6xl tracking-tight">The Analysis Pipeline</h2>
+          </ScrollReveal>
+
+          <div className="relative">
+            <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-pink-300 to-transparent hidden md:block" />
+
+            {[
+              { step: '01', title: 'Sample Preparation', desc: 'Raw material is placed in a standardized lightbox environment to eliminate shadows and stabilize color representation.' },
+              { step: '02', title: 'Microscopic Scanning', desc: 'High-fidelity macro lenses capture multispectral images, focusing on venation and surface anomalies.' },
+              { step: '03', title: 'Neural Processing', desc: 'Gemini-powered models cross-reference the visual data against millions of botanical records.' },
+              { step: '04', title: 'Quality Certification', desc: 'A verified digital certificate is generated in real-time, detailing the authenticated species and purity grade.' },
+            ].map((item, i) => {
+              const isEven = i % 2 === 0;
+              return (
+              <div key={i} className={`relative flex flex-col md:flex-row items-center mb-24 last:mb-0 ${isEven ? 'md:flex-row-reverse' : ''}`}>
+                <motion.div 
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ type: 'spring', delay: 0.1 }}
+                  className="hidden md:block absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-white border-4 border-pink-400 shadow-[0_0_20px_rgba(244,114,182,0.6)] z-10" 
+                />
+                
+                <motion.div 
+                  initial={{ x: isEven ? 60 : -60, opacity: 0 }}
+                  whileInView={{ x: 0, opacity: 1 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  className={`w-full md:w-1/2 ${isEven ? 'md:pl-16' : 'md:pr-16'} mb-8 md:mb-0`}
+                >
+                  <div className="liquid-glass p-10 rounded-[2.5rem]">
+                    <span className="text-pink-500 text-sm font-black tracking-[0.25em] mb-4 inline-block bg-pink-100 px-3 py-1 rounded-full">PHASE {item.step}</span>
+                    <h3 className="text-4xl font-heading italic mb-4 tracking-tight text-emerald-950">{item.title}</h3>
+                    <p className="text-emerald-800/80 leading-relaxed font-medium">{item.desc}</p>
+                  </div>
+                </motion.div>
+              </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <footer className="border-t border-emerald-900/10 pt-24 pb-12 px-6 lg:px-12 max-w-[1400px] mx-auto">
+          <div className="grid lg:grid-cols-12 gap-12 mb-20">
+            <div className="lg:col-span-6">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center">
+                  <Leaf className="w-5 h-5 text-white" />
+                </div>
+                <span className="font-extrabold tracking-[0.2em] uppercase text-sm text-emerald-900">BloomSense</span>
+              </div>
+              <h2 className="font-heading italic text-6xl md:text-7xl mb-10 leading-none tracking-tight text-emerald-950">Nature is calling.</h2>
+              <form onSubmit={handleSubscribe} className="flex gap-2 max-w-md liquid-glass p-2 rounded-full relative">
+                <AnimatePresence>
+                  {subscribed && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                      className="absolute -top-10 left-0 right-0 text-center text-sm font-bold text-emerald-600 bg-white/80 py-1.5 px-4 rounded-full shadow-sm backdrop-blur-sm"
+                    >
+                      Thanks for subscribing! Check your inbox soon.
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <input 
+                  type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your lab email" 
+                  className="flex-1 bg-transparent px-6 py-3 text-sm outline-none placeholder:text-emerald-800/50 font-semibold text-emerald-950"
+                  required
+                />
+                <button type="submit" className="bg-emerald-600 text-white px-8 py-3 rounded-full text-sm font-bold hover:bg-emerald-700 transition-colors shadow-md shadow-emerald-600/20 min-w-[120px]">
+                  {subscribed ? 'Subscribed ✓' : 'Subscribe'}
+                </button>
+              </form>
+            </div>
+
+            <div className="lg:col-span-3">
+              <h4 className="text-emerald-900/50 uppercase tracking-[0.25em] text-xs font-black mb-8">Technology</h4>
+              <ul className="space-y-4 text-sm text-emerald-800 font-semibold">
+                <li><a href="#" className="hover:text-pink-500 transition-colors">Computer Vision</a></li>
+                <li><a href="#" className="hover:text-pink-500 transition-colors">Phyto-AI Models</a></li>
+                <li><a href="#" className="hover:text-pink-500 transition-colors">Edge Processing</a></li>
+                <li><a href="#" className="hover:text-pink-500 transition-colors">Hardware Specs</a></li>
+              </ul>
+            </div>
+
+            <div className="lg:col-span-3">
+              <h4 className="text-emerald-900/50 uppercase tracking-[0.25em] text-xs font-black mb-8">Company</h4>
+              <ul className="space-y-4 text-sm text-emerald-800 font-semibold">
+                <li><a href="#" className="hover:text-pink-500 transition-colors">About Project</a></li>
+                <li><a href="#" className="hover:text-pink-500 transition-colors">Research Papers</a></li>
+                <li><a href="#" className="hover:text-pink-500 transition-colors">Careers</a></li>
+                <li><a href="#" className="hover:text-pink-500 transition-colors">Contact</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-emerald-900/10 text-sm font-semibold text-emerald-800/60">
+            <p>© 2026 BloomSense. All rights reserved.</p>
+            <div className="flex items-center gap-6 mt-4 md:mt-0">
+              <a href="#" className="hover:text-emerald-900 transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-emerald-900 transition-colors">Terms of Service</a>
+            </div>
+          </div>
+        </footer>
+
+        {/* Modal Overlay for Amania AI Camera */}
+        <AnimatePresence>
+          {showAmaniaCamera && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-emerald-950/40 backdrop-blur-md"
+            >
+              <motion.div 
+                initial={{ scale: 0.95, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.95, y: 20 }}
+                className="liquid-glass-strong w-full max-w-4xl h-[85vh] rounded-[2.5rem] overflow-hidden shadow-2xl relative flex flex-col bg-white"
+              >
+                <div className="px-8 py-4 border-b border-emerald-900/10 flex justify-between items-center bg-white/80 z-10 backdrop-blur-md absolute top-0 left-0 right-0">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-pink-500" />
+                    </div>
+                    <div>
+                      <h3 className="font-heading italic text-2xl tracking-tight text-emerald-950 leading-none">Amania AI</h3>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-600 mt-1">Botanical Analysis Mode</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setShowAmaniaCamera(false)}
+                    className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors border border-emerald-100 shadow-sm"
+                  >
+                    <X className="w-6 h-6 text-emerald-900/60" />
+                  </button>
+                </div>
+
+                <div className="flex-1 w-full h-full pt-[73px]">
+                  <iframe 
+                    src="https://cpmishra.lovable.app" 
+                    allow="camera; microphone" 
+                    className="w-full h-full border-0"
+                    title="Amania AI Interface"
+                  />
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+
+
+        {/* Adds Amania AI globally */}
+        <AmaniaChatbot />
+        <AmaniaBadge />
+      </main>
+    </div>
+  );
+}
