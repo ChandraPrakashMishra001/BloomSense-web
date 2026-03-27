@@ -96,14 +96,23 @@ body {
   font-family: 'Barlow', sans-serif !important;
   color: transparent !important; /* Hides "Powered by Google" */
   font-size: 0px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 !important;
 }
 
-.goog-te-combo {
+/* Hard-kill all google branding sub-elements */
+.goog-logo-link, .goog-te-gadget span, .goog-te-gadget img {
+  display: none !important;
+}
+
+.goog-te-gadget .goog-te-combo {
   background-color: rgba(255, 255, 255, 0.8) !important;
   backdrop-filter: blur(16px) !important;
   border: 1px solid rgba(6, 78, 59, 0.1) !important;
   border-radius: 9999px !important;
   padding: 0.5rem 1rem !important;
+  margin: 0 !important;
   color: #064e3b !important;
   font-size: 0.875rem !important;
   font-weight: 700 !important;
@@ -112,7 +121,7 @@ body {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
   transition: all 0.3s ease !important;
 }
-.goog-te-combo:hover {
+.goog-te-gadget .goog-te-combo:hover {
   background-color: white !important;
 }
 

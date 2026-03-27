@@ -445,7 +445,6 @@ export default function App() {
         new window.google.translate.TranslateElement({
           pageLanguage: 'en',
           includedLanguages: 'en,hi,or', // English, Hindi, Odia
-          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
           autoDisplay: false
         }, 'google_translate_element');
       };
