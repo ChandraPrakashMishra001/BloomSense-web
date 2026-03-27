@@ -431,6 +431,27 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
+  // Phase 5: Regional Odia Localization using Google Translate API
+  useEffect(() => {
+    // Avoid re-injecting script heavily on hot reloads
+    if (!document.getElementById('google-translate-script')) {
+      const addScript = document.createElement('script');
+      addScript.id = 'google-translate-script';
+      addScript.setAttribute('src', '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit');
+      addScript.async = true;
+      document.body.appendChild(addScript);
+      
+      window.googleTranslateElementInit = () => {
+        new window.google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'en,hi,or', // English, Hindi, Odia
+          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false
+        }, 'google_translate_element');
+      };
+    }
+  }, []);
+
   // Phase 2: Real Device GPS Tracking
   useEffect(() => {
     if ('geolocation' in navigator) {
@@ -566,14 +587,18 @@ export default function App() {
 
 
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-4 flex justify-between items-center bg-pink-50/80 backdrop-blur-md border-b border-emerald-900/10 shadow-sm transition-all duration-300">
-        <div className="flex items-center gap-4">
-          <button className="liquid-glass w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-300 shadow-sm border border-emerald-200/50">
-            <Leaf className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
-          </button>
-          <div className="flex flex-col drop-shadow-sm">
-            <span className="font-heading italic text-3xl md:text-4xl text-emerald-950 leading-none">BloomSense</span>
-            <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 mt-1 pl-1">A part of Neural Leaf</span>
+        <div className="flex flex-col xl:flex-row items-start xl:items-center gap-2 xl:gap-6">
+          <div className="flex items-center gap-4">
+            <button className="liquid-glass w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-300 shadow-sm border border-emerald-200/50">
+              <Leaf className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
+            </button>
+            <div className="flex flex-col drop-shadow-sm">
+              <span className="font-heading italic text-3xl md:text-4xl text-emerald-950 leading-none">BloomSense</span>
+              <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 mt-1 pl-1 hidden sm:block">A part of Neural Leaf</span>
+            </div>
           </div>
+          {/* Phase 5: Regional Localization Google Context */}
+          <div id="google_translate_element" className="google-translate-container min-h-[36px]"></div>
         </div>
         
         <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full liquid-glass">
