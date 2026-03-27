@@ -1,10 +1,29 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { db, auth } from './firebase';
 import { 
   Leaf, ArrowUpRight, Play, Zap, Shield, Microscope, 
   Cpu, Cloud, Database, Scan, Beaker, ChevronDown, 
-  Layers, Focus, Activity, X, Loader2, CheckCircle, AlertTriangle, Search, Sparkles
+  Layers, Focus, Activity, X, Loader2, CheckCircle, AlertTriangle, Search, Sparkles, Map, Bell, LogIn, LogOut
 } from 'lucide-react';
+import DiseaseMap from './components/DiseaseMap';
+import AlertNetwork from './components/AlertNetwork';
+import AuthModal from './components/AuthModal';
+
+const initialAlerts = [
+  { id: 1, disease: 'Rice Blast', distance: '1.2', farmCount: 4, timeAgo: '2h ago', severity: 'high' },
+  { id: 2, disease: 'Bacterial Leaf Blight', distance: '3.5', farmCount: 2, timeAgo: '5h ago', severity: 'medium' },
+  { id: 3, disease: 'Brown Spot', distance: '4.8', farmCount: 1, timeAgo: '1d ago', severity: 'medium' }
+];
+
+const initialDiseasePoints = [
+  { lat: 20.2961, lng: 85.8245, disease: 'Rice Blast', severity: 'high', intensity: 0.5, timestamp: Date.now() - 7200000, radius: 1500 },
+  { lat: 20.3161, lng: 85.8045, disease: 'Rice Blast', severity: 'high', intensity: 0.4, timestamp: Date.now() - 86400000, radius: 2000 },
+  { lat: 20.2761, lng: 85.8545, disease: 'Bacterial Leaf Blight', severity: 'medium', intensity: 0.2, timestamp: Date.now() - 18000000, radius: 1200 },
+  { lat: 20.2561, lng: 85.8145, disease: 'Brown Spot', severity: 'medium', intensity: 0.1, timestamp: Date.now() - 86400000, radius: 800 }
+];
 
 const AmaniaChatbot = () => {
   useEffect(() => {
@@ -395,6 +414,133 @@ export default function App() {
   const [subscribed, setSubscribed] = useState(false);
   const [showAnimation, setShowAnimation] = useState(true);
   const [showAmaniaCamera, setShowAmaniaCamera] = useState(false);
+  const [alerts, setAlerts] = useState(initialAlerts);
+  const [diseasePoints, setDiseasePoints] = useState(initialDiseasePoints);
+  const [userLocation, setUserLocation] = useState(null);
+
+  // Phase 3: Authentication
+  const [user, setUser] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [activeToast, setActiveToast] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) setShowAuthModal(false); // Close modal on successful auth
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Phase 2: Real Device GPS Tracking
+  useEffect(() => {
+    if ('geolocation' in navigator) {
+      const watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => console.log("GPS Location Denied/Error:", error),
+        { enableHighAccuracy: true }
+      );
+      return () => navigator.geolocation.clearWatch(watchId);
+    }
+  }, []);
+
+  // Phase 2: Real-time Firebase Firestore Sync
+  useEffect(() => {
+    const qPoints = query(collection(db, 'diseasePoints'), orderBy('timestamp', 'desc'));
+    const unsubPoints = onSnapshot(qPoints, (snapshot) => {
+      const pts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      // Only override the mock initial prototypes if we have actual live data
+      if (pts.length > 0) setDiseasePoints(pts);
+    });
+
+    const qAlerts = query(collection(db, 'alerts'), orderBy('timestamp', 'desc'));
+    const unsubAlerts = onSnapshot(qAlerts, (snapshot) => {
+      
+      // Phase 4: Push Notification Listener
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          const data = change.doc.data();
+          // Only trigger push notifications for strictly new events (added < 5 seconds ago)
+          if (Date.now() - data.timestamp < 5000) {
+              setActiveToast(data);
+              setTimeout(() => setActiveToast(null), 7000); 
+          }
+        }
+      });
+
+      const alts = snapshot.docs.map(doc => {
+        const data = doc.data();
+        
+        // Calculate dynamic real-time string based on timestamp
+        const secondsAgo = Math.floor((Date.now() - data.timestamp) / 1000);
+        let timeAgoStr = 'Just now';
+        if (secondsAgo > 60) timeAgoStr = `${Math.floor(secondsAgo / 60)}m ago`;
+        if (secondsAgo > 3600) timeAgoStr = `${Math.floor(secondsAgo / 3600)}h ago`;
+
+        // Calculate rough distance if user GPS location is actively tracking
+        let distStr = data.distance || '?';
+        if (userLocation && data.lat && data.lng) {
+            const dx = userLocation.lat - data.lat;
+            const dy = userLocation.lng - data.lng;
+            const distKm = Math.sqrt(dx*dx + dy*dy) * 111; // rough degree to km approximation
+            distStr = distKm < 1 ? '<1' : distKm.toFixed(1);
+        }
+
+        return { 
+           id: doc.id, 
+           ...data,
+           timeAgo: timeAgoStr,
+           distance: distStr
+        };
+      });
+      if (alts.length > 0) setAlerts(alts);
+    });
+
+    return () => {
+      unsubPoints();
+      unsubAlerts();
+    };
+  }, [userLocation]);
+
+  const handleSimulateScan = async () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    // Drop the pin using the user's ACTUAL real-world GPS coordinates!
+    const baseLat = userLocation ? userLocation.lat : 20.2961;
+    const baseLng = userLocation ? userLocation.lng : 85.8245;
+
+    // Add a slight jitter to simulate scanning a neighboring farm 
+    const lat = baseLat + (Math.random() - 0.5) * 0.08;
+    const lng = baseLng + (Math.random() - 0.5) * 0.08;
+
+    // Push the disease detection to the unified Global Firebase Database!
+    await addDoc(collection(db, 'diseasePoints'), {
+      lat,
+      lng,
+      disease: 'Rice Blast (Local)',
+      severity: 'high',
+      intensity: 0.6 + Math.random() * 0.3,
+      timestamp: Date.now(),
+      radius: 800 + Math.random() * 800
+    });
+
+    // Broadcast the alert to the feed globally across all devices instantly!
+    await addDoc(collection(db, 'alerts'), {
+      disease: 'Rice Blast',
+      severity: 'high',
+      farmCount: 1,
+      lat,
+      lng,
+      timestamp: Date.now()
+    });
+  };
 
   const handleSubscribe = (e) => {
     e.preventDefault();
@@ -406,6 +552,10 @@ export default function App() {
   };
 
   const handleScanClick = () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
     setShowAmaniaCamera(true);
   };
 
@@ -427,23 +577,37 @@ export default function App() {
         </div>
         
         <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full liquid-glass">
-          {['Home', 'Technology', 'Flora', 'Research', 'Lab'].map((item) => (
-            <a key={item} href={`#${item.toLowerCase()}`} className="px-6 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
+          {['Home', 'Technology', 'Network', 'Flora'].map((item) => (
+            <a key={item} href={`#${item.toLowerCase()}`} className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
               {item}
             </a>
           ))}
-          <button onClick={() => setShowAnimation(!showAnimation)} className="p-2 rounded-full hover:bg-emerald-100 transition-colors mx-1" title="Toggle Falling Leaves">
-            <Leaf className={`w-5 h-5 ${showAnimation ? 'text-emerald-600' : 'text-emerald-600/30'}`} />
-          </button>
-          <button onClick={handleScanClick} className="bg-emerald-600/90 text-white px-7 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 hover:bg-emerald-700 transition-colors ml-2 shadow-lg hover:shadow-emerald-500/30">
+          
+          {user ? (
+            <button onClick={() => signOut(auth)} className="px-5 py-2.5 text-sm font-bold text-rose-600 hover:text-rose-700 transition-colors tracking-wide flex items-center gap-2">
+              Log Out
+            </button>
+          ) : (
+            <button onClick={() => setShowAuthModal(true)} className="px-5 py-2.5 text-sm font-bold text-emerald-900 hover:text-emerald-950 transition-colors tracking-wide flex items-center gap-2">
+              <LogIn className="w-4 h-4" /> Log In
+            </button>
+          )}
+
+          <button onClick={handleScanClick} className="bg-emerald-600/90 text-white px-7 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 hover:bg-emerald-700 transition-colors shadow-lg hover:shadow-emerald-500/30">
             Scan Sample <ArrowUpRight className="w-4 h-4" />
           </button>
         </div>
 
         <div className="md:hidden flex items-center gap-2">
-          <button onClick={() => setShowAnimation(!showAnimation)} className="p-2 rounded-full bg-white/50 border border-emerald-900/10 shadow-sm transition-colors" title="Toggle Falling Leaves">
-            <Leaf className={`w-5 h-5 ${showAnimation ? 'text-emerald-600' : 'text-emerald-600/30'}`} />
-          </button>
+          {user ? (
+            <button onClick={() => signOut(auth)} className="p-2 rounded-full focus:bg-rose-50 border border-rose-900/10 shadow-sm transition-colors text-rose-600">
+               <LogOut className="w-5 h-5" />
+            </button>
+          ) : (
+            <button onClick={() => setShowAuthModal(true)} className="p-2 rounded-full focus:bg-emerald-50 border border-emerald-900/10 shadow-sm transition-colors text-emerald-800">
+               <LogIn className="w-5 h-5" />
+            </button>
+          )}
           <button onClick={handleScanClick} className="bg-emerald-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-emerald-700 transition-colors">
             <Scan className="w-5 h-5" />
           </button>
@@ -600,6 +764,38 @@ export default function App() {
           </div>
         </section>
 
+        {/* Predictive Disease Spread Interface Component */}
+        <section id="network" className="py-32 px-6 lg:px-12 max-w-[1400px] mx-auto relative z-10">
+          <ScrollReveal className="text-center mb-16 max-w-4xl mx-auto">
+            <span className="text-pink-500 font-bold uppercase tracking-[0.25em] mb-4 block">Outbreak Early Warning System</span>
+            <h2 className="font-heading italic text-6xl tracking-tight text-emerald-950 mb-6">Predictive Disease Spread Mapping</h2>
+            <p className="text-emerald-800/80 font-medium text-lg text-balance">
+              Every Amania scan logs disease signatures. Discover hyper-local infection zones before they reach your farm. This decentralized, farmer-to-farmer alert network is the first of its kind.
+            </p>
+            
+            <button 
+              onClick={handleSimulateScan}
+              className="mt-8 bg-pink-500/10 text-pink-600 border border-pink-500/30 px-6 py-3 rounded-full text-sm font-bold flex items-center justify-center gap-2 hover:bg-pink-500 hover:text-white transition-all mx-auto shadow-sm"
+            >
+              <Zap className="w-4 h-4" /> Simulate Local Scan Detection
+            </button>
+          </ScrollReveal>
+
+          <div className="grid lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-3 h-[600px]">
+              <ScrollReveal delay={0.2} className="h-full">
+                <DiseaseMap diseasePoints={diseasePoints} />
+              </ScrollReveal>
+            </div>
+            
+            <div className="lg:col-span-1 h-[600px]">
+              <ScrollReveal delay={0.4} className="h-full">
+                <AlertNetwork alerts={alerts} />
+              </ScrollReveal>
+            </div>
+          </div>
+        </section>
+
         <footer className="border-t border-emerald-900/10 pt-24 pb-12 px-6 lg:px-12 max-w-[1400px] mx-auto">
           <div className="grid lg:grid-cols-12 gap-12 mb-20">
             <div className="lg:col-span-6">
@@ -712,6 +908,38 @@ export default function App() {
         </AnimatePresence>
 
 
+
+        <AnimatePresence>
+          {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
+        </AnimatePresence>
+
+        {/* Phase 4: Custom Push Notification Toast */}
+        <AnimatePresence>
+          {activeToast && (
+            <motion.div
+              initial={{ opacity: 0, y: 50, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.9 }}
+              className="fixed bottom-6 right-6 z-[300] bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow-[0_10px_40px_rgba(225,29,72,0.2)] border-l-[6px] border-l-rose-500 border-y border-r border-emerald-100 flex gap-4 pr-12 max-w-sm"
+            >
+              <button 
+                onClick={() => setActiveToast(null)} 
+                className="absolute top-2 right-2 text-emerald-900/40 hover:text-emerald-900 transition-colors w-6 h-6 flex items-center justify-center rounded-full hover:bg-emerald-50"
+              >
+                <X size={16}/>
+              </button>
+              <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center flex-shrink-0 relative">
+                <div className="absolute inset-0 bg-rose-500 rounded-full animate-ping opacity-20 hidden"></div>
+                <Bell className="w-5 h-5 text-rose-600 animate-pulse" />
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-600 block mb-1">Emergency Push Alert</span>
+                <h4 className="font-heading italic text-xl text-emerald-950 leading-tight mb-1">{activeToast.disease} Found</h4>
+                <p className="text-xs text-emerald-800/80 font-medium leading-relaxed">A high-risk mapping hit was just logged locally. Check the Network Map immediately.</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Adds Amania AI globally */}
         <AmaniaChatbot />
