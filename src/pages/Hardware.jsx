@@ -56,11 +56,7 @@ import { Link } from 'react-router-dom';
 import '@google/model-viewer';
 
 export default function Hardware() {
-  const hardwareRef = React.useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: hardwareRef,
-    offset: ["start start", "end start"]
-  });
+  const { scrollYProgress } = useScroll();
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const y = useTransform(scrollYProgress, [0, 0.2], [0, 100]);
   const [activeCard, setActiveCard] = React.useState(null);
@@ -97,9 +93,20 @@ export default function Hardware() {
     };
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
-    <div ref={hardwareRef} className="bg-[#050505] min-h-screen text-gray-200 overflow-x-hidden font-sans selection:bg-white/20 selection:text-white">
+    <div className="bg-[#050505] min-h-screen text-gray-200 overflow-x-hidden font-sans selection:bg-white/20 selection:text-white">
       
+      {/* Navigation Return */}
+      <nav className="absolute top-0 left-0 w-full z-50 p-6 flex justify-between items-center bg-transparent mix-blend-difference">
+        <Link to="/" className="flex items-center gap-2 text-white/50 hover:text-white transition-colors text-[10px] uppercase tracking-[0.2em] font-bold">
+          <ArrowLeft className="w-4 h-4" /> Return to Software
+        </Link>
+      </nav>
+
       {/* Section 1: Hero */}
       <section 
         className="relative w-full h-[90vh] md:h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden border-b border-white/[0.03]" 

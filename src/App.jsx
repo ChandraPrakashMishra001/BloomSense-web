@@ -604,13 +604,15 @@ function Home() {
         
         <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full liquid-glass">
           {['Home', 'Technology', 'Network', 'Flora'].map((item) => (
-            <a 
-              key={item} 
-              href={`#${item === 'Technology' ? 'hardware' : item.toLowerCase()}`} 
-              className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide"
-            >
-              {item}
-            </a>
+            item === 'Technology' ? (
+              <Link key={item} to="/technology/hardware" className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
+                {item}
+              </Link>
+            ) : (
+              <a key={item} href={`#${item.toLowerCase()}`} className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
+                {item}
+              </a>
+            )
           ))}
           
           {user ? (
@@ -975,17 +977,15 @@ function Home() {
         <AmaniaChatbot />
         <AmaniaBadge />
       </main>
-
-      {/* Embedded Hardware Section */}
-      <section id="hardware" className="relative w-full z-10">
-        <Hardware />
-      </section>
     </div>
   );
 }
 
 export default function App() {
   return (
-    <Home />
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/technology/hardware" element={<Hardware />} />
+    </Routes>
   );
 }
