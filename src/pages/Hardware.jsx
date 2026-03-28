@@ -126,7 +126,7 @@ export default function Hardware() {
           playsInline 
           className="absolute inset-0 w-full h-full object-cover z-0"
         >
-          <source src="/Hardwarebackground.mp4" type="video/mp4" />
+          <source src="/hardwarevideo.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/40 to-[#050505] z-0" />
         
@@ -204,7 +204,7 @@ export default function Hardware() {
                   auto-rotate
                   camera-controls
                   touch-action="pan-y"
-                  shadow-intensity="1"
+                  shadow-intensity="0.5"
                   environment-image="neutral"
                   exposure="0.8"
                   style={{ width: '100%', height: '100%', outline: 'none' }}

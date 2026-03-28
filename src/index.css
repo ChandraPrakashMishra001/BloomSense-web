@@ -168,3 +168,16 @@ body {
 .animate-particle {
   animation: particle-drift 15s linear infinite;
 }
+
+@keyframes flora-fall {
+  0% { transform: translateY(-10vh) translateX(0) rotate(0deg); }
+  33% { transform: translateY(30vh) translateX(30px) rotate(120deg); }
+  66% { transform: translateY(70vh) translateX(-30px) rotate(240deg); }
+  100% { transform: translateY(115vh) translateX(0) rotate(360deg); }
+}
+
+.animate-flora {
+  animation: flora-fall var(--duration) linear infinite;
+  animation-delay: var(--delay);
+  will-change: transform;
+}

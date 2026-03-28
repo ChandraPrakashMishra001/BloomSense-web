@@ -185,7 +185,7 @@ const BlurText = ({ text, className = "" }) => {
         <span key={index} className="inline-block overflow-hidden whitespace-nowrap">
           <motion.span
             variants={{
-              hidden: { filter: 'blur(12px)', opacity: 0, y: 40 },
+              hidden: { filter: 'blur(4px)', opacity: 0, y: 40 },
               visible: { filter: 'blur(0px)', opacity: 1, y: 0, transition: { duration: 0.8, ease: customEase } }
             }}
             className="inline-block mr-[0.25em]"
@@ -200,12 +200,12 @@ const BlurText = ({ text, className = "" }) => {
 
 const ScrollReveal = ({ children, className = "", delay = 0 }) => (
   <motion.div
-    initial={{ opacity: 0, filter: 'blur(12px)', y: 40 }}
-    whileInView={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+    initial={{ opacity: 0, y: 40 }}
+    whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-50px" }}
     transition={{ duration: 0.8, delay, ease: customEase }}
     className={className}
-    style={{ willChange: "transform, opacity, filter" }}
+    style={{ willChange: "transform, opacity" }}
   >
     {children}
   </motion.div>
@@ -215,30 +215,24 @@ const MixedFlora = () => {
   const elements = useMemo(() => Array.from({ length: 45 }).map((_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
-    duration: Math.random() * 12 + 12,
-    delay: Math.random() * -20,
+    duration: `${Math.random() * 12 + 12}s`,
+    delay: `${Math.random() * -20}s`,
     scale: Math.random() * 0.45 + 0.3,
-    xDrift: (Math.random() - 0.5) * 350,
     isPink: Math.random() > 0.4 
   })), []);
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
       {elements.map((el) => (
-        <motion.div
+        <div
            key={el.id}
-           className={`absolute drop-shadow-md ${el.isPink ? 'text-pink-400/80' : 'text-emerald-500/70'}`}
-           style={{ left: el.left, top: '-10%', willChange: "transform" }}
-          animate={{
-            y: ['0vh', '115vh'],
-            x: [0, el.xDrift, -el.xDrift, 0],
-            rotate: [0, 180, 360],
-          }}
-          transition={{
-            y: { duration: el.duration, repeat: Infinity, ease: "linear", delay: el.delay },
-            x: { duration: el.duration * 0.7, repeat: Infinity, ease: "easeInOut", yoyo: true },
-            rotate: { duration: el.duration * 0.5, repeat: Infinity, ease: "linear" }
-          }}
+           className={`absolute drop-shadow-md animate-flora ${el.isPink ? 'text-pink-400/80' : 'text-emerald-500/70'}`}
+           style={{ 
+             left: el.left, 
+             top: '-10%', 
+             '--duration': el.duration, 
+             '--delay': el.delay 
+           }}
         >
           {el.isPink ? (
             <svg style={{ transform: `scale(${el.scale})` }} width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -247,7 +241,7 @@ const MixedFlora = () => {
           ) : (
             <Leaf style={{ transform: `scale(${el.scale})` }} />
           )}
-        </motion.div>
+        </div>
       ))}
     </div>
   );
