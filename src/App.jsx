@@ -724,15 +724,11 @@ function Home() {
         <section id="technology" className="py-24 px-6 lg:px-12 max-w-[1400px] mx-auto relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
             <Link to="/technology/hardware" className="block relative h-[400px] md:h-[650px] rounded-[2.5rem] liquid-glass overflow-hidden border border-emerald-900/10 shadow-xl group cursor-pointer lg:col-span-1">
-              <video 
-                autoPlay 
-                loop 
-                muted 
-                playsInline
+              <img 
+                src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1600&auto=format&fit=crop" 
+                alt="Pink and Green Leaf Pattern Botanical" 
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
-              >
-                <source src="/Hardwarebackground.mp4" type="video/mp4" />
-              </video>
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-900/20 to-transparent transition-opacity duration-500" />
               <div className="absolute bottom-10 left-10 right-10 transform translate-y-0 group-hover:-translate-y-2 transition-transform duration-500">
                 <p className="text-emerald-100 text-sm uppercase tracking-[0.25em] mb-3 font-bold bg-white/20 backdrop-blur-md border border-white/30 inline-block px-4 py-1.5 rounded-full shadow-sm flex items-center w-max gap-2 group-hover:bg-emerald-600 group-hover:border-emerald-500 transition-colors">

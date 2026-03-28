@@ -62,6 +62,7 @@ export default function Hardware() {
   const [activeCard, setActiveCard] = React.useState(null);
   const [isFullscreen, setIsFullscreen] = React.useState(false);
   const modelContainerRef = React.useRef(null);
+  const videoRef = React.useRef(null);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -95,6 +96,12 @@ export default function Hardware() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    // Explicitly play the background video to prevent browser autoplay blockers (which makes it look like a static photo)
+    if (videoRef.current) {
+      videoRef.current.play().catch(error => {
+        console.log("Video auto-play was prevented by the browser:", error);
+      });
+    }
   }, []);
 
   return (
@@ -109,10 +116,19 @@ export default function Hardware() {
 
       {/* Section 1: Hero */}
       <section 
-        className="relative w-full h-[90vh] md:h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden border-b border-white/[0.03]" 
-        style={{ backgroundImage: "url('/hardwarebackground.webp')" }}
+        className="relative w-full h-[90vh] md:h-screen flex items-center justify-center overflow-hidden border-b border-white/[0.03]"
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/40 to-[#050505]" />
+        <video 
+          ref={videoRef}
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          className="absolute inset-0 w-full h-full object-cover z-0"
+        >
+          <source src="/Hardwarebackground.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/40 to-[#050505] z-0" />
         
         <motion.div 
           style={{ opacity, y }}
