@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, Suspense, lazy } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
@@ -12,7 +12,7 @@ import DiseaseMap from './components/DiseaseMap';
 import AlertNetwork from './components/AlertNetwork';
 import AuthModal from './components/AuthModal';
 import { Routes, Route, Link } from 'react-router-dom';
-import Hardware from './pages/Hardware';
+const Hardware = lazy(() => import('./pages/Hardware'));
 
 const initialAlerts = [
   { id: 1, disease: 'Rice Blast', distance: '1.2', farmCount: 4, timeAgo: '2h ago', severity: 'high' },
@@ -603,10 +603,10 @@ function Home() {
         </div>
         
         <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full liquid-glass">
-          {['Home', 'Technology', 'Network', 'Flora'].map((item) => (
-            item === 'Technology' ? (
+          {['Home', 'Technology', 'Hardware', 'Network', 'Flora'].map((item) => (
+            item === 'Hardware' ? (
               <Link key={item} to="/technology/hardware" className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
-                {item}
+                Hardware Specs
               </Link>
             ) : (
               <a key={item} href={`#${item.toLowerCase()}`} className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
@@ -680,7 +680,7 @@ function Home() {
 
         <section id="technology" className="py-24 px-6 lg:px-12 max-w-[1400px] mx-auto relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
-            <ScrollReveal className="group relative h-[650px] rounded-[2.5rem] liquid-glass overflow-hidden border border-emerald-900/10 shadow-xl">
+            <Link to="/technology/hardware" className="block relative h-[650px] rounded-[2.5rem] liquid-glass overflow-hidden border border-emerald-900/10 shadow-xl group cursor-pointer lg:col-span-1">
               <img 
                 src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1600&auto=format&fit=crop" 
                 alt="Pink and Green Leaf Pattern Botanical" 
@@ -688,10 +688,12 @@ function Home() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-900/20 to-transparent transition-opacity duration-500" />
               <div className="absolute bottom-10 left-10 right-10 transform translate-y-0 group-hover:-translate-y-2 transition-transform duration-500">
-                <p className="text-emerald-100 text-sm uppercase tracking-[0.25em] mb-3 font-bold bg-white/20 backdrop-blur-md border border-white/30 inline-block px-4 py-1.5 rounded-full shadow-sm">Vision System</p>
+                <p className="text-emerald-100 text-sm uppercase tracking-[0.25em] mb-3 font-bold bg-white/20 backdrop-blur-md border border-white/30 inline-block px-4 py-1.5 rounded-full shadow-sm flex items-center w-max gap-2 group-hover:bg-emerald-600 group-hover:border-emerald-500 transition-colors">
+                  Explore Hardware <ArrowUpRight className="w-3 h-3" />
+                </p>
                 <h3 className="font-heading italic text-6xl text-white mt-2 drop-shadow-md">The Apex Sensor</h3>
               </div>
-            </ScrollReveal>
+            </Link>
 
             <div className="relative">
               {/* Ambient Glow for Glassmorphism */}
@@ -719,6 +721,14 @@ function Home() {
                   </ScrollReveal>
                 ))}
               </div>
+              <ScrollReveal delay={0.6} className="mt-8 flex justify-start">
+                <Link to="/technology/hardware" className="text-emerald-600 font-bold group flex items-center gap-2 hover:text-emerald-800 transition-colors">
+                  View full hardware specifications
+                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                     <ArrowUpRight className="w-4 h-4" />
+                  </div>
+                </Link>
+              </ScrollReveal>
             </div>
           </div>
         </section>
@@ -866,10 +876,10 @@ function Home() {
             <div className="lg:col-span-3">
               <h4 className="text-emerald-900/50 uppercase tracking-[0.25em] text-xs font-black mb-8">Technology</h4>
               <ul className="space-y-4 text-sm text-emerald-800 font-semibold">
-                <li><a href="#" className="hover:text-pink-500 transition-colors">Computer Vision</a></li>
-                <li><a href="#" className="hover:text-pink-500 transition-colors">Phyto-AI Models</a></li>
-                <li><a href="#" className="hover:text-pink-500 transition-colors">Edge Processing</a></li>
-                <li><a href="#" className="hover:text-pink-500 transition-colors">Hardware Specs</a></li>
+                <li><Link to="/technology/hardware" className="hover:text-pink-500 transition-colors">Computer Vision</Link></li>
+                <li><Link to="/technology/hardware" className="hover:text-pink-500 transition-colors">Phyto-AI Models</Link></li>
+                <li><Link to="/technology/hardware" className="hover:text-pink-500 transition-colors">Edge Processing</Link></li>
+                <li><Link to="/technology/hardware" className="hover:text-pink-500 transition-colors">Hardware Specs</Link></li>
               </ul>
             </div>
 
@@ -983,9 +993,11 @@ function Home() {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/technology/hardware" element={<Hardware />} />
-    </Routes>
+    <Suspense fallback={<div className="h-screen w-full bg-pink-50 flex flex-col items-center justify-center animate-pulse"><Leaf className="w-12 h-12 text-emerald-600 mb-4" /><p className="text-emerald-800 font-bold uppercase tracking-[0.2em] text-sm">Loading Environment...</p></div>}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/technology/hardware" element={<Hardware />} />
+      </Routes>
+    </Suspense>
   );
 }

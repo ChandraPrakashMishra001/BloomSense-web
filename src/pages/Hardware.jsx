@@ -183,7 +183,7 @@ export default function Hardware() {
               <div className="absolute inset-0 z-0">
                 {/* 3D Model injected into the dashboard card */}
                 <model-viewer
-                  src="/AgriProbe.glb"
+                  src="/AgriProbe-compressed.glb"
                   alt="3D Agri-Probe Hardware Model"
                   auto-rotate
                   camera-controls
