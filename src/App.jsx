@@ -11,6 +11,8 @@ import {
 import DiseaseMap from './components/DiseaseMap';
 import AlertNetwork from './components/AlertNetwork';
 import AuthModal from './components/AuthModal';
+import { Routes, Route, Link } from 'react-router-dom';
+import Hardware from './pages/Hardware';
 
 const initialAlerts = [
   { id: 1, disease: 'Rice Blast', distance: '1.2', farmCount: 4, timeAgo: '2h ago', severity: 'high' },
@@ -403,7 +405,7 @@ const FloraArchive = () => {
   );
 };
 
-export default function App() {
+function Home() {
   const { scrollY } = useScroll();
   const heroY = useTransform(scrollY, [0, 1000], [0, 200]);
   const heroOpacity = useTransform(scrollY, [0, 800], [1, 0]);
@@ -602,9 +604,15 @@ export default function App() {
         
         <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full liquid-glass">
           {['Home', 'Technology', 'Network', 'Flora'].map((item) => (
-            <a key={item} href={`#${item.toLowerCase()}`} className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
-              {item}
-            </a>
+            item === 'Technology' ? (
+              <Link key={item} to="/technology/hardware" className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
+                {item}
+              </Link>
+            ) : (
+              <a key={item} href={`#${item.toLowerCase()}`} className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
+                {item}
+              </a>
+            )
           ))}
           
           {user ? (
@@ -970,5 +978,14 @@ export default function App() {
         <AmaniaBadge />
       </main>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/technology/hardware" element={<Hardware />} />
+    </Routes>
   );
 }
