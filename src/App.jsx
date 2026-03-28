@@ -63,7 +63,7 @@ const floraDatabase = [
     id: 1,
     name: "Ashwagandha",
     scientificName: "Withania somnifera",
-    image: "/ashwagandha.png",
+    image: "/ashwagandha.webp",
     properties: ["Adaptogenic", "Anti-inflammatory", "Stress Relief"],
     diseasesTargeted: ["Insomnia", "Anxiety", "Arthritis"],
     cures: "Used to lower cortisol levels and improve brain function. Often consumed as a root powder mixed with warm milk.",
@@ -72,7 +72,7 @@ const floraDatabase = [
     id: 2,
     name: "Tulsi (Holy Basil)",
     scientificName: "Ocimum tenuiflorum",
-    image: "/tulsi.png",
+    image: "/tulsi.webp",
     properties: ["Antibacterial", "Antiviral", "Immunity Booster"],
     diseasesTargeted: ["Common Cold", "Asthma", "Fever"],
     cures: "Leaves are boiled in water to extract essential oils, acting as a powerful expectorant for respiratory illnesses.",
@@ -81,7 +81,7 @@ const floraDatabase = [
     id: 3,
     name: "Neem",
     scientificName: "Azadirachta indica",
-    image: "/neem.png",
+    image: "/neem.webp",
     properties: ["Antifungal", "Blood Purifier", "Detoxifying"],
     diseasesTargeted: ["Acne", "Eczema", "Dental Plaque"],
     cures: "Neem paste is applied directly to the skin to cure fungal infections and acne. Chewing twigs improves oral hygiene.",
@@ -90,7 +90,7 @@ const floraDatabase = [
     id: 4,
     name: "Brahmi",
     scientificName: "Bacopa monnieri",
-    image: "/brahmi.png",
+    image: "/brahmi.webp",
     properties: ["Nootropic", "Antioxidant", "Neuroprotective"],
     diseasesTargeted: ["Memory Loss", "ADHD", "Anxiety"],
     cures: "Enhances cognitive function and memory retention. Extracted as an oil for scalp massage or consumed as a dietary supplement.",
@@ -99,7 +99,7 @@ const floraDatabase = [
     id: 5,
     name: "Turmeric",
     scientificName: "Curcuma longa",
-    image: "/turmeric.png",
+    image: "/turmeric.webp",
     properties: ["Curcumin", "Anti-inflammatory", "Antioxidant"],
     diseasesTargeted: ["Joint Pain", "Digestive Issues", "Wounds"],
     cures: "Curcumin compound reduces inflammation at the molecular level. Applied topically to wounds for rapid healing.",
@@ -108,7 +108,7 @@ const floraDatabase = [
     id: 6,
     name: "Aloe Vera",
     scientificName: "Aloe barbadensis miller",
-    image: "/aloe vera.png",
+    image: "/aloe vera.webp",
     properties: ["Hydrating", "Healing", "Antimicrobial"],
     diseasesTargeted: ["Sunburn", "Psoriasis", "Acid Reflux"],
     cures: "The clear gel inside the leaves provides instant relief for burns and skin irritations. Juice aids in digestive health.",
@@ -117,7 +117,7 @@ const floraDatabase = [
     id: 7,
     name: "Peppermint",
     scientificName: "Mentha piperita",
-    image: "/peppermint.jpeg",
+    image: "/peppermint.webp",
     properties: ["Cooling", "Digestive", "Antibacterial"],
     diseasesTargeted: ["IBS", "Headaches", "Nausea"],
     cures: "Menthol compound soothes upset stomachs and provides relief for tension headaches when applied as oil.",
@@ -126,7 +126,7 @@ const floraDatabase = [
     id: 8,
     name: "Lavender",
     scientificName: "Lavandula angustifolia",
-    image: "/lavender.png",
+    image: "/lavender.webp",
     properties: ["Calming", "Sedative", "Antiseptic"],
     diseasesTargeted: ["Insomnia", "Anxiety", "Restlessness"],
     cures: "Widely used in aromatherapy and sleep aids due to its profound soothing and nervous system-regulating effects.",
@@ -135,7 +135,7 @@ const floraDatabase = [
     id: 9,
     name: "Ginger",
     scientificName: "Zingiber officinale",
-    image: "/ginger.jpeg",
+    image: "/ginger.webp",
     properties: ["Anti-nausea", "Anti-inflammatory", "Warming"],
     diseasesTargeted: ["Motion Sickness", "Morning Sickness", "Osteoarthritis"],
     cures: "Contains gingerol, a substance with powerful anti-inflammatory and antioxidant properties, used to treat all forms of nausea.",
@@ -153,7 +153,7 @@ const floraDatabase = [
     id: 11,
     name: "Echinacea",
     scientificName: "Echinacea purpurea",
-    image: "/echinacea.png",
+    image: "/echinacea.webp",
     properties: ["Immune Stimulant", "Antiviral", "Pain Relief"],
     diseasesTargeted: ["Common Cold", "Upper Respiratory Infections", "Sore Throat"],
     cures: "Increases the number of white blood cells which fight infections; heavily utilized preventatively during flu seasons.",
@@ -695,7 +695,7 @@ function Home() {
 
           <motion.div 
             style={{ y: heroY, opacity: heroOpacity, scale: heroScale }}
-            className="absolute inset-0 w-full h-full z-0 bg-[url('/bg.png')] bg-cover bg-center"
+            className="absolute inset-0 w-full h-full z-0 bg-[url('/bg.webp')] bg-cover bg-center"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-pink-50/40 to-emerald-50/90 pointer-events-none" />
           </motion.div>

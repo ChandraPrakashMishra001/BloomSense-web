@@ -110,7 +110,7 @@ export default function Hardware() {
       {/* Section 1: Hero */}
       <section 
         className="relative w-full h-[90vh] md:h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden border-b border-white/[0.03]" 
-        style={{ backgroundImage: "url('/hardwarebackground.png')" }}
+        style={{ backgroundImage: "url('/hardwarebackground.webp')" }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/40 to-[#050505]" />
         
@@ -325,12 +325,12 @@ export default function Hardware() {
           className="w-full max-w-[1300px] mx-auto px-4 md:px-12 relative z-10"
         >
           <img 
-            src="/probe-render.jpeg" 
+            src="/probe-render.webp" 
             alt="3D Probe Render" 
             className="w-full h-auto object-cover rounded-[40px] border border-white/[0.05] opacity-[0.85] mix-blend-screen shadow-[0_0_50px_rgba(255,255,255,0.02)]"
             onError={(e) => {
               e.target.style.display = 'none';
-              e.target.parentElement.innerHTML = '<div class="w-full h-[40vh] md:h-[60vh] flex flex-col items-center justify-center border border-white/5 rounded-[40px] bg-[#050505]"><Maximize class="w-12 h-12 text-white/10 mb-6" /><p class="text-white/20 text-[10px] uppercase tracking-[0.3em]">[ missing: /probe-render.jpeg ]</p></div>';
+              e.target.parentElement.innerHTML = '<div class="w-full h-[40vh] md:h-[60vh] flex flex-col items-center justify-center border border-white/5 rounded-[40px] bg-[#050505]"><Maximize class="w-12 h-12 text-white/10 mb-6" /><p class="text-white/20 text-[10px] uppercase tracking-[0.3em]">[ missing: /probe-render.webp ]</p></div>';
             }}
           />
         </motion.div>
