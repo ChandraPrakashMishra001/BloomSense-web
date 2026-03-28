@@ -187,6 +187,7 @@ export default function Hardware() {
                   alt="3D Agri-Probe Hardware Model"
                   auto-rotate
                   camera-controls
+                  touch-action="pan-y"
                   shadow-intensity="1"
                   environment-image="neutral"
                   exposure="0.8"

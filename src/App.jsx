@@ -6,7 +6,7 @@ import { db, auth } from './firebase';
 import { 
   Leaf, ArrowUpRight, Play, Zap, Shield, Microscope, 
   Cpu, Cloud, Database, Scan, Beaker, ChevronDown, 
-  Layers, Focus, Activity, X, Loader2, CheckCircle, AlertTriangle, Search, Sparkles, Map, Bell, LogIn, LogOut
+  Layers, Focus, Activity, X, Loader2, CheckCircle, AlertTriangle, Search, Sparkles, Map, Bell, LogIn, LogOut, Menu
 } from 'lucide-react';
 import DiseaseMap from './components/DiseaseMap';
 import AlertNetwork from './components/AlertNetwork';
@@ -424,6 +424,7 @@ function Home() {
   const [user, setUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [activeToast, setActiveToast] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -643,8 +644,50 @@ function Home() {
           <button onClick={handleScanClick} className="bg-emerald-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-emerald-700 transition-colors">
             <Scan className="w-5 h-5" />
           </button>
+          <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 ml-1 rounded-full focus:bg-emerald-50 border border-emerald-900/10 shadow-sm transition-colors text-emerald-800">
+            <Menu className="w-6 h-6" />
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Navigation Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-[60] bg-pink-50 flex flex-col pt-24 px-6 pb-6 overflow-y-auto"
+          >
+            <button onClick={() => setIsMobileMenuOpen(false)} className="absolute top-6 right-6 p-2 rounded-full bg-white/50 border border-emerald-900/10 shadow-sm transition-colors text-emerald-800">
+              <X className="w-6 h-6" />
+            </button>
+            
+            <div className="flex flex-col gap-6 mt-8">
+              {['Home', 'Technology', 'Hardware', 'Network', 'Flora'].map((item) => (
+                item === 'Hardware' ? (
+                  <Link key={item} to="/technology/hardware" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
+                    Hardware Specs
+                  </Link>
+                ) : (
+                  <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
+                    {item}
+                  </a>
+                )
+              ))}
+            </div>
+            {user ? (
+                 <button onClick={() => { signOut(auth); setIsMobileMenuOpen(false); }} className="mt-8 px-5 py-4 text-xl font-bold rounded-full bg-rose-100 text-rose-600 flex items-center justify-center gap-2 w-full">
+                  <LogOut className="w-5 h-5" /> Log Out
+                </button>
+            ) : (
+                <button onClick={() => { setShowAuthModal(true); setIsMobileMenuOpen(false); }} className="mt-8 px-5 py-4 text-xl font-bold rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center gap-2 w-full">
+                  <LogIn className="w-5 h-5" /> Log In
+                </button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <main>
         <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden bg-pink-50">
@@ -658,7 +701,7 @@ function Home() {
           </motion.div>
 
           <div className="relative z-20 text-center px-6 max-w-5xl mx-auto mt-20">
-            <h1 className="font-heading italic text-5xl md:text-6xl lg:text-7xl tracking-tight text-balance leading-[0.9] mb-6 text-emerald-950 text-shadow-sm">
+            <h1 className="font-heading italic text-4xl md:text-5xl lg:text-7xl tracking-tight text-balance leading-[0.9] mb-6 text-emerald-950 text-shadow-sm">
               <BlurText text="Decode Nature's Secrets with Precision AI" />
             </h1>
             
@@ -680,7 +723,7 @@ function Home() {
 
         <section id="technology" className="py-24 px-6 lg:px-12 max-w-[1400px] mx-auto relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
-            <Link to="/technology/hardware" className="block relative h-[650px] rounded-[2.5rem] liquid-glass overflow-hidden border border-emerald-900/10 shadow-xl group cursor-pointer lg:col-span-1">
+            <Link to="/technology/hardware" className="block relative h-[400px] md:h-[650px] rounded-[2.5rem] liquid-glass overflow-hidden border border-emerald-900/10 shadow-xl group cursor-pointer lg:col-span-1">
               <img 
                 src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1600&auto=format&fit=crop" 
                 alt="Pink and Green Leaf Pattern Botanical" 
@@ -691,7 +734,7 @@ function Home() {
                 <p className="text-emerald-100 text-sm uppercase tracking-[0.25em] mb-3 font-bold bg-white/20 backdrop-blur-md border border-white/30 inline-block px-4 py-1.5 rounded-full shadow-sm flex items-center w-max gap-2 group-hover:bg-emerald-600 group-hover:border-emerald-500 transition-colors">
                   Explore Hardware <ArrowUpRight className="w-3 h-3" />
                 </p>
-                <h3 className="font-heading italic text-6xl text-white mt-2 drop-shadow-md">The Apex Sensor</h3>
+                <h3 className="font-heading italic text-4xl md:text-6xl text-white mt-2 drop-shadow-md">The Apex Sensor</h3>
               </div>
             </Link>
 
