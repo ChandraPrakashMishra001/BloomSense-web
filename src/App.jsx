@@ -932,7 +932,10 @@ function Home() {
           </div>
 
           <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-emerald-900/10 text-sm font-semibold text-emerald-800/60">
-            <p>© 2026 BloomSense. All rights reserved.</p>
+            <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left mb-4 md:mb-0">
+              <p>© 2026 BloomSense. All rights reserved.</p>
+              <p className="text-pink-600/80 text-xs font-bold tracking-[0.1em] uppercase">Made by Chandra Prakash Mishra</p>
+            </div>
             <div className="flex items-center gap-6 mt-4 md:mt-0">
               <a href="#" className="hover:text-emerald-900 transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-emerald-900 transition-colors">Terms of Service</a>

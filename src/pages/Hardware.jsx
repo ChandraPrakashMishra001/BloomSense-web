@@ -447,9 +447,14 @@ export default function Hardware() {
         </div>
         
         <div className="w-full max-w-[1300px] border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-white/20 text-[10px] uppercase tracking-[0.2em] font-semibold text-center md:text-left">
-            © {new Date().getFullYear()} BloomSense. All rights reserved.
-          </p>
+          <div className="flex flex-col gap-2 items-center md:items-start">
+            <p className="text-white/20 text-[10px] uppercase tracking-[0.2em] font-semibold text-center md:text-left">
+              © {new Date().getFullYear()} BloomSense. All rights reserved.
+            </p>
+            <p className="text-[#00FF88]/40 text-[10px] uppercase tracking-[0.2em] font-bold text-center md:text-left">
+              Made by Chandra Prakash Mishra
+            </p>
+          </div>
           <div className="flex gap-8">
             <Link to="/" className="text-white/20 hover:text-white transition-colors text-[10px] uppercase tracking-[0.2em] font-bold">Home</Link>
             <Link to="/technology" className="text-white/20 hover:text-white transition-colors text-[10px] uppercase tracking-[0.2em] font-bold">Technology</Link>
