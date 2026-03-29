@@ -46,7 +46,7 @@ const AmaniaBadge = () => (
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.8, delay: 0.5 }}
-    className="fixed bottom-6 left-6 z-[60] flex items-center gap-3 liquid-glass px-4 py-2 rounded-full cursor-pointer hover:scale-105 transition-all shadow-xl hover:shadow-pink-500/20 border border-pink-200/50 bg-white/40"
+    className="absolute bottom-6 left-6 md:bottom-12 md:left-12 z-[60] flex items-center gap-3 liquid-glass px-4 py-2 rounded-full cursor-pointer hover:scale-105 transition-all shadow-xl hover:shadow-pink-500/20 border border-pink-200/50 bg-white/40"
   >
     <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center shadow-inner">
       <Sparkles className="w-4 h-4 text-white" />
@@ -685,6 +685,7 @@ function Home() {
 
       <main>
         <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden bg-pink-50">
+          <AmaniaBadge />
           {showAnimation && <MixedFlora />}
 
           <motion.div 
@@ -1025,7 +1026,6 @@ function Home() {
 
         {/* Adds Amania AI globally */}
         <AmaniaChatbot />
-        <AmaniaBadge />
       </main>
     </div>
   );

@@ -377,10 +377,10 @@ export default function Hardware() {
             {/* Modal Container */}
             <div className="fixed inset-0 z-[101] flex items-end md:items-center justify-center pointer-events-none p-4 md:p-6">
               <motion.div 
-                initial={{ opacity: 0, y: 100, scale: 0.95 }}
+                initial={{ opacity: 0, y: 40, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 100, scale: 0.95 }}
-                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                exit={{ opacity: 0, y: 40, scale: 0.95 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
                 className="w-full max-w-2xl bg-[#0A0A0A] border border-white/10 md:border-[#00FF88]/20 rounded-[40px] p-8 md:p-12 shadow-[0_0_100px_rgba(0,0,0,0.8)] pointer-events-auto relative overflow-hidden"
               >
                 {/* Subtle top reflection / glow */}
@@ -389,9 +389,9 @@ export default function Hardware() {
                 {/* Close Button */}
                 <button 
                   onClick={() => setActiveCard(null)}
-                  className="absolute top-6 right-6 md:top-8 md:right-8 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors z-10 group"
+                  className="absolute top-6 right-6 md:top-8 md:right-8 w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 hover:scale-110 active:scale-95 transition-all z-50 group shadow-lg"
                 >
-                  <X className="w-5 h-5 text-gray-400 group-hover:text-white" />
+                  <X className="w-5 h-5 text-gray-300 group-hover:text-white" />
                 </button>
 
                 <div className="relative z-10">
