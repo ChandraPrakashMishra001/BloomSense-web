@@ -12,7 +12,8 @@ export default defineConfig({
           vendor: ['react', 'react-dom', 'react-router-dom'],
           firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
           animation: ['framer-motion'],
-          viewer: ['@google/model-viewer']
+          viewer: ['@google/model-viewer'],
+          icons: ['lucide-react']
         }
       }
     }

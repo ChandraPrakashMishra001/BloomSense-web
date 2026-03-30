@@ -43,7 +43,7 @@ const initialDiseasePoints = [
   { lat: 19.8190, lng: 85.8278, disease: 'Sheath Blight', severity: 'medium', intensity: 0.83, confidence_score: 83, radius: 1300, timestamp: new Date('2026-03-29T13:20:00').getTime() }
 ];
 
-const AmaniaChatbot = () => {
+const AmaniaChatbot = React.memo(() => {
   useEffect(() => {
     if (document.querySelector('script[src="https://cpmishra.lovable.app/embed.js"]')) {
       return;
@@ -55,9 +55,9 @@ const AmaniaChatbot = () => {
   }, []);
 
   return null;
-};
+});
 
-const AmaniaBadge = () => (
+const AmaniaBadge = React.memo(() => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -72,7 +72,7 @@ const AmaniaBadge = () => (
       <span className="font-heading italic text-2xl bg-gradient-to-r from-pink-600 to-purple-700 bg-clip-text text-transparent leading-none">Amania AI</span>
     </div>
   </motion.div>
-);
+));
 
 const floraDatabase = [
   {
@@ -227,7 +227,7 @@ const ScrollReveal = ({ children, className = "", delay = 0 }) => (
   </motion.div>
 );
 
-const MixedFlora = () => {
+const MixedFlora = React.memo(() => {
   const elements = useMemo(() => Array.from({ length: 45 }).map((_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
@@ -261,9 +261,9 @@ const MixedFlora = () => {
       ))}
     </div>
   );
-};
+});
 
-const FloraArchive = () => {
+const FloraArchive = React.memo(() => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
 
@@ -413,7 +413,7 @@ const FloraArchive = () => {
       </AnimatePresence>
     </section>
   );
-};
+});
 
 function Home() {
   const { scrollY } = useScroll();

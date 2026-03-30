@@ -78,4 +78,4 @@ const AlertNetwork = ({ alerts }) => {
     );
 };
 
-export default AlertNetwork;
+export default React.memo(AlertNetwork);
