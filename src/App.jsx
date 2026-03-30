@@ -11,6 +11,7 @@ import {
 import DiseaseMap from './components/DiseaseMap';
 import AlertNetwork from './components/AlertNetwork';
 import AuthModal from './components/AuthModal';
+import WeatherIntelligence from './components/WeatherIntelligence';
 import { Routes, Route, Link } from 'react-router-dom';
 const Hardware = lazy(() => import('./pages/Hardware'));
 
@@ -876,6 +877,8 @@ function Home() {
               <Zap className="w-4 h-4" /> Simulate Local Scan Detection
             </button>
           </ScrollReveal>
+
+          <WeatherIntelligence userLocation={userLocation} />
 
           <div className="grid lg:grid-cols-4 gap-8">
             <div className="lg:col-span-3 h-[600px]">
