@@ -21,10 +21,26 @@ const initialAlerts = [
 ];
 
 const initialDiseasePoints = [
-  { lat: 20.2961, lng: 85.8245, disease: 'Rice Blast', severity: 'high', intensity: 0.5, timestamp: Date.now() - 7200000, radius: 1500 },
-  { lat: 20.3161, lng: 85.8045, disease: 'Rice Blast', severity: 'high', intensity: 0.4, timestamp: Date.now() - 86400000, radius: 2000 },
-  { lat: 20.2761, lng: 85.8545, disease: 'Bacterial Leaf Blight', severity: 'medium', intensity: 0.2, timestamp: Date.now() - 18000000, radius: 1200 },
-  { lat: 20.2561, lng: 85.8145, disease: 'Brown Spot', severity: 'medium', intensity: 0.1, timestamp: Date.now() - 86400000, radius: 800 }
+  { lat: 21.4669, lng: 83.9812, disease: 'Rice Blast', severity: 'high', intensity: 0.91, confidence_score: 91, radius: 1500, timestamp: new Date('2026-03-20T08:23:00').getTime() },
+  { lat: 21.4721, lng: 83.9756, disease: 'Rice Blast', severity: 'medium', intensity: 0.88, confidence_score: 88, radius: 1200, timestamp: new Date('2026-03-21T09:15:00').getTime() },
+  { lat: 21.4598, lng: 83.9901, disease: 'Brown Plant Hopper', severity: 'low', intensity: 0.79, confidence_score: 79, radius: 1300, timestamp: new Date('2026-03-22T07:44:00').getTime() },
+  { lat: 20.4625, lng: 85.8830, disease: 'Sheath Blight', severity: 'medium', intensity: 0.85, confidence_score: 85, radius: 1100, timestamp: new Date('2026-03-22T10:30:00').getTime() },
+  { lat: 20.4701, lng: 85.8912, disease: 'Sheath Blight', severity: 'medium', intensity: 0.82, confidence_score: 82, radius: 1400, timestamp: new Date('2026-03-23T08:10:00').getTime() },
+  { lat: 20.4550, lng: 85.8778, disease: 'Leaf Folder', severity: 'low', intensity: 0.77, confidence_score: 77, radius: 900, timestamp: new Date('2026-03-23T11:22:00').getTime() },
+  { lat: 20.2961, lng: 85.8189, disease: 'Powdery Mildew', severity: 'medium', intensity: 0.83, confidence_score: 83, radius: 1600, timestamp: new Date('2026-03-24T09:05:00').getTime() },
+  { lat: 20.3021, lng: 85.8245, disease: 'Bacterial Blight', severity: 'high', intensity: 0.90, confidence_score: 90, radius: 1700, timestamp: new Date('2026-03-24T14:33:00').getTime() },
+  { lat: 20.7167, lng: 83.4833, disease: 'Rice Blast', severity: 'high', intensity: 0.93, confidence_score: 93, radius: 1900, timestamp: new Date('2026-03-25T07:55:00').getTime() },
+  { lat: 20.7210, lng: 83.4901, disease: 'Stem Rot', severity: 'medium', intensity: 0.81, confidence_score: 81, radius: 1200, timestamp: new Date('2026-03-25T10:18:00').getTime() },
+  { lat: 18.8135, lng: 82.7110, disease: 'Late Blight', severity: 'medium', intensity: 0.87, confidence_score: 87, radius: 1600, timestamp: new Date('2026-03-26T08:40:00').getTime() },
+  { lat: 18.8190, lng: 82.7055, disease: 'Leaf Curl', severity: 'low', intensity: 0.76, confidence_score: 76, radius: 1000, timestamp: new Date('2026-03-26T12:15:00').getTime() },
+  { lat: 21.9522, lng: 86.7322, disease: 'Rice Blast', severity: 'medium', intensity: 0.89, confidence_score: 89, radius: 1400, timestamp: new Date('2026-03-27T07:30:00').getTime() },
+  { lat: 21.9478, lng: 86.7401, disease: 'Brown Spot', severity: 'medium', intensity: 0.84, confidence_score: 84, radius: 1300, timestamp: new Date('2026-03-27T09:45:00').getTime() },
+  { lat: 19.3870, lng: 84.9750, disease: 'Downy Mildew', severity: 'medium', intensity: 0.80, confidence_score: 80, radius: 1500, timestamp: new Date('2026-03-28T08:20:00').getTime() },
+  { lat: 19.3920, lng: 84.9810, disease: 'Fusarium Wilt', severity: 'medium', intensity: 0.86, confidence_score: 86, radius: 1100, timestamp: new Date('2026-03-28T11:05:00').getTime() },
+  { lat: 22.1167, lng: 84.0333, disease: 'Rice Blast', severity: 'high', intensity: 0.92, confidence_score: 92, radius: 1800, timestamp: new Date('2026-03-29T07:15:00').getTime() },
+  { lat: 22.1210, lng: 84.0389, disease: 'Neck Rot', severity: 'low', intensity: 0.78, confidence_score: 78, radius: 1200, timestamp: new Date('2026-03-29T10:30:00').getTime() },
+  { lat: 19.8135, lng: 85.8312, disease: 'Bacterial Leaf Blight', severity: 'medium', intensity: 0.88, confidence_score: 88, radius: 1600, timestamp: new Date('2026-03-29T08:55:00').getTime() },
+  { lat: 19.8190, lng: 85.8278, disease: 'Sheath Blight', severity: 'medium', intensity: 0.83, confidence_score: 83, radius: 1300, timestamp: new Date('2026-03-29T13:20:00').getTime() }
 ];
 
 const AmaniaChatbot = () => {

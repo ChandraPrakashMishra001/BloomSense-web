@@ -73,9 +73,16 @@ const DiseaseMap = ({ diseasePoints }) => {
                                 ×
                             </button>
                             <span className="font-heading italic font-bold text-emerald-950 block text-2xl leading-none mb-2 pr-4">{selectedPoint.disease}</span>
-                            <span className="text-[10px] text-rose-600 font-bold uppercase tracking-widest block mb-2 px-2.5 py-1 bg-rose-50 rounded-md inline-block">
-                                {selectedPoint.severity} Risk Zone
-                            </span>
+                            <div className="flex gap-2 items-center mb-2">
+                                <span className="text-[10px] text-rose-600 font-bold uppercase tracking-widest px-2.5 py-1 bg-rose-50 rounded-md inline-block">
+                                    {selectedPoint.severity} Risk Zone
+                                </span>
+                                {(selectedPoint.confidence_score || selectedPoint.intensity) && (
+                                    <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-widest px-2.5 py-1 bg-emerald-50 rounded-md inline-block">
+                                        {selectedPoint.confidence_score ? `${selectedPoint.confidence_score}% Confidence` : `${Math.round(selectedPoint.intensity * 100)}% Confidence`}
+                                    </span>
+                                )}
+                            </div>
                             <span className="text-xs text-emerald-800/80 block font-semibold">
                                 Detected: {new Date(selectedPoint.timestamp).toLocaleDateString()}
                             </span>
