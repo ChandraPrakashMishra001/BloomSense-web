@@ -7,14 +7,16 @@ const WeatherIntelligence = ({ userLocation }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Prevent micro-GPS noise (causes lag) by rounding lat/lng to ~1km precision
+    const latRounded = userLocation?.lat ? userLocation.lat.toFixed(2) : '20.30';
+    const lngRounded = userLocation?.lng ? userLocation.lng.toFixed(2) : '85.82';
+
     useEffect(() => {
         const fetchWeather = async () => {
             try {
                 setLoading(true);
-                const lat = userLocation?.lat || 20.2961;
-                const lng = userLocation?.lng || 85.8245;
                 
-                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code&daily=precipitation_probability_max&timezone=auto`);
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latRounded}&longitude=${lngRounded}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code&daily=precipitation_probability_max&timezone=auto`);
                 
                 if (!res.ok) throw new Error('Failed to fetch weather data');
                 const data = await res.json();
@@ -38,7 +40,7 @@ const WeatherIntelligence = ({ userLocation }) => {
         
         const interval = setInterval(fetchWeather, 30 * 60 * 1000); // 30 mins
         return () => clearInterval(interval);
-    }, [userLocation]);
+    }, [latRounded, lngRounded]);
 
     const getRiskAssessment = () => {
         if (!weather) return null;

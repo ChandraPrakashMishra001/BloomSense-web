@@ -8,10 +8,11 @@ import {
   Cpu, Cloud, Database, Scan, Beaker, ChevronDown, 
   Layers, Focus, Activity, X, Loader2, CheckCircle, AlertTriangle, Search, Sparkles, Map, Bell, LogIn, LogOut, Menu
 } from 'lucide-react';
-import DiseaseMap from './components/DiseaseMap';
-import AlertNetwork from './components/AlertNetwork';
+const DiseaseMap = lazy(() => import('./components/DiseaseMap'));
+const AlertNetwork = lazy(() => import('./components/AlertNetwork'));
 import AuthModal from './components/AuthModal';
 import WeatherIntelligence from './components/WeatherIntelligence';
+import GovernmentSchemesHub from './components/GovernmentSchemesHub';
 import { Routes, Route, Link } from 'react-router-dom';
 const Hardware = lazy(() => import('./pages/Hardware'));
 
@@ -883,17 +884,23 @@ function Home() {
           <div className="grid lg:grid-cols-4 gap-8">
             <div className="lg:col-span-3 h-[600px]">
               <ScrollReveal delay={0.2} className="h-full">
-                <DiseaseMap diseasePoints={diseasePoints} />
+                <Suspense fallback={<div className="w-full h-full liquid-glass rounded-[2rem] animate-pulse"></div>}>
+                   <DiseaseMap diseasePoints={diseasePoints} />
+                </Suspense>
               </ScrollReveal>
             </div>
             
             <div className="lg:col-span-1 h-[600px]">
               <ScrollReveal delay={0.4} className="h-full">
-                <AlertNetwork alerts={alerts} />
+                <Suspense fallback={<div className="w-full h-full liquid-glass rounded-[2rem] animate-pulse"></div>}>
+                   <AlertNetwork alerts={alerts} />
+                </Suspense>
               </ScrollReveal>
             </div>
           </div>
         </section>
+
+        <GovernmentSchemesHub />
 
         <footer className="border-t border-emerald-900/10 pt-24 pb-12 px-6 lg:px-12 max-w-[1400px] mx-auto">
           <div className="grid lg:grid-cols-12 gap-12 mb-20">
