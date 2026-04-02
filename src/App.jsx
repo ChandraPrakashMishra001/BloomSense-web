@@ -6,7 +6,7 @@ import { db, auth } from './firebase';
 import { 
   Leaf, ArrowUpRight, Play, Zap, Shield, Microscope, 
   Cpu, Cloud, Database, Scan, Beaker, ChevronDown, 
-  Layers, Focus, Activity, X, Loader2, CheckCircle, AlertTriangle, Search, Sparkles, Map, Bell, LogIn, LogOut, Menu
+  Layers, Focus, Activity, X, Loader2, CheckCircle, AlertTriangle, Search, Sparkles, Map, Bell, LogIn, LogOut, Menu, Brain
 } from 'lucide-react';
 const DiseaseMap = lazy(() => import('./components/DiseaseMap'));
 const AlertNetwork = lazy(() => import('./components/AlertNetwork'));
@@ -15,6 +15,7 @@ import WeatherIntelligence from './components/WeatherIntelligence';
 import GovernmentSchemesHub from './components/GovernmentSchemesHub';
 import { Routes, Route, Link } from 'react-router-dom';
 const Hardware = lazy(() => import('./pages/Hardware'));
+const Anant = lazy(() => import('./pages/Anant'));
 
 const initialAlerts = [
   { id: 1, disease: 'Rice Blast', distance: '1.2', farmCount: 4, timeAgo: '2h ago', severity: 'high' },
@@ -616,17 +617,27 @@ function Home() {
         </div>
         
         <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full liquid-glass">
-          {['Home', 'Technology', 'Hardware', 'Network', 'Flora'].map((item) => (
-            item === 'Hardware' ? (
-              <Link key={item} to="/technology/hardware" className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
-                Hardware Specs
-              </Link>
-            ) : (
-              <a key={item} href={`#${item.toLowerCase()}`} className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
-                {item}
-              </a>
-            )
-          ))}
+          {['Home', 'Technology', 'Hardware', 'Network', 'Flora', 'ANANT'].map((item) => {
+            if (item === 'Hardware') {
+              return (
+                <Link key={item} to="/technology/hardware" className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
+                  Hardware Specs
+                </Link>
+              );
+            } else if (item === 'ANANT') {
+              return (
+                <Link key={item} to="/anant" className="px-5 py-2.5 text-sm font-bold text-emerald-100 bg-emerald-900 rounded-full hover:bg-emerald-950 transition-colors tracking-wide shadow-sm border border-emerald-500/30 flex items-center gap-2">
+                  <Brain className="w-4 h-4" /> ANANT
+                </Link>
+              );
+            } else {
+              return (
+                <a key={item} href={`#${item.toLowerCase()}`} className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
+                  {item}
+                </a>
+              );
+            }
+          })}
           
           {user ? (
             <button onClick={() => signOut(auth)} className="px-5 py-2.5 text-sm font-bold text-rose-600 hover:text-rose-700 transition-colors tracking-wide flex items-center gap-2">
@@ -676,17 +687,28 @@ function Home() {
             </button>
             
             <div className="flex flex-col gap-6 mt-8">
-              {['Home', 'Technology', 'Hardware', 'Network', 'Flora'].map((item) => (
-                item === 'Hardware' ? (
-                  <Link key={item} to="/technology/hardware" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
-                    Hardware Specs
-                  </Link>
-                ) : (
-                  <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
-                    {item}
-                  </a>
-                )
-              ))}
+              {['Home', 'Technology', 'Hardware', 'Network', 'Flora', 'ANANT'].map((item) => {
+                if (item === 'Hardware') {
+                  return (
+                    <Link key={item} to="/technology/hardware" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
+                      Hardware Specs
+                    </Link>
+                  );
+                } else if (item === 'ANANT') {
+                  return (
+                    <Link key={item} to="/anant" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-800 border-b border-emerald-900/10 pb-4 tracking-wide flex items-center gap-3">
+                      ANANT
+                      <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                    </Link>
+                  );
+                } else {
+                  return (
+                    <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
+                      {item}
+                    </a>
+                  );
+                }
+              })}
             </div>
             {user ? (
                  <button onClick={() => { signOut(auth); setIsMobileMenuOpen(false); }} className="mt-8 px-5 py-4 text-xl font-bold rounded-full bg-rose-100 text-rose-600 flex items-center justify-center gap-2 w-full">
@@ -1063,6 +1085,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/technology/hardware" element={<Hardware />} />
+        <Route path="/anant" element={<Anant />} />
       </Routes>
     </Suspense>
   );
