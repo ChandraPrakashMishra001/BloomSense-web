@@ -21,11 +21,25 @@ export default function Anant() {
   const winner = isConverging ? results.filter(r=>r.success).sort((a,b) => b.score - a.score)[0] : null;
 
   useEffect(() => {
+    // Hide Amanai shortcut button and frame on this specific page
+    const style = document.createElement('style');
+    style.id = 'hide-amanai-widget';
+    style.innerHTML = `
+      #amanai-widget-btn, #amanai-widget-frame {
+        display: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+
     const key = localStorage.getItem('openrouter_key');
     if (key) {
       setApiKey(key);
       setHasKey(true);
     }
+
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
 
   const executeConsensus = async (queryText, base64Image) => {
