@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Infinity as InfinityIcon } from 'lucide-react';
+import { Infinity as InfinityIcon, ArrowLeft } from 'lucide-react';
 import { raceModels, getModelsForTier, classifySector } from '../lib/godmode/ultraplinian';
 import { applyParseltongue } from '../lib/godmode/parseltongue';
 
 import AnantSidebar from '../components/GodMode/AnantSidebar';
 import AnantInputBase from '../components/GodMode/AnantInputBase';
+import ConstellationFooter from '../components/GodMode/ConstellationFooter';
 
 export default function Anant() {
   const [apiKey, setApiKey] = useState('');
@@ -15,7 +17,7 @@ export default function Anant() {
   
   // Selection Modes: 'single', 'top7', 'all'
   const [runMode, setRunMode] = useState('top7');
-  const [selectedSingleModel, setSelectedSingleModel] = useState('anthropic/claude-3-5-sonnet-20241022');
+  const [selectedSingleModel, setSelectedSingleModel] = useState('anthropic/claude-3.5-sonnet');
 
   const isConverging = !isRacing && results.length > 0 && results.some(r => r.success);
   const winner = isConverging ? results.filter(r=>r.success).sort((a,b) => b.score - a.score)[0] : null;
@@ -105,9 +107,25 @@ export default function Anant() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[url('/space.jpg')] bg-cover bg-center bg-fixed bg-no-repeat flex flex-col items-center pt-24 pb-12 px-4 sm:px-6 font-body text-white relative">
-      {/* Dim Overlay for Readability */}
-      <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none" />
+    <div className="min-h-screen w-full bg-[url('/space.jpg')] bg-cover bg-center bg-fixed bg-no-repeat flex flex-col items-center pt-24 pb-12 px-4 sm:px-6 font-body text-white relative overflow-x-hidden">
+      {/* Top Navigation / Branding */}
+      <div className="absolute top-0 left-0 w-full p-4 sm:p-6 flex justify-between items-center z-50">
+        <Link 
+          to="/" 
+          className="flex items-center gap-2 text-white/70 hover:text-white transition-colors duration-200 font-mono text-xs sm:text-sm tracking-wide bg-white/5 hover:bg-white/10 px-3 sm:px-4 py-2 rounded-full border border-white/10 backdrop-blur-md"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span className="hidden sm:inline">Go to main website</span>
+          <span className="sm:hidden">Main Site</span>
+        </Link>
+        <div className="font-serif italic font-bold text-xl sm:text-2xl tracking-wide bg-gradient-to-r from-emerald-400 to-white text-transparent bg-clip-text drop-shadow-lg">
+          Neural Leaf
+        </div>
+      </div>
+
+      {/* Enhanced Dim Overlay with subtle emerald radial glow */}
+      <div className="absolute inset-0 bg-black/60 z-0 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/20 via-black/40 to-black/80 pointer-events-none z-0" />
 
       {/* Header */}
       <div className="relative z-10 text-center mb-6">
@@ -133,8 +151,10 @@ export default function Anant() {
         />
 
         {/* Center Canvas */}
-        <div className="flex-1 bg-black/50 backdrop-blur-xl border border-white/10 rounded-[32px] shadow-2xl p-6 md:p-10 flex flex-col relative overflow-hidden">
-          <AnimatePresence mode="wait">
+        <div className="flex-1 bg-black/50 backdrop-blur-xl border border-emerald-500/20 rounded-[32px] shadow-[0_0_80px_rgba(16,185,129,0.1)] p-6 md:p-10 flex flex-col relative overflow-hidden transition-all">
+          <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-white/5 to-transparent z-0" />
+          <div className="relative z-10 flex flex-col h-full flex-1">
+            <AnimatePresence mode="wait">
             {isRacing ? (
               <motion.div 
                 key="racing"
@@ -180,7 +200,8 @@ export default function Anant() {
                 <h2 className="font-serif italic text-4xl text-white/80 tracking-widest">AWAITING DIRECTIVE</h2>
               </motion.div>
             )}
-          </AnimatePresence>
+            </AnimatePresence>
+          </div>
         </div>
 
       </div>
@@ -192,6 +213,8 @@ export default function Anant() {
           isRacing={isRacing} 
         />
       </div>
+
+      <ConstellationFooter />
 
     </div>
   );

@@ -2,10 +2,10 @@ import React from 'react';
 import { Lock, Cpu, Star, Layers } from 'lucide-react';
 
 const COMMON_MODELS = [
-  { id: 'anthropic/claude-3-5-sonnet-20241022', name: 'Claude 3.5 Sonnet' },
+  { id: 'anthropic/claude-3.5-sonnet', name: 'Claude 3.5 Sonnet' },
   { id: 'openai/gpt-4o', name: 'GPT-4 Omni' },
-  { id: 'google/gemini-pro-1.5', name: 'Gemini 1.5 Pro' },
-  { id: 'meta-llama/llama-3-70b-instruct', name: 'Llama 3 (70B)' }
+  { id: 'google/gemini-2.5-pro', name: 'Gemini 2.5 Pro' },
+  { id: 'meta-llama/llama-3.1-405b-instruct', name: 'Llama 3.1 (405B)' }
 ];
 
 export default function AnantSidebar({
