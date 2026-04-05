@@ -25,21 +25,33 @@ export default function ConstellationFooter() {
           <Sparkles className="w-4 h-4" />
         </h3>
 
-        {/* Elegant Grid Setup */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 mx-auto opacity-80">
+        {/* Elegant Grid Setup optimized for performance */}
+        <motion.div 
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "50px" }}
+          variants={{
+            hidden: { opacity: 0 },
+            show: {
+              opacity: 1,
+              transition: { staggerChildren: 0.03 }
+            }
+          }}
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 mx-auto opacity-80"
+        >
           {models.map((modelName, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-20px" }}
-              transition={{ delay: (i % 6) * 0.05, duration: 0.4 }}
-              className="px-3 py-2 bg-emerald-900/40 border border-emerald-500/50 rounded-xl text-[10px] md:text-xs font-mono font-bold text-white tracking-wide hover:bg-emerald-800/80 hover:border-emerald-400 transition-colors shadow-[0_0_15px_rgba(16,185,129,0.15)] flex items-center justify-center text-center"
+              variants={{
+                hidden: { opacity: 0, y: 10 },
+                show: { opacity: 1, y: 0, transition: { duration: 0.3 } }
+              }}
+              className="px-3 py-2 bg-emerald-900/40 border border-emerald-500/50 rounded-xl text-[10px] md:text-xs font-mono font-bold text-white tracking-wide hover:bg-emerald-800/80 hover:border-emerald-400 transition-colors shadow-[0_0_15px_rgba(16,185,129,0.15)] flex items-center justify-center text-center will-change-transform"
             >
               {modelName}
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* BloomSense Ending Tag */}

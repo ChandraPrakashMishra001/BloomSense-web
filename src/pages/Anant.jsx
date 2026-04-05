@@ -108,7 +108,9 @@ export default function Anant() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[url('/space.jpg')] bg-cover bg-center bg-fixed bg-no-repeat flex flex-col items-center pt-24 pb-12 px-4 sm:px-6 font-body text-white relative overflow-x-hidden">
+    <div className="min-h-screen w-full flex flex-col items-center pt-24 pb-12 px-4 sm:px-6 font-body text-white relative overflow-x-hidden">
+      {/* Hardware accelerated fixed background to prevent mobile scroll jitter */}
+      <div className="fixed inset-0 w-full h-full bg-[url('/space.jpg')] bg-cover bg-center bg-no-repeat -z-20 will-change-transform" />
       {/* Top Navigation / Branding */}
       <div className="absolute top-0 left-0 w-full p-4 sm:p-6 flex justify-between items-center z-50">
         <Link 
