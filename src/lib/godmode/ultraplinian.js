@@ -99,6 +99,14 @@ export function getModelsForTier(tier) {
 export function scoreResponse(content, userQuery) {
   if (!content || content.length < 10) return 0;
 
+  // Fix: userQuery can be an array if multi-modal
+  let queryString = '';
+  if (Array.isArray(userQuery)) {
+    queryString = userQuery.find(c => c.type === 'text')?.text || '';
+  } else if (typeof userQuery === 'string') {
+    queryString = userQuery;
+  }
+
   let score = 0;
   score += Math.min(content.length / 40, 25);
   
@@ -119,7 +127,7 @@ export function scoreResponse(content, userQuery) {
   const hasPreamble = [/^(Sure|Of course|Certainly)/i].some(p => p.test(trimmed));
   score += hasPreamble ? 8 : 15;
 
-  const queryWords = userQuery.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+  const queryWords = queryString.toLowerCase().split(/\s+/).filter(w => w.length > 3);
   const contentLower = content.toLowerCase();
   const matchedWords = queryWords.filter(w => contentLower.includes(w));
   const relevance = queryWords.length > 0 ? matchedWords.length / queryWords.length : 0.5;

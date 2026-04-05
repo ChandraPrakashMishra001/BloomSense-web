@@ -72,7 +72,7 @@ const AmaniaBadge = React.memo(() => (
     </div>
     <div className="flex flex-col justify-center pr-3">
       <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-emerald-800/60 leading-none mb-1">Powered By</span>
-      <span className="font-heading italic text-2xl bg-gradient-to-r from-pink-600 to-purple-700 bg-clip-text text-transparent leading-none">Amania AI</span>
+      <span translate="no" className="font-heading italic text-2xl bg-gradient-to-r from-pink-600 to-purple-700 bg-clip-text text-transparent leading-none notranslate">Amania AI</span>
     </div>
   </motion.div>
 ));
@@ -1013,7 +1013,7 @@ function Home() {
                       <Sparkles className="w-5 h-5 text-pink-500" />
                     </div>
                     <div>
-                      <h3 className="font-heading italic text-2xl tracking-tight text-emerald-950 leading-none">Amania AI</h3>
+                      <h3 translate="no" className="font-heading italic text-2xl tracking-tight text-emerald-950 leading-none notranslate">Amania AI</h3>
                       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-600 mt-1">Botanical Analysis Mode</p>
                     </div>
                   </div>

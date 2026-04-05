@@ -57,6 +57,10 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     border-radius: 2rem;
   }
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(16, 185, 129, 0.3) rgba(16, 185, 129, 0.05);
+  }
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
   }

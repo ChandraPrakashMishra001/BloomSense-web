@@ -92,7 +92,7 @@ export default function GovernmentSchemesHub() {
          </div>
          <div className="text-center sm:text-left relative z-10">
              <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
-                 <span className="font-heading italic text-xl text-emerald-950">Amania AI Advice</span>
+                 <span translate="no" className="font-heading italic text-xl text-emerald-950 notranslate">Amania AI Advice</span>
                  <span className="bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full text-[9px] uppercase font-black tracking-widest border border-pink-200">Personalized</span>
              </div>
              <p className="text-sm font-semibold text-emerald-800/80 leading-relaxed">

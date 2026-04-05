@@ -21,6 +21,7 @@ export default function Anant() {
 
   const isConverging = !isRacing && results.length > 0 && results.some(r => r.success);
   const winner = isConverging ? results.filter(r=>r.success).sort((a,b) => b.score - a.score)[0] : null;
+  const isFailed = !isRacing && results.length > 0 && !results.some(r => r.success);
 
   useEffect(() => {
     // Hide Amanai shortcut button and frame on this specific page
@@ -188,6 +189,27 @@ export default function Anant() {
                 </div>
                 <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 text-white/80 leading-relaxed sm:text-lg whitespace-pre-wrap">
                   {winner.content}
+                </div>
+              </motion.div>
+            ) : isFailed ? (
+              <motion.div 
+                key="failed"
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                className="flex flex-col items-center justify-center flex-1 text-center"
+              >
+                <div className="w-20 h-20 bg-red-500/10 border border-red-500/30 rounded-full flex items-center justify-center mb-6">
+                  <span className="text-red-400 text-3xl">⚠</span>
+                </div>
+                <h2 className="font-serif italic text-3xl text-red-200 mb-2">Consensus Failed</h2>
+                <p className="text-red-400/80 mb-6 max-w-lg">
+                  None of the selected models returned a valid response. This is often due to missing API credits or rate limits for specific models.
+                </p>
+                <div className="bg-red-950/30 text-red-300 text-sm p-4 rounded-xl text-left border border-red-900/50 w-full max-w-lg overflow-y-auto max-h-48 custom-scrollbar">
+                  {results.map((r, i) => (
+                    <div key={i} className="mb-2 last:mb-0">
+                      <span className="font-bold opacity-70">[{r.model.split('/').pop()}]</span>: {r.error || "Unknown error"}
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             ) : (
