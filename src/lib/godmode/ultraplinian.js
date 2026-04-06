@@ -2,13 +2,13 @@ import { sendMessage } from './openrouter.js';
 
 export const ULTRAPLINIAN_MODELS = {
   top7: [
-    'google/gemini-2.0-flash-lite-preview-02-05:free',
-    'meta-llama/llama-3.1-8b-instruct:free',
-    'qwen/qwen-2.5-coder-32b-instruct:free',
-    'mistralai/mistral-small-24b-instruct-2501:free',
-    'deepseek/deepseek-chat:free',
-    'sophosympatheia/rogue-rose-103b-v0.2:free',
-    'cognitivecomputations/dolphin3.0-r1-mistral-24b:free'
+    'meta-llama/llama-3.3-70b-instruct:free',
+    'google/gemma-3-27b-it:free',
+    'qwen/qwen3.6-plus:free',
+    'openrouter/free',
+    'nvidia/nemotron-3-super-120b-a12b:free',
+    'meta-llama/llama-3.2-3b-instruct:free',
+    'nousresearch/hermes-3-llama-3.1-405b:free'
   ],
   fast: [
     'google/gemini-2.0-flash-exp:free',
