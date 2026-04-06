@@ -36,7 +36,15 @@ export async function sendMessage({
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error?.message || `API error (${response.status})`);
+    let errMsg = errorData.error?.message || `API error (${response.status})`;
+    
+    if (response.status === 401) errMsg += ` - Invalid API Key`;
+    else if (response.status === 402) errMsg += ` - Insufficient Credits`;
+    else if (response.status === 429) errMsg += ` - Rate Limit Exceeded`;
+    else if (response.status === 403) errMsg += ` - Access Restricted`;
+    else if (response.status === 404) errMsg += ` - Model Not Found/Offline`;
+
+    throw new Error(errMsg);
   }
 
   const data = await response.json();
