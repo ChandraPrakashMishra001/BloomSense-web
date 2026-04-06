@@ -17,7 +17,7 @@ export default function Anant() {
   
   // Selection Modes: 'single', 'top7', 'all'
   const [runMode, setRunMode] = useState('top7');
-  const [selectedSingleModel, setSelectedSingleModel] = useState('anthropic/claude-3.5-sonnet');
+  const [selectedSingleModel, setSelectedSingleModel] = useState('google/gemini-2.0-flash-lite-preview-02-05:free');
 
   const isConverging = !isRacing && results.length > 0 && results.some(r => r.success);
   const winner = isConverging ? results.filter(r=>r.success).sort((a,b) => b.score - a.score)[0] : null;

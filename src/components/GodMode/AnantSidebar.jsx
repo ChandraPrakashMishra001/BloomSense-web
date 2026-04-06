@@ -2,10 +2,12 @@ import React from 'react';
 import { Lock, Cpu, Star, Layers } from 'lucide-react';
 
 const COMMON_MODELS = [
-  { id: 'anthropic/claude-3.5-sonnet', name: 'Claude 3.5 Sonnet' },
-  { id: 'openai/gpt-4o', name: 'GPT-4 Omni' },
-  { id: 'google/gemini-2.5-pro', name: 'Gemini 2.5 Pro' },
-  { id: 'meta-llama/llama-3.1-405b-instruct', name: 'Llama 3.1 (405B)' }
+  { id: 'google/gemini-2.0-flash-lite-preview-02-05:free', name: 'Gemini 2.0 Flash (Free)' },
+  { id: 'meta-llama/llama-3.1-8b-instruct:free', name: 'Llama 3.1 8B (Free)' },
+  { id: 'qwen/qwen-2.5-coder-32b-instruct:free', name: 'Qwen 2.5 Coder (Free)' },
+  { id: 'mistralai/mistral-small-24b-instruct-2501:free', name: 'Mistral Small (Free)' },
+  { id: 'anthropic/claude-3.5-sonnet', name: 'Claude 3.5 Sonnet (Pro)' },
+  { id: 'openai/gpt-4o', name: 'GPT-4 Omni (Pro)' }
 ];
 
 export default function AnantSidebar({
