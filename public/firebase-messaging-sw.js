@@ -1,4 +1,5 @@
 // BloomSense Service Worker
+// Version 1.0.2 - Cache Invalidation Bump
 // Handles both PWA offline caching (via Workbox injected manifest)
 // and Firebase Cloud Messaging background push notifications.
 
