@@ -93,6 +93,9 @@ export default function Community() {
       <header className="pt-24 pb-8 px-6 lg:px-12 max-w-7xl mx-auto z-10 relative">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
           <div>
+            <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-emerald-700 hover:text-emerald-900 transition-colors mb-4">
+              <ChevronLeft className="w-4 h-4" /> Back to BloomSense
+            </Link>
             <div className="flex items-center gap-3 mb-2">
               <span className="flex items-center justify-center p-2 bg-emerald-100 rounded-full text-emerald-600">
                 <Users className="w-6 h-6" />

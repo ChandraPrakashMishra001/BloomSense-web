@@ -268,7 +268,8 @@ export default function CropCalendar() {
           <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-emerald-100/50 group-hover:bg-emerald-200 transition-colors">
             <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 text-emerald-700" />
           </div>
-          <div className="flex flex-col drop-shadow-sm">
+          <span className="font-bold text-emerald-800 text-sm hidden lg:block mr-2 group-hover:text-emerald-950 transition-colors">Back to BloomSense</span>
+          <div className="flex flex-col drop-shadow-sm border-l border-emerald-900/10 pl-3">
             <span className="font-heading italic text-lg md:text-xl text-emerald-950 leading-none">BloomSense</span>
             <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 mt-0.5 pl-0.5">Neural Leaf</span>
           </div>
