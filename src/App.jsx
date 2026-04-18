@@ -611,43 +611,43 @@ function Home() {
               <Leaf className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
             </button>
             <div className="flex flex-col drop-shadow-sm">
-              <span className="font-heading italic text-3xl md:text-4xl text-emerald-950 leading-none">BloomSense</span>
-              <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 mt-1 pl-1 hidden sm:block">A part of Neural Leaf</span>
+              <span className="font-heading italic  text-2xl md:text-3xl xl:text-4xl text-emerald-950 leading-none">BloomSense</span>
+              <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 mt-1 pl-1 hidden sm:block">Neural Leaf</span>
             </div>
           </div>
           {/* Phase 5: Regional Localization Google Context */}
-          <div id="google_translate_element" className="google-translate-container min-h-[36px]"></div>
+          <div id="google_translate_element" className="google-translate-container min-h-[36px] hidden sm:block"></div>
         </div>
         
         <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full liquid-glass">
-          {['Home', 'Community', 'Calendar', 'Technology', 'Hardware', 'Network', 'Flora', 'ANANT'].map((item) => {
+          {['Home', 'Community', 'Calendar', 'Technology', 'Hardware', 'Network', 'ANANT'].map((item) => {
             if (item === 'Hardware') {
               return (
-                <Link key={item} to="/technology/hardware" className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
-                  Hardware Specs
+                <Link key={item} to="/technology/hardware" className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-[0.05em] xl:tracking-wide">
+                  Specs
                 </Link>
               );
             } else if (item === 'Community') {
               return (
-                <Link key={item} to="/community" className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
+                <Link key={item} to="/community" className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-[0.05em] xl:tracking-wide">
                   Community
                 </Link>
               );
             } else if (item === 'Calendar') {
               return (
-                <Link key={item} to="/calendar" className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
+                <Link key={item} to="/calendar" className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-[0.05em] xl:tracking-wide">
                   Calendar
                 </Link>
               );
             } else if (item === 'ANANT') {
               return (
-                <Link key={item} to="/anant" className="px-5 py-2.5 text-sm font-bold text-emerald-100 bg-emerald-900 rounded-full hover:bg-emerald-950 transition-colors tracking-wide shadow-sm border border-emerald-500/30 flex items-center gap-2">
+                <Link key={item} to="/anant" className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-bold text-emerald-100 bg-emerald-900 rounded-full hover:bg-emerald-950 transition-colors tracking-[0.05em] xl:tracking-wide shadow-sm border border-emerald-500/30 flex items-center gap-1.5 lg:gap-2">
                   <Brain className="w-4 h-4" /> ANANT
                 </Link>
               );
             } else {
               return (
-                <a key={item} href={`#${item.toLowerCase()}`} className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
+                <a key={item} href={`#${item.toLowerCase()}`} className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-[0.05em] xl:tracking-wide">
                   {item}
                 </a>
               );
@@ -655,17 +655,17 @@ function Home() {
           })}
           
           {user ? (
-            <button onClick={() => signOut(auth)} className="px-5 py-2.5 text-sm font-bold text-rose-600 hover:text-rose-700 transition-colors tracking-wide flex items-center gap-2">
+            <button onClick={() => signOut(auth)} className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-bold text-rose-600 hover:text-rose-700 transition-colors tracking-wide flex items-center gap-2">
               Log Out
             </button>
           ) : (
-            <button onClick={() => setShowAuthModal(true)} className="px-5 py-2.5 text-sm font-bold text-emerald-900 hover:text-emerald-950 transition-colors tracking-wide flex items-center gap-2">
-              <LogIn className="w-4 h-4" /> Log In
+            <button onClick={() => setShowAuthModal(true)} className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-bold text-emerald-900 hover:text-emerald-950 transition-colors tracking-wide flex items-center gap-2">
+              <LogIn className="w-4 h-4" /> <span className="hidden xl:inline">Log In</span>
             </button>
           )}
 
-          <button onClick={handleScanClick} className="bg-emerald-600/90 text-white px-7 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 hover:bg-emerald-700 transition-colors shadow-lg hover:shadow-emerald-500/30">
-            Scan Sample <ArrowUpRight className="w-4 h-4" />
+          <button onClick={handleScanClick} className="ml-1 bg-emerald-600/90 text-white px-4 lg:px-7 py-2 lg:py-2.5 rounded-full text-sm font-bold flex items-center gap-1.5 lg:gap-2 hover:bg-emerald-700 transition-colors shadow-lg hover:shadow-emerald-500/30">
+            <span className="hidden lg:inline">Scan Sample</span><span className="lg:hidden">Scan</span> <ArrowUpRight className="w-4 h-4" />
           </button>
         </div>
 
@@ -702,11 +702,11 @@ function Home() {
             </button>
             
             <div className="flex flex-col gap-6 mt-8">
-              {['Home', 'Community', 'Calendar', 'Technology', 'Hardware', 'Network', 'Flora', 'ANANT'].map((item) => {
+              {['Home', 'Community', 'Calendar', 'Technology', 'Hardware', 'Network', 'ANANT'].map((item) => {
                 if (item === 'Hardware') {
                   return (
                     <Link key={item} to="/technology/hardware" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
-                      Hardware Specs
+                      Specs
                     </Link>
                   );
                 } else if (item === 'Community') {
