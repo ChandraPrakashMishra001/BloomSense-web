@@ -68,7 +68,8 @@ export default function CropPhaseCalendar({ crop }) {
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-12 gap-1.5">
+      {/* Horizontal scrolling on mobile, full grid on desktop */}
+      <div className="flex overflow-x-auto pb-4 snap-x snap-mandatory lg:grid lg:grid-cols-12 gap-2 lg:gap-1.5 hide-scrollbar">
         {MONTH_NUMS.map((month, idx) => {
           const phase = phaseMap[month];
           const isCurrent = month === currentMonth;
@@ -78,7 +79,7 @@ export default function CropPhaseCalendar({ crop }) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.04 }}
-              className="flex flex-col items-center gap-1"
+              className="flex-shrink-0 w-[72px] lg:w-auto snap-center flex flex-col items-center gap-1"
             >
               {/* Month label */}
               <span className={`text-[10px] font-black uppercase tracking-wider ${isCurrent ? 'text-emerald-600' : 'text-emerald-800/40'}`}>
