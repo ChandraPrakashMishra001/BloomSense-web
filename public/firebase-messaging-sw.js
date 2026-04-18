@@ -1,60 +1,7 @@
 // BloomSense Service Worker
 // Version 1.0.2 - Cache Invalidation Bump
-// Handles both PWA offline caching (via Workbox injected manifest)
-// and Firebase Cloud Messaging background push notifications.
-
-import { precacheAndRoute } from 'workbox-precaching';
-import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate, CacheFirst, NetworkFirst } from 'workbox-strategies';
-import { ExpirationPlugin } from 'workbox-expiration';
-import { CacheableResponsePlugin } from 'workbox-cacheable-response';
-
-// Workbox will inject the pre-cache manifest here at build time
-precacheAndRoute(self.__WB_MANIFEST);
-
-// ── Runtime Caching ──────────────────────────────────────────────────────────
-
-// Google Fonts
-registerRoute(
-  ({ url }) => url.origin === 'https://fonts.googleapis.com',
-  new StaleWhileRevalidate({ cacheName: 'google-fonts-stylesheets' })
-);
-registerRoute(
-  ({ url }) => url.origin === 'https://fonts.gstatic.com',
-  new CacheFirst({
-    cacheName: 'google-fonts-webfonts',
-    plugins: [
-      new CacheableResponsePlugin({ statuses: [0, 200] }),
-      new ExpirationPlugin({ maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 })
-    ]
-  })
-);
-
-// Unsplash images
-registerRoute(
-  ({ url }) => url.origin === 'https://images.unsplash.com',
-  new StaleWhileRevalidate({
-    cacheName: 'unsplash-images',
-    plugins: [
-      new CacheableResponsePlugin({ statuses: [0, 200] }),
-      new ExpirationPlugin({ maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 7 })
-    ]
-  })
-);
-
-// Weather API — prefer network, fall back to cache
-registerRoute(
-  ({ url }) => url.origin === 'https://api.open-meteo.com',
-  new NetworkFirst({
-    cacheName: 'weather-api',
-    networkTimeoutSeconds: 5,
-    plugins: [
-      new ExpirationPlugin({ maxEntries: 5, maxAgeSeconds: 60 * 60 })
-    ]
-  })
-);
-
-// ── Firebase Cloud Messaging ─────────────────────────────────────────────────
+// Handles Firebase Cloud Messaging background push notifications exclusively.
+// PWA Workbox offline caching has been completely removed to prioritize load speed.
 
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');

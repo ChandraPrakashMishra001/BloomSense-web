@@ -109,20 +109,6 @@ export default function Community() {
                {activeFarmers.toLocaleString()} {t.activeNow}
             </p>
           </div>
-          
-          {/* Language Selector */}
-          <div className="flex bg-white/60 p-1 rounded-full liquid-glass border border-emerald-900/10 shadow-sm relative">
-            <Globe2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-700" />
-            <select 
-              value={lang} 
-              onChange={e => setLang(e.target.value)}
-              className="pl-10 pr-6 py-2 bg-transparent text-sm font-bold text-emerald-900 outline-none appearance-none cursor-pointer"
-            >
-              {LANGUAGES.map(l => (
-                <option key={l.code} value={l.code}>{l.emoji} {l.name}</option>
-              ))}
-            </select>
-          </div>
         </div>
 
         {/* Navigation Tabs */}
