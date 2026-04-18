@@ -450,25 +450,7 @@ function Home() {
     return () => unsubscribe();
   }, []);
 
-  // Phase 5: Regional Odia Localization using Google Translate API
-  useEffect(() => {
-    // Avoid re-injecting script heavily on hot reloads
-    if (!document.getElementById('google-translate-script')) {
-      const addScript = document.createElement('script');
-      addScript.id = 'google-translate-script';
-      addScript.setAttribute('src', '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit');
-      addScript.async = true;
-      document.body.appendChild(addScript);
-      
-      window.googleTranslateElementInit = () => {
-        new window.google.translate.TranslateElement({
-          pageLanguage: 'en',
-          includedLanguages: 'en,hi,or', // English, Hindi, Odia
-          autoDisplay: false
-        }, 'google_translate_element');
-      };
-    }
-  }, []);
+
 
   // Phase 2: Real Device GPS Tracking
   useEffect(() => {
@@ -1126,6 +1108,31 @@ function Home() {
 }
 
 export default function App() {
+  // Global Language Localization using Google Translate API
+  useEffect(() => {
+    if (!document.getElementById('google-translate-script')) {
+      const addScript = document.createElement('script');
+      addScript.id = 'google-translate-script';
+      addScript.setAttribute('src', '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit');
+      addScript.async = true;
+      document.body.appendChild(addScript);
+      
+      window.googleTranslateElementInit = () => {
+        const containers = ['google_translate_element', 'google_translate_element_calendar'];
+        containers.forEach(id => {
+          if (document.getElementById(id)) {
+            new window.google.translate.TranslateElement({
+              pageLanguage: 'en',
+              includedLanguages: 'en,hi,or,te,bn,mr',
+              autoDisplay: false,
+              layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, id);
+          }
+        });
+      };
+    }
+  }, []);
+
   return (
     <Suspense fallback={<div className="h-screen w-full bg-pink-50 flex flex-col items-center justify-center animate-pulse"><Leaf className="w-12 h-12 text-emerald-600 mb-4" /><p className="text-emerald-800 font-bold uppercase tracking-[0.2em] text-sm">Loading Environment...</p></div>}>
       <Routes>

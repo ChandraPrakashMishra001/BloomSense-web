@@ -110,6 +110,7 @@ export default function Community() {
                {activeFarmers.toLocaleString()} {t.activeNow}
             </p>
           </div>
+          <div id="google_translate_element" className="scale-75 origin-left md:origin-right sm:scale-100 min-h-[40px]"></div>
         </div>
 
         {/* Navigation Tabs */}
