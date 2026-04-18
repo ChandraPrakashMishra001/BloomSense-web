@@ -14,7 +14,7 @@ import AuthModal from './components/AuthModal';
 import WeatherIntelligence from './components/WeatherIntelligence';
 import GovernmentSchemesHub from './components/GovernmentSchemesHub';
 import InstallBanner from './components/InstallBanner';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 const Hardware = lazy(() => import('./pages/Hardware'));
 const Anant = lazy(() => import('./pages/Anant'));
 const Community = lazy(() => import('./pages/Community'));
@@ -1108,6 +1108,8 @@ function Home() {
 }
 
 export default function App() {
+  const location = useLocation();
+
   // Global Language Localization using Google Translate API
   useEffect(() => {
     if (!document.getElementById('google-translate-script')) {
@@ -1118,20 +1120,36 @@ export default function App() {
       document.body.appendChild(addScript);
       
       window.googleTranslateElementInit = () => {
-        const containers = ['google_translate_element', 'google_translate_element_calendar'];
+        window.isGoogleTranslateLoaded = true;
+        window.dispatchEvent(new Event('google-translate-loaded'));
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    const initTranslate = () => {
+      if (window.google && window.google.translate) {
+        const containers = ['google_translate_element', 'google_translate_element_calendar', 'google_translate_element_anant', 'google_translate_element_hardware', 'google_translate_element_godmode'];
         containers.forEach(id => {
-          if (document.getElementById(id)) {
+          const el = document.getElementById(id);
+          if (el && el.innerHTML === '') {
             new window.google.translate.TranslateElement({
               pageLanguage: 'en',
-              includedLanguages: 'en,hi,or,te,bn,mr',
+              includedLanguages: 'en,hi,bn,te,mr,ta,ur,gu,kn,or,ml,pa,as,id',
               autoDisplay: false,
               layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE
             }, id);
           }
         });
-      };
+      }
+    };
+
+    if (window.isGoogleTranslateLoaded) {
+      setTimeout(initTranslate, 300);
+    } else {
+      window.addEventListener('google-translate-loaded', () => setTimeout(initTranslate, 300));
     }
-  }, []);
+  }, [location]);
 
   return (
     <Suspense fallback={<div className="h-screen w-full bg-pink-50 flex flex-col items-center justify-center animate-pulse"><Leaf className="w-12 h-12 text-emerald-600 mb-4" /><p className="text-emerald-800 font-bold uppercase tracking-[0.2em] text-sm">Loading Environment...</p></div>}>

@@ -112,6 +112,7 @@ export default function Hardware() {
         <Link to="/" className="flex items-center gap-2 text-white/50 hover:text-white transition-colors text-[10px] uppercase tracking-[0.2em] font-bold">
           <ArrowLeft className="w-4 h-4" /> Return to Software
         </Link>
+        <div id="google_translate_element_hardware" className="scale-75 origin-right sm:scale-100 min-h-[40px] mix-blend-normal"></div>
       </nav>
 
       {/* Section 1: Hero */}

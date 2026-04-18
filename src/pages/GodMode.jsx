@@ -44,10 +44,11 @@ export default function GodMode() {
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black/90 to-emerald-950/20 pointer-events-none" />
       
       {/* Nav Link back to app */}
-      <div className="absolute top-6 left-6 z-50">
+      <div className="absolute top-6 left-6 z-50 flex items-center gap-4">
         <Link to="/" className="text-emerald-600 hover:text-emerald-400 transition-colors uppercase tracking-widest font-bold text-xs flex items-center gap-2">
            {"< Return to Root"}
         </Link>
+        <div id="google_translate_element_godmode" className="scale-75 origin-left sm:scale-100 min-h-[40px]"></div>
       </div>
 
       <div className="flex-1 w-full max-w-[1600px] mx-auto p-6 pt-20 lg:p-12 relative z-10 flex flex-col items-center">

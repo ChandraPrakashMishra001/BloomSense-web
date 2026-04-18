@@ -121,8 +121,9 @@ export default function Anant() {
           <span className="hidden sm:inline">Go to main website</span>
           <span className="sm:hidden">Main Site</span>
         </Link>
-        <div className="font-serif italic font-bold text-xl sm:text-2xl tracking-wide bg-gradient-to-r from-emerald-400 to-white text-transparent bg-clip-text drop-shadow-lg">
+        <div className="font-serif italic font-bold text-xl sm:text-2xl tracking-wide bg-gradient-to-r from-emerald-400 to-white text-transparent bg-clip-text drop-shadow-lg flex items-center gap-4">
           Neural Leaf
+          <div id="google_translate_element_anant" className="scale-75 origin-right sm:scale-100 min-h-[40px]"></div>
         </div>
       </div>
 
