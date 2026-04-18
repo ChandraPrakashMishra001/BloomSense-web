@@ -621,10 +621,10 @@ function Home() {
         
         <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full liquid-glass">
           {['Home', 'Community', 'Calendar', 'Technology', 'Hardware', 'Network', 'ANANT'].map((item) => {
-            if (item === 'Hardware') {
+            if (item === 'Hardware' || item === 'Technology') {
               return (
                 <Link key={item} to="/technology/hardware" className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-[0.05em] xl:tracking-wide">
-                  Specs
+                  {item === 'Hardware' ? 'Specs' : 'Technology'}
                 </Link>
               );
             } else if (item === 'Community') {
@@ -703,10 +703,10 @@ function Home() {
             
             <div className="flex flex-col gap-6 mt-8">
               {['Home', 'Community', 'Calendar', 'Technology', 'Hardware', 'Network', 'ANANT'].map((item) => {
-                if (item === 'Hardware') {
+                if (item === 'Hardware' || item === 'Technology') {
                   return (
                     <Link key={item} to="/technology/hardware" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
-                      Specs
+                      {item === 'Hardware' ? 'Specs' : 'Technology'}
                     </Link>
                   );
                 } else if (item === 'Community') {

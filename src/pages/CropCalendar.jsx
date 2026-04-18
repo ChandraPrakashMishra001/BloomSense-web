@@ -164,32 +164,47 @@ export default function CropCalendar() {
 
   // Load saved profile from Firestore or localStorage
   useEffect(() => {
+    let isMounted = true;
     const loadProfile = async () => {
-      setLoading(true);
       // Try localStorage first (works offline)
       const local = localStorage.getItem('bloomsense_crop_profile');
+      let hasLocalProfile = false;
       if (local) {
-        try { setProfile(JSON.parse(local)); } catch {}
+        try { 
+          setProfile(JSON.parse(local));
+          hasLocalProfile = true;
+          if (isMounted) setLoading(false); // Instantly show UI if we have offline/local data
+        } catch {}
       }
-      // If logged in, fetch from Firestore (may be richer / synced)
+
+      // If logged in, fetch from Firestore to sync any new data
       if (user) {
         try {
-          const snap = await getDoc(doc(db, 'users', user.uid, 'cropProfile', 'main'));
-          if (snap.exists()) {
+          // Use Promise.race to ensure it doesn't hang indefinitely on poor networks
+          const fetchPromise = getDoc(doc(db, 'users', user.uid, 'cropProfile', 'main'));
+          const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000));
+          const snap = await Promise.race([fetchPromise, timeoutPromise]);
+          
+          if (snap.exists() && isMounted) {
             const data = snap.data();
             setProfile({ crop: data.crop, sowingMonth: data.sowingMonth });
             localStorage.setItem('bloomsense_crop_profile', JSON.stringify({ crop: data.crop, sowingMonth: data.sowingMonth }));
           }
         } catch (e) {
-          // Offline — use localStorage data
+          console.warn("Could not sync remote calendar profile:", e.message);
         }
       }
-      setLoading(false);
+      
+      if (isMounted && !hasLocalProfile) {
+        setLoading(false);
+      }
 
       // Notification permission status
-      if ('Notification' in window) setNotifStatus(Notification.permission);
+      if ('Notification' in window && isMounted) setNotifStatus(Notification.permission);
     };
+    
     loadProfile();
+    return () => { isMounted = false; };
   }, [user]);
 
   const handleSetupComplete = async ({ crop, sowingMonth }) => {
