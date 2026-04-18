@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, enableIndexedDbPersistence } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
@@ -18,4 +18,16 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-export { db, auth };
+// Enable offline persistence so disease data & alerts work without internet
+enableIndexedDbPersistence(db).catch((err) => {
+  if (err.code === 'failed-precondition') {
+    // Multiple tabs open — persistence only works in one tab at a time
+    console.warn('[BloomSense] Offline persistence unavailable: multiple tabs open.');
+  } else if (err.code === 'unimplemented') {
+    // Browser doesn't support persistence
+    console.warn('[BloomSense] Offline persistence not supported in this browser.');
+  }
+});
+
+export { db, auth, app };
+

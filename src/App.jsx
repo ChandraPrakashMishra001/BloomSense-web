@@ -13,10 +13,12 @@ const AlertNetwork = lazy(() => import('./components/AlertNetwork'));
 import AuthModal from './components/AuthModal';
 import WeatherIntelligence from './components/WeatherIntelligence';
 import GovernmentSchemesHub from './components/GovernmentSchemesHub';
+import InstallBanner from './components/InstallBanner';
 import { Routes, Route, Link } from 'react-router-dom';
 const Hardware = lazy(() => import('./pages/Hardware'));
 const Anant = lazy(() => import('./pages/Anant'));
 const Community = lazy(() => import('./pages/Community'));
+const CropCalendar = lazy(() => import('./pages/CropCalendar'));
 
 const initialAlerts = [
   { id: 1, disease: 'Rice Blast', distance: '1.2', farmCount: 4, timeAgo: '2h ago', severity: 'high' },
@@ -618,7 +620,7 @@ function Home() {
         </div>
         
         <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full liquid-glass">
-          {['Home', 'Community', 'Technology', 'Hardware', 'Network', 'Flora', 'ANANT'].map((item) => {
+          {['Home', 'Community', 'Calendar', 'Technology', 'Hardware', 'Network', 'Flora', 'ANANT'].map((item) => {
             if (item === 'Hardware') {
               return (
                 <Link key={item} to="/technology/hardware" className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
@@ -629,6 +631,12 @@ function Home() {
               return (
                 <Link key={item} to="/community" className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
                   Community
+                </Link>
+              );
+            } else if (item === 'Calendar') {
+              return (
+                <Link key={item} to="/calendar" className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
+                  Calendar
                 </Link>
               );
             } else if (item === 'ANANT') {
@@ -694,7 +702,7 @@ function Home() {
             </button>
             
             <div className="flex flex-col gap-6 mt-8">
-              {['Home', 'Community', 'Technology', 'Hardware', 'Network', 'Flora', 'ANANT'].map((item) => {
+              {['Home', 'Community', 'Calendar', 'Technology', 'Hardware', 'Network', 'Flora', 'ANANT'].map((item) => {
                 if (item === 'Hardware') {
                   return (
                     <Link key={item} to="/technology/hardware" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
@@ -705,6 +713,12 @@ function Home() {
                   return (
                     <Link key={item} to="/community" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
                       Community
+                    </Link>
+                  );
+                } else if (item === 'Calendar') {
+                  return (
+                    <Link key={item} to="/calendar" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
+                      Calendar
                     </Link>
                   );
                 } else if (item === 'ANANT') {
@@ -1063,6 +1077,8 @@ function Home() {
           {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
         </AnimatePresence>
 
+        <InstallBanner />
+
         {/* Phase 4: Custom Push Notification Toast */}
         <AnimatePresence>
           {activeToast && (
@@ -1105,6 +1121,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/technology/hardware" element={<Hardware />} />
         <Route path="/community" element={<Community />} />
+        <Route path="/calendar" element={<CropCalendar />} />
         <Route path="/anant" element={<Anant />} />
       </Routes>
     </Suspense>

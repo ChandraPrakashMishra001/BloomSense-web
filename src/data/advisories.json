@@ -1,0 +1,205 @@
+{
+  "Rice": {
+    "1": {
+      "phase": "Rabi Harvest",
+      "week1": "Inspect stored paddy for moisture — keep below 14% to prevent fungal growth.",
+      "week2": "Clean and service the thresher before post-harvest processing.",
+      "week3": "Apply mulch to harvested fields to conserve soil moisture for the next crop.",
+      "week4": "Collect soil samples for testing — results guide your Kharif fertiliser plan.",
+      "alerts": ["Watch for rodent damage in grain storage", "Low temperature can affect germination of nursery beds"]
+    },
+    "2": {
+      "phase": "Land Preparation",
+      "week1": "Deep plough the field to expose soil-borne pests to winter cold.",
+      "week2": "Apply Farm Yard Manure (FYM) at 10 tonnes/ha and incorporate into soil.",
+      "week3": "Check bunds and levelling — uneven fields waste 30% more irrigation water.",
+      "week4": "Order certified seed for summer nursery if planning a June transplant.",
+      "alerts": ["Soil temperature still low — delay nursery sowing until March"]
+    },
+    "3": {
+      "phase": "Nursery Preparation",
+      "week1": "Prepare raised nursery beds (1m wide, 10m long) with well-drained soil.",
+      "week2": "Treat seeds with Carbendazim 2g/kg to prevent seed-borne diseases.",
+      "week3": "Sow pre-germinated seeds at 40g/m² for optimal seedling density.",
+      "week4": "Apply light irrigation twice daily — avoid water stagnation in nursery.",
+      "alerts": ["Monitor for blast disease in nursery — apply Tricyclazole if spotted", "Aphid infestation risk rising with warming temperatures"]
+    },
+    "4": {
+      "phase": "Nursery Growth",
+      "week1": "Apply urea top-dressing at 5g/m² to nursery beds for vigorous seedling growth.",
+      "week2": "Weed nursery beds manually — do not use herbicides at this stage.",
+      "week3": "Thin out overcrowded seedlings to improve air circulation.",
+      "week4": "Seedlings should be 20–25 days old (3–4 leaves) before transplanting.",
+      "alerts": ["Leaf folder moths active — use light traps to monitor population"]
+    },
+    "5": {
+      "phase": "Transplanting",
+      "week1": "Transplant seedlings at 2–3 per hill, 20cm × 15cm spacing for Kharif varieties.",
+      "week2": "Apply basal fertiliser: DAP 50kg/ha + MOP 40kg/ha before transplanting.",
+      "week3": "Maintain 2–5cm standing water for the first 2 weeks after transplanting.",
+      "week4": "Gap-fill any missing hills within 7 days of transplanting.",
+      "alerts": ["Stem borer active — apply Chlorpyrifos granules at transplanting", "Check weather forecast — avoid transplanting just before heavy rain"]
+    },
+    "6": {
+      "phase": "Vegetative Growth",
+      "week1": "Apply first nitrogen split (urea 65 kg/ha) at 15 days after transplanting (DAT).",
+      "week2": "Apply pre-emergence herbicide (Butachlor 1.5L/ha) at 5–7 DAT.",
+      "week3": "Drain field for 3–4 days at tillering stage to strengthen root system.",
+      "week4": "Scout for brown plant hopper (BPH) — check base of plants weekly.",
+      "alerts": ["Monsoon onset — risk of blast increases significantly", "Zinc deficiency (yellowing leaves) — apply ZnSO4 at 25 kg/ha"]
+    },
+    "7": {
+      "phase": "Maximum Tillering",
+      "week1": "Apply second nitrogen split (urea 65 kg/ha) at 45 DAT.",
+      "week2": "Maintain 5–8cm water level during active tillering.",
+      "week3": "Pull out and destroy any Tungro-infected plants immediately.",
+      "week4": "Install pheromone traps for stem borer monitoring (1 trap/ha).",
+      "alerts": ["High humidity — ideal conditions for Sheath Blight. Apply Validamycin if threshold exceeded", "BPH outbreak risk peak month"]
+    },
+    "8": {
+      "phase": "Panicle Initiation",
+      "week1": "Apply potash top-dressing (MOP 20 kg/ha) to improve grain quality.",
+      "week2": "Apply third urea split (urea 30 kg/ha) at panicle initiation stage.",
+      "week3": "Ensure no water stress during panicle initiation — critical stage.",
+      "week4": "Scout for false smut balls on panicles — remove and burn affected ones.",
+      "alerts": ["Neck blast is peak risk now — spray Tricyclazole 0.6g/L at boot stage", "Avoid broad-spectrum pesticides to protect natural enemies of BPH"]
+    },
+    "9": {
+      "phase": "Flowering & Grain Filling",
+      "week1": "Maintain 3–5cm water during flowering — drought stress reduces yield by 40%.",
+      "week2": "Do NOT spray pesticides during flowering — protects pollinators.",
+      "week3": "Scout for grain discolouration — sign of bacterial blight or false smut.",
+      "week4": "Begin field drainage 10 days before expected harvest for efficient combine operation.",
+      "alerts": ["Cyclone watch — lash paddy bundles if storm predicted", "Grain damage from sparrows rises at dough stage — use scare devices"]
+    },
+    "10": {
+      "phase": "Maturation & Harvest",
+      "week1": "Harvest when 80–85% of grains are golden yellow — avoid over-maturity.",
+      "week2": "Use combine harvester or self-help group thresher to reduce losses.",
+      "week3": "Dry harvested paddy to 14% moisture before storage.",
+      "week4": "Register at nearest paddy procurement centre before closing date.",
+      "alerts": ["Unseasonal rain — cover harvested crop with tarpaulin immediately", "Price advisory: MSP for common paddy is ₹2,183/quintal (2025–26)"]
+    },
+    "11": {
+      "phase": "Post-Harvest",
+      "week1": "Chop and incorporate straw residue — avoids burning and improves soil health.",
+      "week2": "Apply Trichoderma viride to decompose stubble faster.",
+      "week3": "Irrigate field lightly and sow green manure (Dhaincha) as rabi break crop.",
+      "week4": "Clean and store all farm equipment before the dry season.",
+      "alerts": ["Stubble burning ban in force — violations attract ₹2,500 fine", "Apply lime if soil pH < 5.5"]
+    },
+    "12": {
+      "phase": "Rabi Season Rest",
+      "week1": "Apply gypsum (500 kg/ha) on alkaline soils for soil amendment.",
+      "week2": "Renew Kisan Credit Card before expiry for next season credit.",
+      "week3": "Attend local KVK (Krishi Vigyan Kendra) training sessions if available.",
+      "week4": "Plan next Kharif crop — select variety based on Bloomsense disease heatmap.",
+      "alerts": ["Fog and low temperatures — protect nursery beds with polythene covers"]
+    }
+  },
+  "Wheat": {
+    "1": {
+      "phase": "Vegetative Growth",
+      "week1": "Apply first irrigation (CRI stage) if 20–25 days have passed since sowing.",
+      "week2": "Apply second urea top-dressing (65 kg/ha) at first irrigation.",
+      "week3": "Scout for yellow rust on upper leaves — apply Propiconazole if spotted.",
+      "week4": "Check for aphid colonies at leaf tips — threshold is 10 aphids/tiller.",
+      "alerts": ["Yellow rust spore movement is high in January", "Low temperature may delay tillering in late sown crops"]
+    },
+    "2": {
+      "phase": "Tillering",
+      "week1": "Apply third irrigation at tillering stage (40–45 DAS).",
+      "week2": "Spray 2,4-D sodium salt for broad-leaf weed control.",
+      "week3": "Apply second nitrogen split at tillering.",
+      "week4": "Monitor for Karnal Bunt in areas with high humidity.",
+      "alerts": ["Aphid outbreak risk peaks in February", "Frost warning — delay irrigation if frost predicted in next 48 hours"]
+    },
+    "3": {
+      "phase": "Jointing",
+      "week1": "Apply fourth irrigation at jointing stage.",
+      "week2": "Scout for stem rust — warm and humid nights increase risk.",
+      "week3": "Apply foliar micronutrients (Zinc + Boron) for grain quality.",
+      "week4": "Remove volunteer plants of different varieties.",
+      "alerts": ["Hailstorm risk in North India — assess crop insurance coverage"]
+    },
+    "4": {
+      "phase": "Booting & Heading",
+      "week1": "Apply fifth irrigation at booting stage — most critical irrigation.",
+      "week2": "Do NOT apply nitrogen at this stage — will increase lodging risk.",
+      "week3": "Monitor for aphids on ear heads — spray imidacloprid at threshold.",
+      "week4": "Check for powdery mildew on upper leaves.",
+      "alerts": ["Unseasonal rain + high humidity — Scab (Fusarium head blight) risk elevated"]
+    },
+    "5": {
+      "phase": "Grain Filling",
+      "week1": "Apply sixth (final) irrigation at grain filling if available.",
+      "week2": "Avoid any chemical spray — residue risk in grain.",
+      "week3": "Estimate yield and contact local mandi for registration.",
+      "week4": "Harvest when grains are fully dry and hard (< 12% moisture).",
+      "alerts": ["Hot dry winds (loo) accelerate maturity — may reduce grain weight"]
+    },
+    "6": { "phase": "Harvest", "week1": "Harvest at 12–14% grain moisture.", "week2": "Avoid field fires.", "week3": "Sell or store in jute bags.", "week4": "Submit e-NAM registration.", "alerts": ["MSP for wheat is ₹2,275/quintal (2025–26)"] },
+    "7": { "phase": "Fallow", "week1": "Deep summer ploughing.", "week2": "Apply FYM.", "week3": "Soil testing.", "week4": "Order seeds.", "alerts": ["Soil moisture conservation critical in July"] },
+    "8": { "phase": "Fallow", "week1": "Prepare seed bed.", "week2": "Apply basal dose.", "week3": "Check irrigation source.", "week4": "Procure certified seed.", "alerts": [] },
+    "9": { "phase": "Fallow", "week1": "Final land preparation.", "week2": "Check soil moisture.", "week3": "Calibrate seed drill.", "week4": "Await sowing window.", "alerts": [] },
+    "10": { "phase": "Fallow", "week1": "Continue pre-sowing prep.", "week2": "Check fertiliser stock.", "week3": "Coordinate with FPO.", "week4": "Sow if soil temperature is below 25°C.", "alerts": [] },
+    "11": {
+      "phase": "Sowing",
+      "week1": "Sow wheat in first fortnight of November for timely sown crop.",
+      "week2": "Seed rate: 100 kg/ha for timely sown, 125 kg/ha for late sown.",
+      "week3": "Apply basal dose: Urea 65kg + DAP 100kg + MOP 40kg per ha.",
+      "week4": "First irrigation (pre-sowing) if soil moisture is low.",
+      "alerts": ["Delay in monsoon withdrawal may push sowing into late window — use late-sown varieties like PBW 373"]
+    },
+    "12": {
+      "phase": "Early Germination",
+      "week1": "Ensure uniform germination — resow if < 70% germination.",
+      "week2": "First irrigation at Crown Root Initiation (CRI) — 20–22 DAS.",
+      "week3": "Scout for termite damage — apply Chlorpyrifos if needed.",
+      "week4": "Remove weeds manually before first irrigation.",
+      "alerts": ["Fog may reduce sunlight — monitor for elongated, weak seedlings"]
+    }
+  },
+  "Tomato": {
+    "1": { "phase": "Rabi Growth", "week1": "Apply 2nd fertigation (NPK 19:19:19).", "week2": "Stake plants to prevent lodging.", "week3": "Monitor for early blight.", "week4": "Apply Ca+Mg foliar to prevent BER.", "alerts": ["Spider mites active in dry cold weather"] },
+    "2": { "phase": "Flowering", "week1": "Avoid excess nitrogen at flowering stage.", "week2": "Install sticky traps for whitefly monitoring.", "week3": "Scout for Tomato Leaf Curl Virus (TLCV) — remove infected plants.", "week4": "Apply potassium foliar for fruit set.", "alerts": ["TLCV spread by whitefly peaks in Feb-March"] },
+    "3": { "phase": "Fruiting", "week1": "Harvest first red ripe fruits.", "week2": "Grade and pack for market.", "week3": "Scout for fruit borer — apply biopesticide (HaNPV).", "week4": "Apply final fertigation.", "alerts": ["Price dips in March — consider cold-chain or processing options"] },
+    "4": { "phase": "End of Season / Kharif Nursery", "week1": "Pull out crop residue and destroy.", "week2": "Prepare nursery beds for Kharif tomato.", "week3": "Sow nursery (protrays preferred).", "week4": "Apply shade net on nursery to protect from heat.", "alerts": [] },
+    "5": { "phase": "Kharif Nursery", "week1": "Harden seedlings by reducing irrigation.", "week2": "Transplant 25-day old seedlings.", "week3": "Apply drip irrigation from day 1.", "week4": "Apply mulch film to conserve moisture.", "alerts": ["High rain — waterlogging is fatal. Ensure raised beds"] },
+    "6": { "phase": "Kharif Vegetative", "week1": "Apply 1st fertigation.", "week2": "Scout for thrips.", "week3": "Stake plants.", "week4": "Control weed.", "alerts": ["Monsoon humidity — bacterial speck risk high"] },
+    "7": { "phase": "Kharif Flowering", "week1": "Apply boron for fruit set.", "week2": "Scout for late blight.", "week3": "Remove suckers.", "week4": "Scout for fruit borer.", "alerts": ["Late blight can destroy crop in 7 days — act immediately"] },
+    "8": { "phase": "Kharif Fruiting", "week1": "Harvest first fruits.", "week2": "Grade and pack.", "week3": "Scout for TSWV.", "week4": "Apply post-harvest nutrition.", "alerts": [] },
+    "9": { "phase": "End of Kharif", "week1": "Final harvest.", "week2": "Pull out crop.", "week3": "Soil sterilisation.", "week4": "Prepare Rabi nursery.", "alerts": [] },
+    "10": { "phase": "Rabi Nursery", "week1": "Sow nursery in protrays.", "week2": "Apply bio-stimulants.", "week3": "Harden seedlings.", "week4": "Transplant.", "alerts": [] },
+    "11": { "phase": "Rabi Vegetative", "week1": "Apply drip system.", "week2": "Stake and tie.", "week3": "Apply 1st fertigation.", "week4": "Scout for mites.", "alerts": [] },
+    "12": { "phase": "Rabi Vegetative", "week1": "Apply 2nd fertigation.", "week2": "Prune lower leaves.", "week3": "Scout for blight.", "week4": "Apply calcium.", "alerts": [] }
+  },
+  "Cotton": {
+    "4": { "phase": "Sowing Preparation", "week1": "Order BT cotton certified seed.", "week2": "Deep ploughing if not done.", "week3": "Apply FYM 10t/ha.", "week4": "Prepare seed bed.", "alerts": [] },
+    "5": { "phase": "Sowing", "week1": "Sow at 45 × 60 cm spacing.", "week2": "Apply basal NPK.", "week3": "Ensure pre-emergence herbicide.", "week4": "Monitor germination.", "alerts": [] },
+    "6": { "phase": "Seedling", "week1": "Gap fill if needed.", "week2": "First irrigation at 30 DAS.", "week3": "Spray Imidacloprid for sucking pests.", "week4": "Weed manually.", "alerts": ["Thrips and jassids — early action critical"] },
+    "7": { "phase": "Squaring", "week1": "Apply urea top-dressing.", "week2": "Install pheromone traps for bollworm.", "week3": "Scout for mealy bug.", "week4": "Apply growth regulator (Mepiquat Chloride) if vigorous.", "alerts": ["Pink bollworm — most damaging pest of Bt cotton in India"] },
+    "8": { "phase": "Boll Setting", "week1": "Scout for American bollworm.", "week2": "Apply NPV biopesticide.", "week3": "Harvest first open bolls.", "week4": "Grade and pack first pick.", "alerts": [] },
+    "9": { "phase": "Peak Picking", "week1": "2nd pick harvest.", "week2": "Spray for anti-sucking pests.", "week3": "Apply foliar potash for boll opening.", "week4": "Sell at nearest CCI procurement centre.", "alerts": ["MSP for medium staple cotton: ₹7,121/quintal (2025–26)"] },
+    "10": { "phase": "Late Picking", "week1": "3rd pick.", "week2": "Apply defoliant if late bolls not opening.", "week3": "Pull out stalks after last pick.", "week4": "Destroy stalks — reduces next season pest carryover.", "alerts": [] },
+    "11": { "phase": "Post-Harvest", "week1": "Deep ploughing.", "week2": "Soil testing.", "week3": "Apply lime if pH < 6.", "week4": "Plan for next season.", "alerts": [] },
+    "12": { "phase": "Fallow / Rabi", "week1": "Consider sunflower as rabi crop.", "week2": "Irrigate if dry spell.", "week3": "Maintain field bunds.", "week4": "Attend FPO meeting.", "alerts": [] },
+    "1": { "phase": "Fallow", "week1": "Soil amendment.", "week2": "FYM application.", "week3": "Seed procurement.", "week4": "Credit planning.", "alerts": [] },
+    "2": { "phase": "Fallow", "week1": "Land preparation.", "week2": "Irrigation check.", "week3": "Seed treatment planning.", "week4": "Market linkage.", "alerts": [] },
+    "3": { "phase": "Pre-Sowing", "week1": "Final land prep.", "week2": "Irrigation infrastructure check.", "week3": "Procure seeds.", "week4": "Apply pre-sowing irrigation.", "alerts": [] }
+  },
+  "Maize": {
+    "6": { "phase": "Kharif Sowing", "week1": "Sow at 60×25 cm with 2 seeds/hill.", "week2": "Apply basal NPK 120:60:40 kg/ha.", "week3": "Apply atrazine for weed control.", "week4": "First irrigation at 15 DAS.", "alerts": ["Fall Armyworm — check whorls daily"] },
+    "7": { "phase": "Vegetative", "week1": "Apply 1st urea split at 30 DAS.", "week2": "Scout for Fall Armyworm in whorls.", "week3": "Apply Emamectin Benzoate for FAW control.", "week4": "Earthing up operation.", "alerts": ["FAW is the #1 threat to Kharif maize — inspect whorls every 3 days"] },
+    "8": { "phase": "Tasselling & Silking", "week1": "Apply 2nd urea split at 60 DAS.", "week2": "Detassel male plants in seed production plots.", "week3": "Ensure no water stress at silking.", "week4": "Scout for cob borer.", "alerts": [] },
+    "9": { "phase": "Grain Filling", "week1": "Final irrigation at dough stage.", "week2": "Scout for storage pest (weevils) early.", "week3": "Estimate yield and contact buyer.", "week4": "Harvest when husk is fully dry.", "alerts": [] },
+    "10": { "phase": "Harvest", "week1": "Harvest at 25–27% moisture, dry to 14%.", "week2": "Shell and bag properly.", "week3": "Register at NAFED/FCI.", "week4": "Sell or store with hermetic bags.", "alerts": ["MSP for Maize: ₹2,090/quintal (2025–26)"] },
+    "11": { "phase": "Rabi Sowing", "week1": "Sow Rabi maize in irrigated conditions.", "week2": "Apply FYM + phosphorus basal.", "week3": "Sow at 60×20 cm spacing.", "week4": "First irrigation at 10 DAS.", "alerts": [] },
+    "12": { "phase": "Rabi Vegetative", "week1": "Apply urea at 30 DAS.", "week2": "Weed control.", "week3": "Scout for aphids.", "week4": "Earthing up.", "alerts": [] },
+    "1": { "phase": "Rabi Tasselling", "week1": "Apply 2nd urea split.", "week2": "Ensure irrigation at silking.", "week3": "Scout for bollworm.", "week4": "Do not stress crop.", "alerts": [] },
+    "2": { "phase": "Rabi Grain Filling", "week1": "Final irrigation.", "week2": "Estimate yield.", "week3": "Contact buyer.", "week4": "Harvest at maturity.", "alerts": [] },
+    "3": { "phase": "Rabi Harvest", "week1": "Harvest.", "week2": "Dry grain.", "week3": "Store or sell.", "week4": "Soil preparation for next crop.", "alerts": [] },
+    "4": { "phase": "Fallow", "week1": "Deep plough.", "week2": "Soil test.", "week3": "FYM application.", "week4": "Plan Kharif varieties.", "alerts": [] },
+    "5": { "phase": "Pre-Sowing", "week1": "Land levelling.", "week2": "Seed procurement.", "week3": "Irrigation readiness.", "week4": "Await monsoon onset.", "alerts": [] }
+  }
+}
