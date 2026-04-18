@@ -16,6 +16,7 @@ import GovernmentSchemesHub from './components/GovernmentSchemesHub';
 import { Routes, Route, Link } from 'react-router-dom';
 const Hardware = lazy(() => import('./pages/Hardware'));
 const Anant = lazy(() => import('./pages/Anant'));
+const Community = lazy(() => import('./pages/Community'));
 
 const initialAlerts = [
   { id: 1, disease: 'Rice Blast', distance: '1.2', farmCount: 4, timeAgo: '2h ago', severity: 'high' },
@@ -617,11 +618,17 @@ function Home() {
         </div>
         
         <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full liquid-glass">
-          {['Home', 'Technology', 'Hardware', 'Network', 'Flora', 'ANANT'].map((item) => {
+          {['Home', 'Community', 'Technology', 'Hardware', 'Network', 'Flora', 'ANANT'].map((item) => {
             if (item === 'Hardware') {
               return (
                 <Link key={item} to="/technology/hardware" className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
                   Hardware Specs
+                </Link>
+              );
+            } else if (item === 'Community') {
+              return (
+                <Link key={item} to="/community" className="px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-wide">
+                  Community
                 </Link>
               );
             } else if (item === 'ANANT') {
@@ -687,11 +694,17 @@ function Home() {
             </button>
             
             <div className="flex flex-col gap-6 mt-8">
-              {['Home', 'Technology', 'Hardware', 'Network', 'Flora', 'ANANT'].map((item) => {
+              {['Home', 'Community', 'Technology', 'Hardware', 'Network', 'Flora', 'ANANT'].map((item) => {
                 if (item === 'Hardware') {
                   return (
                     <Link key={item} to="/technology/hardware" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
                       Hardware Specs
+                    </Link>
+                  );
+                } else if (item === 'Community') {
+                  return (
+                    <Link key={item} to="/community" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
+                      Community
                     </Link>
                   );
                 } else if (item === 'ANANT') {
@@ -975,7 +988,13 @@ function Home() {
                 <li><a href="#" className="hover:text-pink-500 transition-colors">About Project</a></li>
                 <li><a href="#" className="hover:text-pink-500 transition-colors">Research Papers</a></li>
                 <li><a href="#" className="hover:text-pink-500 transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-pink-500 transition-colors">Contact</a></li>
+                <li className="relative group/contact">
+                  <a href="mailto:mishrac373@gmail.com" className="hover:text-pink-500 transition-colors">Contact</a>
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 rounded-full bg-emerald-950 text-white text-xs font-semibold whitespace-nowrap shadow-lg opacity-0 scale-90 group-hover/contact:opacity-100 group-hover/contact:scale-100 transition-all duration-200 pointer-events-none select-none">
+                    mishrac373@gmail.com
+                    <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-emerald-950"></span>
+                  </div>
+                </li>
               </ul>
             </div>
           </div>
@@ -1085,6 +1104,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/technology/hardware" element={<Hardware />} />
+        <Route path="/community" element={<Community />} />
         <Route path="/anant" element={<Anant />} />
       </Routes>
     </Suspense>
