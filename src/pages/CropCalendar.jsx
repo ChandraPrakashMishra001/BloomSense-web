@@ -263,19 +263,25 @@ export default function CropCalendar() {
   return (
     <div className="min-h-screen bg-pink-50 leaf-pattern-bg text-emerald-950 font-body">
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-12 py-3 sm:py-4 flex items-center gap-2 sm:gap-4 bg-pink-50/80 backdrop-blur-md border-b border-emerald-900/10 shadow-sm">
-        <Link to="/" className="flex items-center gap-1.5 sm:gap-2 text-emerald-700 hover:text-emerald-900 transition-colors font-bold text-xs sm:text-sm">
-          <ArrowLeft className="w-4 h-4" /> <span className="hidden sm:inline">Back to BloomSense</span><span className="sm:hidden">Back</span>
+      <nav className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-12 py-3 flex items-center bg-pink-50/90 backdrop-blur-md border-b border-emerald-900/10 shadow-sm">
+        <Link to="/" className="flex items-center gap-2 group mr-auto">
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-emerald-100/50 group-hover:bg-emerald-200 transition-colors">
+            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 text-emerald-700" />
+          </div>
+          <div className="flex flex-col drop-shadow-sm">
+            <span className="font-heading italic text-lg md:text-xl text-emerald-950 leading-none">BloomSense</span>
+            <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 mt-0.5 pl-0.5">Neural Leaf</span>
+          </div>
         </Link>
-        <span className="text-emerald-300 hidden sm:inline">|</span>
-        <div className="hidden sm:flex items-center gap-2">
+        <div id="google_translate_element_calendar" className="mr-2 sm:mr-4 hidden sm:block scale-75 origin-right sm:scale-100"></div>
+        <div className="hidden sm:flex items-center gap-2 mr-2">
           <Calendar className="w-4 h-4 text-emerald-600" />
           <span className="font-bold text-emerald-950 text-sm">Crop Calendar</span>
         </div>
-        <div className="ml-auto flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <span className="text-xs sm:text-sm font-semibold text-emerald-700/60 hidden sm:inline">{cropInfo?.icon} {profile.crop}</span>
           <span className="text-xs sm:text-sm font-semibold text-emerald-700/60 sm:hidden">{cropInfo?.icon}</span>
-          <button onClick={handleReset} className="text-[10px] sm:text-xs text-emerald-600 hover:text-emerald-800 font-bold flex items-center gap-1 border border-emerald-200 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full hover:bg-emerald-50 transition-colors">
+          <button onClick={handleReset} className="text-[10px] sm:text-xs text-emerald-600 hover:text-emerald-800 font-bold flex items-center gap-1 border border-emerald-200 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full hover:bg-emerald-50 transition-colors shadow-sm">
             <RefreshCw className="w-3 h-3" /> <span className="hidden sm:inline">Change Crop</span><span className="sm:hidden">Reset</span>
           </button>
         </div>

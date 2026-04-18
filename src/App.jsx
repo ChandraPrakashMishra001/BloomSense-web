@@ -612,11 +612,10 @@ function Home() {
             </button>
             <div className="flex flex-col drop-shadow-sm">
               <span className="font-heading italic  text-2xl md:text-3xl xl:text-4xl text-emerald-950 leading-none">BloomSense</span>
-              <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 mt-1 pl-1 hidden sm:block">Neural Leaf</span>
+              <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 mt-1 pl-1 block">Neural Leaf</span>
             </div>
           </div>
-          {/* Phase 5: Regional Localization Google Context */}
-          <div id="google_translate_element" className="google-translate-container min-h-[36px] hidden sm:block"></div>
+          <div id="google_translate_element" className="google-translate-container min-h-[36px] block mt-2 xl:mt-0 xl:ml-6 scale-75 origin-left sm:scale-100"></div>
         </div>
         
         <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full liquid-glass">
