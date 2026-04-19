@@ -105,7 +105,7 @@ body {
 }
 
 /* Hard-kill all google branding sub-elements */
-.goog-logo-link, .goog-te-gadget span, .goog-te-gadget img {
+.goog-logo-link, .goog-te-gadget img {
   display: none !important;
 }
 
