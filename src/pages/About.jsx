@@ -27,7 +27,7 @@ const features = [
     accent: 'from-pink-400 to-rose-500',
     tag: 'Core Feature',
     title: 'AI Plant & Disease Scanning',
-    desc: 'Powered by Amania AI (Gemini 2.5 Pro), BloomSense lets any farmer point their phone at a leaf and receive an instant, clinical-grade diagnosis of diseases, pests, and contamination — with 98.4% confidence. Supports camera input and real-time processing.'
+    desc: 'Powered by AmanAI (Gemini 3.1 Pro & Flash), BloomSense lets any farmer point their phone at a leaf and receive an instant, clinical-grade diagnosis of diseases, pests, and contamination — with 98.4% confidence. Supports camera input and real-time processing.'
   },
   {
     icon: Cpu,
@@ -76,7 +76,7 @@ const features = [
     accent: 'from-green-400 to-emerald-600',
     tag: 'Information',
     title: 'Government Schemes Hub',
-    desc: 'An always-live ticker and card grid displaying the latest Central and State government schemes for farmers — including PM-KISAN, Samrudha Krushaka Yojana, Shree Anna Abhiyan, and CM-KISAN. Personalized Amania AI recommendations suggest schemes based on recent scan history.'
+    desc: 'An always-live ticker and card grid displaying the latest Central and State government schemes for farmers — including PM-KISAN, Samrudha Krushaka Yojana, Shree Anna Abhiyan, and CM-KISAN. Personalized AmanAI recommendations suggest schemes based on recent scan history.'
   },
   {
     icon: Microscope,
@@ -92,13 +92,7 @@ const features = [
     title: 'Secure Firebase Auth & PWA',
     desc: 'Full Google Sign-In authentication via Firebase for personalized access. BloomSense is a Progressive Web App (PWA) — installable on Android and iOS directly from the browser with custom install prompts, offline caching via service workers, and push notification support.'
   },
-  {
-    icon: Database,
-    accent: 'from-slate-400 to-gray-600',
-    tag: 'Backend',
-    title: 'G0DM0DE — Moderation API',
-    desc: 'A hardened Node.js/TypeScript backend (deployed on Railway/Cloudflare) that proxies community post moderation through Gemini AI to prevent harmful content. Features rate limiting, IP-based throttling, telemetry logging, and a secure admin interface accessible via the GodMode route.'
-  },
+
   {
     icon: Focus,
     accent: 'from-pink-500 to-fuchsia-600',
@@ -116,7 +110,7 @@ const stats = [
 ];
 
 const techStack = [
-  'React + Vite', 'Firebase Firestore', 'Firebase Auth', 'Gemini 2.5 Pro',
+  'React + Vite', 'Firebase Firestore', 'Firebase Auth', 'Gemini 3.1 Pro & Flash',
   'Google Translate API', 'Framer Motion', 'Open-Meteo API', 'Leaflet.js',
   'OpenRouter AI', 'ESP32-S3 Edge AI', 'Node.js + TypeScript', 'PWA + Service Worker',
   'Tailwind CSS', 'Lucide Icons', 'Cloudflare', 'Railway'
