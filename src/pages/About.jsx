@@ -260,14 +260,22 @@ export default function About() {
             <div className="absolute -top-20 -right-20 w-60 h-60 bg-gradient-to-br from-pink-200/40 to-emerald-200/30 blur-3xl rounded-full pointer-events-none" />
             <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-10">
               {/* Avatar — Creator Photo */}
-              <div className="flex-shrink-0">
-                <div className="w-44 h-56 md:w-52 md:h-64 rounded-3xl overflow-hidden shadow-2xl shadow-emerald-400/20 border-4 border-white ring-2 ring-emerald-200/60">
+              <div className="flex-shrink-0 flex flex-col items-center">
+                <div className="w-44 h-56 md:w-52 md:h-64 rounded-3xl overflow-hidden shadow-2xl shadow-emerald-400/20 border-4 border-white ring-2 ring-emerald-200/60 mb-4">
                   <img
                     src="/kunmun.jpeg"
                     alt="Chandra Prakash Mishra"
                     className="w-full h-full object-contain object-center hover:scale-105 transition-transform duration-700 bg-white/50"
                   />
                 </div>
+                <a 
+                  href="https://www.linkedin.com/in/chandra-prakash-mishra-zx277" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center gap-1 text-emerald-700 hover:text-emerald-900 font-bold text-sm bg-white/50 px-4 py-1.5 rounded-full border border-emerald-200/60 shadow-sm transition-all hover:bg-white"
+                >
+                  LinkedIn <ArrowUpRight className="w-3 h-3" />
+                </a>
               </div>
               {/* Info */}
               <div className="text-center md:text-left flex-1">
