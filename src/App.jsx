@@ -19,6 +19,7 @@ const Hardware = lazy(() => import('./pages/Hardware'));
 const Anant = lazy(() => import('./pages/Anant'));
 const Community = lazy(() => import('./pages/Community'));
 const CropCalendar = lazy(() => import('./pages/CropCalendar'));
+const About = lazy(() => import('./pages/About'));
 
 const initialAlerts = [
   { id: 1, disease: 'Rice Blast', distance: '1.2', farmCount: 4, timeAgo: '2h ago', severity: 'high' },
@@ -948,6 +949,9 @@ function Home() {
 
         <GovernmentSchemesHub />
 
+
+
+
         <footer className="border-t border-emerald-900/10 pt-24 pb-12 px-6 lg:px-12 max-w-[1400px] mx-auto">
           <div className="grid lg:grid-cols-12 gap-12 mb-20">
             <div className="lg:col-span-6">
@@ -996,7 +1000,7 @@ function Home() {
             <div className="lg:col-span-3">
               <h4 className="text-emerald-900/50 uppercase tracking-[0.25em] text-xs font-black mb-8">Company</h4>
               <ul className="space-y-4 text-sm text-emerald-800 font-semibold">
-                <li><a href="#" className="hover:text-pink-500 transition-colors">About Project</a></li>
+                <li><Link to="/about" className="hover:text-pink-500 transition-colors">About Project</Link></li>
                 <li><a href="#" className="hover:text-pink-500 transition-colors">Research Papers</a></li>
                 <li><a href="#" className="hover:text-pink-500 transition-colors">Careers</a></li>
                 <li className="relative group/contact">
@@ -1163,6 +1167,7 @@ export default function App() {
         <Route path="/community" element={<Community />} />
         <Route path="/calendar" element={<CropCalendar />} />
         <Route path="/anant" element={<Anant />} />
+        <Route path="/about" element={<About />} />
       </Routes>
     </Suspense>
   );
