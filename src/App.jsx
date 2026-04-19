@@ -1000,7 +1000,19 @@ function Home() {
             <div className="lg:col-span-3">
               <h4 className="text-emerald-900/50 uppercase tracking-[0.25em] text-xs font-black mb-8">Company</h4>
               <ul className="space-y-4 text-sm text-emerald-800 font-semibold">
-                <li><Link to="/about" className="hover:text-pink-500 transition-colors">About Project</Link></li>
+                <li className="py-1">
+                  <Link 
+                    to="/about" 
+                    className="inline-flex items-center gap-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-5 py-2.5 rounded-full font-black uppercase tracking-widest text-xs hover:scale-105 hover:shadow-lg hover:shadow-pink-500/30 transition-all group lg:-ml-2"
+                  >
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                    </span>
+                    About the Project
+                    <Sparkles className="w-3.5 h-3.5 text-white/90 group-hover:rotate-12 group-hover:scale-110 transition-transform" />
+                  </Link>
+                </li>
                 <li><a href="#" className="hover:text-pink-500 transition-colors">Research Papers</a></li>
                 <li><a href="#" className="hover:text-pink-500 transition-colors">Careers</a></li>
                 <li className="relative group/contact">
