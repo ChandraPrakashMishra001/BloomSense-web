@@ -234,7 +234,7 @@ const ScrollReveal = ({ children, className = "", delay = 0 }) => (
 );
 
 const MixedFlora = React.memo(() => {
-  const elements = useMemo(() => Array.from({ length: 45 }).map((_, i) => ({
+  const elements = useMemo(() => Array.from({ length: 25 }).map((_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
     duration: `${Math.random() * 12 + 12}s`,
@@ -330,6 +330,8 @@ const FloraArchive = React.memo(() => {
                 <img 
                   src={plant.image} 
                   alt={plant.name} 
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-pink-50 via-pink-50/20 to-transparent" />
@@ -780,8 +782,10 @@ function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
             <Link to="/technology/hardware" className="block relative h-[400px] md:h-[650px] rounded-[2.5rem] liquid-glass overflow-hidden border border-emerald-900/10 shadow-xl group cursor-pointer lg:col-span-1">
               <img 
-                src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1600&auto=format&fit=crop" 
+                src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1200&auto=format&fit=crop" 
                 alt="Pink and Green Leaf Pattern Botanical" 
+                loading="lazy"
+                decoding="async"
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-900/20 to-transparent transition-opacity duration-500" />

@@ -53,7 +53,6 @@ const componentDetails = {
   }
 };
 import { Link } from 'react-router-dom';
-import '@google/model-viewer';
 
 export default function Hardware() {
   const { scrollYProgress } = useScroll();
@@ -95,8 +94,10 @@ export default function Hardware() {
   }, []);
 
   useEffect(() => {
+    // Dynamically load model-viewer only when this page is mounted
+    import('@google/model-viewer');
+
     window.scrollTo(0, 0);
-    // Explicitly play the background video to prevent browser autoplay blockers (which makes it look like a static photo)
     if (videoRef.current) {
       videoRef.current.play().catch(error => {
         console.log("Video auto-play was prevented by the browser:", error);
