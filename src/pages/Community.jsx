@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc, increment, getDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
-import { Leaf, MessageCircle, MapPin, Send, Loader2, ThumbsUp, AlertTriangle, Globe2, ChevronLeft, ShieldAlert, Pin, TrendingUp, Users } from 'lucide-react';
+import { Leaf, MessageCircle, MapPin, Send, Loader2, ThumbsUp, AlertTriangle, Globe2, ChevronLeft, ShieldAlert, Pin, TrendingUp, Users, ArrowLeft } from 'lucide-react';
 
 const TRANSLATIONS = {
   en: { feed: "Public Feed", districts: "District Groups", messages: "Messages", post: "Post", name: "Your Name", dist: "District (Optional)", lang: "Language", compose: "Post to Community", write: "Write your message...", check: "Checking message...", error: "Your message could not be sent. Please keep the conversation respectful and farming-focused.", likes: "likes", activeNow: "farmers talking right now across Odisha.", reply: "Message", translate: "Translate", pin: "Pinned Alert", report: "Report", trending: "Trending Topics", verifying: "Verifying...", reportDone: "Reported" },
@@ -86,17 +86,30 @@ export default function Community() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-pink-50 text-emerald-950 font-body relative overflow-x-hidden pb-20 leaf-pattern-bg">
+    <div className="min-h-screen bg-pink-50 text-emerald-950 font-body relative overflow-x-hidden pt-24 pb-12 leaf-pattern-bg flex flex-col">
       {/* Background gradients */}
       <div className="fixed inset-0 bg-gradient-to-br from-emerald-50/50 via-transparent to-pink-50/50 pointer-events-none -z-10"></div>
       
+      {/* ── NAV ── */}
+      <nav className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-4 flex justify-between items-center bg-pink-50/80 backdrop-blur-md border-b border-emerald-900/10 shadow-sm transition-all duration-300">
+        <Link to="/" className="flex items-center gap-3 text-emerald-800 hover:text-emerald-950 transition-colors group">
+          <div className="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+          </div>
+          <span className="font-semibold text-sm tracking-wide hidden sm:inline">Back to Home</span>
+        </Link>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center border border-emerald-200/60 shadow-sm">
+            <Leaf className="w-5 h-5 text-emerald-600" />
+          </div>
+          <span className="font-heading italic text-2xl text-emerald-950">BloomSense</span>
+        </div>
+      </nav>
+
       {/* Header */}
-      <header className="pt-20 md:pt-24 pb-6 md:pb-8 px-4 md:px-12 max-w-7xl mx-auto z-10 relative">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
+      <header className="pb-6 md:pb-8 px-4 md:px-12 max-w-7xl mx-auto z-10 relative w-full">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8 pt-4">
           <div>
-            <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-emerald-700 hover:text-emerald-900 transition-colors mb-4">
-              <ChevronLeft className="w-4 h-4" /> Back to BloomSense
-            </Link>
             <div className="flex items-center gap-2 md:gap-3 mb-2">
               <span className="flex items-center justify-center p-2 bg-emerald-100 rounded-full text-emerald-600">
                 <Users className="w-5 h-5 md:w-6 eye-6" />
@@ -136,13 +149,27 @@ export default function Community() {
       </header>
 
       {/* Main Content Area */}
-      <main className="px-4 md:px-12 max-w-7xl mx-auto z-10 relative">
+      <main className="px-4 md:px-12 max-w-7xl mx-auto z-10 relative flex-1 w-full">
         <AnimatePresence mode="wait">
           {activeTab === 'feed' && <PublicFeed key="feed" t={t} lang={lang} />}
           {activeTab === 'district' && <DistrictChats key="district" t={t} lang={lang} />}
           {activeTab === 'dm' && <DirectMessaging key="dm" t={t} lang={lang} dmSessionId={dmSessionId} setDmSessionId={setDmSessionId} />}
         </AnimatePresence>
       </main>
+
+      {/* ── FOOTER ── */}
+      <footer className="border-t border-emerald-900/10 py-8 px-6 lg:px-12 mt-20 max-w-[1400px] w-full mx-auto flex flex-col md:flex-row justify-between items-center gap-4 z-10 relative">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center">
+            <Leaf className="w-4 h-4 text-white" />
+          </div>
+          <span className="font-heading italic text-xl text-emerald-950">BloomSense</span>
+          <span className="text-emerald-800/40 text-xs font-bold uppercase tracking-[0.2em]">Neural Leaf</span>
+        </div>
+        <p className="text-emerald-800/50 text-sm font-semibold">
+          © {new Date().getFullYear()} BloomSense. Made by Chandra Prakash Mishra.
+        </p>
+      </footer>
     </div>
   );
 }
