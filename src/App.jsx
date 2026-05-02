@@ -16,7 +16,6 @@ import GovernmentSchemesHub from './components/GovernmentSchemesHub';
 import InstallBanner from './components/InstallBanner';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 const Hardware = lazy(() => import('./pages/Hardware'));
-const Anant = lazy(() => import('./pages/Anant'));
 const Community = lazy(() => import('./pages/Community'));
 const CropCalendar = lazy(() => import('./pages/CropCalendar'));
 const About = lazy(() => import('./pages/About'));
@@ -604,7 +603,7 @@ function Home() {
         </div>
         
         <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full liquid-glass">
-          {['Home', 'Community', 'Calendar', 'Technology', 'Map', 'ANANT'].map((item) => {
+          {['Home', 'Community', 'Calendar', 'Technology', 'Map'].map((item) => {
             if (item === 'Technology') {
               return (
                 <Link key={item} to="/technology/hardware" className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-[0.05em] xl:tracking-wide">
@@ -627,12 +626,6 @@ function Home() {
               return (
                 <Link key={item} to="/calendar" className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-[0.05em] xl:tracking-wide">
                   Calendar
-                </Link>
-              );
-            } else if (item === 'ANANT') {
-              return (
-                <Link key={item} to="/anant" className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-bold text-emerald-100 bg-emerald-900 rounded-full hover:bg-emerald-950 transition-colors tracking-[0.05em] xl:tracking-wide shadow-sm border border-emerald-500/30 flex items-center gap-1.5 lg:gap-2">
-                  <Brain className="w-4 h-4" /> ANANT
                 </Link>
               );
             } else {
@@ -692,7 +685,7 @@ function Home() {
             </button>
             
             <div className="flex flex-col gap-6 mt-8">
-              {['Home', 'Community', 'Calendar', 'Technology', 'Map', 'ANANT'].map((item) => {
+              {['Home', 'Community', 'Calendar', 'Technology', 'Map'].map((item) => {
                 if (item === 'Technology') {
                   return (
                     <Link key={item} to="/technology/hardware" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
@@ -715,13 +708,6 @@ function Home() {
                   return (
                     <Link key={item} to="/calendar" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
                       Calendar
-                    </Link>
-                  );
-                } else if (item === 'ANANT') {
-                  return (
-                    <Link key={item} to="/anant" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-bold text-emerald-100 bg-emerald-900 p-4 rounded-3xl tracking-wide flex items-center justify-between shadow-sm border border-emerald-500/30">
-                      <span>ANANT</span>
-                      <Brain className="w-8 h-8 opacity-50" />
                     </Link>
                   );
                 } else {
@@ -1149,7 +1135,7 @@ export default function App() {
   useEffect(() => {
     const initTranslate = () => {
       if (window.google && window.google.translate) {
-        const containers = ['google_translate_element', 'google_translate_element_calendar', 'google_translate_element_anant', 'google_translate_element_hardware', 'google_translate_element_godmode'];
+        const containers = ['google_translate_element', 'google_translate_element_calendar', 'google_translate_element_hardware'];
         containers.forEach(id => {
           const el = document.getElementById(id);
           if (el && el.innerHTML === '') {
@@ -1178,7 +1164,6 @@ export default function App() {
         <Route path="/technology/hardware" element={<Hardware />} />
         <Route path="/community" element={<Community />} />
         <Route path="/calendar" element={<CropCalendar />} />
-        <Route path="/anant" element={<Anant />} />
         <Route path="/about" element={<About />} />
       </Routes>
     </Suspense>

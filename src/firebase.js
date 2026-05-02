@@ -14,10 +14,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Modern persistent cache — works across multiple tabs, no deprecation warning
-const db = initializeFirestore(app, {
-  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
-});
+import { getFirestore } from "firebase/firestore";
+
+// Remove persistent local cache for now to debug why it's not syncing
+const db = getFirestore(app);
 
 const auth = getAuth(app);
 

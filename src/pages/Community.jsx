@@ -28,15 +28,19 @@ const PROXY_URL = 'http://localhost:7860/v1'; // Assuming G0DM0D3 API is running
 
 const moderateMessage = async (message) => {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
     const res = await fetch(`${PROXY_URL}/moderate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message })
+      body: JSON.stringify({ message }),
+      signal: controller.signal
     });
+    clearTimeout(timeoutId);
     if (!res.ok) throw new Error('API Error');
     return await res.json();
   } catch (err) {
-    console.error(err);
+    console.error("Moderation API failed or timed out:", err);
     // Be lenient if moderation API fails
     return { approved: true, cleaned_message: message, reason: 'Moderation skip due to error' };
   }
@@ -213,19 +217,24 @@ function PublicFeed({ t, lang }) {
     
     const verifiedBadge = auth.currentUser ? true : false;
     
-    await addDoc(collection(db, 'community_posts'), {
-      username: name.trim(),
-      district: district || null,
-      language: lang,
-      message: modResult.cleaned_message || message.trim(),
-      timestamp: Date.now(),
-      likes: 0,
-      reported_count: 0,
-      pinned: false,
-      isVerified: verifiedBadge
-    });
+    try {
+      await addDoc(collection(db, 'community_posts'), {
+        username: name.trim(),
+        district: district || null,
+        language: lang,
+        message: modResult.cleaned_message || message.trim(),
+        timestamp: Date.now(),
+        likes: 0,
+        reported_count: 0,
+        pinned: false,
+        isVerified: verifiedBadge
+      });
+      setMessage('');
+    } catch (error) {
+      console.error("Firebase error:", error);
+      setErr("Failed to post message to server. Permissions or network error.");
+    }
     
-    setMessage('');
     setIsPosting(false);
   };
 
