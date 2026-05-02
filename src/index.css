@@ -18,22 +18,6 @@ body {
   font-family: var(--font-body);
 }
 
-/* Global viewport border framing the entire website */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  border: 12px solid #064e3b; /* Deep emerald-900 */
-  pointer-events: none; /* Allows clicking through the border */
-  z-index: 999999; /* Keeps the border on top of everything, including modals */
-}
-
-@media (max-width: 768px) {
-  body::after {
-    border-width: 6px; /* Slightly thinner on mobile */
-  }
-}
-
 html {
   scroll-behavior: smooth;
 }
