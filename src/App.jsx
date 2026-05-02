@@ -1135,7 +1135,7 @@ export default function App() {
   useEffect(() => {
     const initTranslate = () => {
       if (window.google && window.google.translate) {
-        const containers = ['google_translate_element', 'google_translate_element_calendar', 'google_translate_element_hardware'];
+        const containers = ['google_translate_element'];
         containers.forEach(id => {
           const el = document.getElementById(id);
           if (el && el.innerHTML === '') {

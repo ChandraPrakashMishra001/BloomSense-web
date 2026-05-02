@@ -274,7 +274,6 @@ export default function CropCalendar() {
             <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 mt-0.5 pl-0.5">Neural Leaf</span>
           </div>
         </Link>
-        <div id="google_translate_element_calendar" className="mr-2 sm:mr-4 hidden sm:block scale-75 origin-right sm:scale-100"></div>
         <div className="hidden sm:flex items-center gap-2 mr-2">
           <Calendar className="w-4 h-4 text-emerald-600" />
           <span className="font-bold text-emerald-950 text-sm">Crop Calendar</span>
