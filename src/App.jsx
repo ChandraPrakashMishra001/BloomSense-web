@@ -19,35 +19,11 @@ const Hardware = lazy(() => import('./pages/Hardware'));
 const Community = lazy(() => import('./pages/Community'));
 const CropCalendar = lazy(() => import('./pages/CropCalendar'));
 const About = lazy(() => import('./pages/About'));
+import { initialAlerts, initialDiseasePoints, floraDatabase } from './data/constants';
 
-const initialAlerts = [
-  { id: 1, disease: 'Rice Blast', distance: '1.2', farmCount: 4, timeAgo: '2h ago', severity: 'high' },
-  { id: 2, disease: 'Bacterial Leaf Blight', distance: '3.5', farmCount: 2, timeAgo: '5h ago', severity: 'medium' },
-  { id: 3, disease: 'Brown Spot', distance: '4.8', farmCount: 1, timeAgo: '1d ago', severity: 'medium' }
-];
 
-const initialDiseasePoints = [
-  { lat: 21.4669, lng: 83.9812, disease: 'Rice Blast', severity: 'high', intensity: 0.91, confidence_score: 91, radius: 1500, timestamp: new Date('2026-03-20T08:23:00').getTime() },
-  { lat: 21.4721, lng: 83.9756, disease: 'Rice Blast', severity: 'medium', intensity: 0.88, confidence_score: 88, radius: 1200, timestamp: new Date('2026-03-21T09:15:00').getTime() },
-  { lat: 21.4598, lng: 83.9901, disease: 'Brown Plant Hopper', severity: 'low', intensity: 0.79, confidence_score: 79, radius: 1300, timestamp: new Date('2026-03-22T07:44:00').getTime() },
-  { lat: 20.4625, lng: 85.8830, disease: 'Sheath Blight', severity: 'medium', intensity: 0.85, confidence_score: 85, radius: 1100, timestamp: new Date('2026-03-22T10:30:00').getTime() },
-  { lat: 20.4701, lng: 85.8912, disease: 'Sheath Blight', severity: 'medium', intensity: 0.82, confidence_score: 82, radius: 1400, timestamp: new Date('2026-03-23T08:10:00').getTime() },
-  { lat: 20.4550, lng: 85.8778, disease: 'Leaf Folder', severity: 'low', intensity: 0.77, confidence_score: 77, radius: 900, timestamp: new Date('2026-03-23T11:22:00').getTime() },
-  { lat: 20.2961, lng: 85.8189, disease: 'Powdery Mildew', severity: 'medium', intensity: 0.83, confidence_score: 83, radius: 1600, timestamp: new Date('2026-03-24T09:05:00').getTime() },
-  { lat: 20.3021, lng: 85.8245, disease: 'Bacterial Blight', severity: 'high', intensity: 0.90, confidence_score: 90, radius: 1700, timestamp: new Date('2026-03-24T14:33:00').getTime() },
-  { lat: 20.7167, lng: 83.4833, disease: 'Rice Blast', severity: 'high', intensity: 0.93, confidence_score: 93, radius: 1900, timestamp: new Date('2026-03-25T07:55:00').getTime() },
-  { lat: 20.7210, lng: 83.4901, disease: 'Stem Rot', severity: 'medium', intensity: 0.81, confidence_score: 81, radius: 1200, timestamp: new Date('2026-03-25T10:18:00').getTime() },
-  { lat: 18.8135, lng: 82.7110, disease: 'Late Blight', severity: 'medium', intensity: 0.87, confidence_score: 87, radius: 1600, timestamp: new Date('2026-03-26T08:40:00').getTime() },
-  { lat: 18.8190, lng: 82.7055, disease: 'Leaf Curl', severity: 'low', intensity: 0.76, confidence_score: 76, radius: 1000, timestamp: new Date('2026-03-26T12:15:00').getTime() },
-  { lat: 21.9522, lng: 86.7322, disease: 'Rice Blast', severity: 'medium', intensity: 0.89, confidence_score: 89, radius: 1400, timestamp: new Date('2026-03-27T07:30:00').getTime() },
-  { lat: 21.9478, lng: 86.7401, disease: 'Brown Spot', severity: 'medium', intensity: 0.84, confidence_score: 84, radius: 1300, timestamp: new Date('2026-03-27T09:45:00').getTime() },
-  { lat: 19.3870, lng: 84.9750, disease: 'Downy Mildew', severity: 'medium', intensity: 0.80, confidence_score: 80, radius: 1500, timestamp: new Date('2026-03-28T08:20:00').getTime() },
-  { lat: 19.3920, lng: 84.9810, disease: 'Fusarium Wilt', severity: 'medium', intensity: 0.86, confidence_score: 86, radius: 1100, timestamp: new Date('2026-03-28T11:05:00').getTime() },
-  { lat: 22.1167, lng: 84.0333, disease: 'Rice Blast', severity: 'high', intensity: 0.92, confidence_score: 92, radius: 1800, timestamp: new Date('2026-03-29T07:15:00').getTime() },
-  { lat: 22.1210, lng: 84.0389, disease: 'Neck Rot', severity: 'low', intensity: 0.78, confidence_score: 78, radius: 1200, timestamp: new Date('2026-03-29T10:30:00').getTime() },
-  { lat: 19.8135, lng: 85.8312, disease: 'Bacterial Leaf Blight', severity: 'medium', intensity: 0.88, confidence_score: 88, radius: 1600, timestamp: new Date('2026-03-29T08:55:00').getTime() },
-  { lat: 19.8190, lng: 85.8278, disease: 'Sheath Blight', severity: 'medium', intensity: 0.83, confidence_score: 83, radius: 1300, timestamp: new Date('2026-03-29T13:20:00').getTime() }
-];
+
+
 
 const AmaniaChatbot = React.memo(() => {
   useEffect(() => {
@@ -80,116 +56,7 @@ const AmaniaBadge = React.memo(() => (
   </motion.div>
 ));
 
-const floraDatabase = [
-  {
-    id: 1,
-    name: "Ashwagandha",
-    scientificName: "Withania somnifera",
-    image: "/ashwagandha.webp",
-    properties: ["Adaptogenic", "Anti-inflammatory", "Stress Relief"],
-    diseasesTargeted: ["Insomnia", "Anxiety", "Arthritis"],
-    cures: "Used to lower cortisol levels and improve brain function. Often consumed as a root powder mixed with warm milk.",
-  },
-  {
-    id: 2,
-    name: "Tulsi (Holy Basil)",
-    scientificName: "Ocimum tenuiflorum",
-    image: "/tulsi.webp",
-    properties: ["Antibacterial", "Antiviral", "Immunity Booster"],
-    diseasesTargeted: ["Common Cold", "Asthma", "Fever"],
-    cures: "Leaves are boiled in water to extract essential oils, acting as a powerful expectorant for respiratory illnesses.",
-  },
-  {
-    id: 3,
-    name: "Neem",
-    scientificName: "Azadirachta indica",
-    image: "/neem.webp",
-    properties: ["Antifungal", "Blood Purifier", "Detoxifying"],
-    diseasesTargeted: ["Acne", "Eczema", "Dental Plaque"],
-    cures: "Neem paste is applied directly to the skin to cure fungal infections and acne. Chewing twigs improves oral hygiene.",
-  },
-  {
-    id: 4,
-    name: "Brahmi",
-    scientificName: "Bacopa monnieri",
-    image: "/brahmi.webp",
-    properties: ["Nootropic", "Antioxidant", "Neuroprotective"],
-    diseasesTargeted: ["Memory Loss", "ADHD", "Anxiety"],
-    cures: "Enhances cognitive function and memory retention. Extracted as an oil for scalp massage or consumed as a dietary supplement.",
-  },
-  {
-    id: 5,
-    name: "Turmeric",
-    scientificName: "Curcuma longa",
-    image: "/turmeric.webp",
-    properties: ["Curcumin", "Anti-inflammatory", "Antioxidant"],
-    diseasesTargeted: ["Joint Pain", "Digestive Issues", "Wounds"],
-    cures: "Curcumin compound reduces inflammation at the molecular level. Applied topically to wounds for rapid healing.",
-  },
-  {
-    id: 6,
-    name: "Aloe Vera",
-    scientificName: "Aloe barbadensis miller",
-    image: "/aloe vera.webp",
-    properties: ["Hydrating", "Healing", "Antimicrobial"],
-    diseasesTargeted: ["Sunburn", "Psoriasis", "Acid Reflux"],
-    cures: "The clear gel inside the leaves provides instant relief for burns and skin irritations. Juice aids in digestive health.",
-  },
-  {
-    id: 7,
-    name: "Peppermint",
-    scientificName: "Mentha piperita",
-    image: "/peppermint.webp",
-    properties: ["Cooling", "Digestive", "Antibacterial"],
-    diseasesTargeted: ["IBS", "Headaches", "Nausea"],
-    cures: "Menthol compound soothes upset stomachs and provides relief for tension headaches when applied as oil.",
-  },
-  {
-    id: 8,
-    name: "Lavender",
-    scientificName: "Lavandula angustifolia",
-    image: "/lavender.webp",
-    properties: ["Calming", "Sedative", "Antiseptic"],
-    diseasesTargeted: ["Insomnia", "Anxiety", "Restlessness"],
-    cures: "Widely used in aromatherapy and sleep aids due to its profound soothing and nervous system-regulating effects.",
-  },
-  {
-    id: 9,
-    name: "Ginger",
-    scientificName: "Zingiber officinale",
-    image: "/ginger.webp",
-    properties: ["Anti-nausea", "Anti-inflammatory", "Warming"],
-    diseasesTargeted: ["Motion Sickness", "Morning Sickness", "Osteoarthritis"],
-    cures: "Contains gingerol, a substance with powerful anti-inflammatory and antioxidant properties, used to treat all forms of nausea.",
-  },
-  {
-    id: 10,
-    name: "Ginseng",
-    scientificName: "Panax ginseng",
-    image: "https://images.unsplash.com/photo-1528659556209-66c10ff5fb82?auto=format&fit=crop&q=80&w=800",
-    properties: ["Energy Boosting", "Cognitive", "Immune Booster"],
-    diseasesTargeted: ["Fatigue", "Brain Fog", "Weak Immunity"],
-    cures: "Revered in traditional medicine for giving a sustained energy lift without jitters and bolstering white blood cell function.",
-  },
-  {
-    id: 11,
-    name: "Echinacea",
-    scientificName: "Echinacea purpurea",
-    image: "/echinacea.webp",
-    properties: ["Immune Stimulant", "Antiviral", "Pain Relief"],
-    diseasesTargeted: ["Common Cold", "Upper Respiratory Infections", "Sore Throat"],
-    cures: "Increases the number of white blood cells which fight infections; heavily utilized preventatively during flu seasons.",
-  },
-  {
-    id: 12,
-    name: "Chamomile",
-    scientificName: "Matricaria chamomilla",
-    image: "https://images.unsplash.com/photo-1621217631317-a169b50ceba7?auto=format&fit=crop&q=80&w=800",
-    properties: ["Relaxing", "Spasmolytic", "Anti-inflammatory"],
-    diseasesTargeted: ["Sleeplessness", "Muscle Spasms", "Skin Irritation"],
-    cures: "Apigenin, a natural antioxidant in the flower, binds to specific brain receptors that decrease anxiety and initiate sleep.",
-  }
-];
+
 
 const customEase = [0.16, 1, 0.3, 1];
 
@@ -234,7 +101,7 @@ const ScrollReveal = ({ children, className = "", delay = 0 }) => (
 );
 
 const MixedFlora = React.memo(() => {
-  const elements = useMemo(() => Array.from({ length: 25 }).map((_, i) => ({
+  const elements = useMemo(() => Array.from({ length: window.innerWidth < 768 ? 10 : 25 }).map((_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
     duration: `${Math.random() * 12 + 12}s`,
@@ -282,13 +149,13 @@ const FloraArchive = React.memo(() => {
     return () => document.body.style.overflow = 'unset';
   }, [selectedImage]);
 
-  const filteredPlants = floraDatabase.filter(plant => {
+  const filteredPlants = useMemo(() => floraDatabase.filter(plant => {
     if (searchTerm.trim() === "") {
       return plant.id <= 6; // Only show the main featured plants when not searching
     }
     return plant.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
       plant.diseasesTargeted.some(disease => disease.toLowerCase().includes(searchTerm.toLowerCase()));
-  });
+  }), [searchTerm]);
 
   return (
     <section id="flora" className="py-32 px-6 lg:px-12 max-w-[1400px] mx-auto z-10 relative">
@@ -738,7 +605,7 @@ function Home() {
           {showAnimation && <MixedFlora />}
 
           <motion.div 
-            style={{ y: heroY, opacity: heroOpacity, scale: heroScale }}
+            style={{ y: heroY, opacity: heroOpacity, scale: heroScale, willChange: 'transform, opacity' }}
             className="absolute inset-0 w-full h-full z-0 bg-[url('/bg.webp')] bg-cover bg-center"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-pink-50/40 to-emerald-50/90 pointer-events-none" />
