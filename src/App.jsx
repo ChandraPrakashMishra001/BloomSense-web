@@ -291,6 +291,7 @@ const FloraArchive = React.memo(() => {
 });
 
 function Home() {
+  const [isNewLanding, setIsNewLanding] = useState(true);
   const { scrollY } = useScroll();
   const heroY = useTransform(scrollY, [0, 1000], [0, 200]);
   const heroOpacity = useTransform(scrollY, [0, 800], [1, 0]);
@@ -455,15 +456,20 @@ function Home() {
     <div className="bg-pink-50 min-h-screen text-emerald-950 selection:bg-emerald-200 selection:text-emerald-950 overflow-x-hidden font-body leaf-pattern-bg">
 
 
-      <nav className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-4 flex justify-between items-center bg-pink-50/80 backdrop-blur-md border-b border-emerald-900/10 shadow-sm transition-all duration-300">
+      <nav className="absolute top-4 left-4 right-4 lg:left-12 lg:right-12 z-50 px-6 lg:px-8 py-3 flex justify-between items-center bg-white/20 backdrop-blur-xl border border-white/50 rounded-[2.5rem] shadow-[0_8px_32px_rgba(0,0,0,0.1)] transition-all duration-300">
         <div className="flex flex-col xl:flex-row items-start xl:items-center gap-2 xl:gap-6">
           <div className="flex items-center gap-4">
-            <button className="liquid-glass w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-300 shadow-sm border border-emerald-200/50">
+            <button onClick={() => setIsNewLanding(!isNewLanding)} className="liquid-glass w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-300 shadow-sm border border-emerald-200/50">
               <Leaf className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
             </button>
             <div className="flex flex-col drop-shadow-sm">
               <span className="font-heading italic  text-2xl md:text-3xl xl:text-4xl text-emerald-950 leading-none">BloomSense</span>
-              <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 mt-1 pl-1 block">Neural Leaf</span>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 mt-1 pl-1">
+                <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 block">Neural Leaf</span>
+                <span className="text-[8px] md:text-[9px] text-emerald-600/80 font-medium animate-pulse mt-0.5 sm:mt-0">
+                  (Tap logo to switch theme)
+                </span>
+              </div>
             </div>
           </div>
           <div id="google_translate_element" className="google-translate-container min-h-[36px] block mt-2 xl:mt-0 xl:ml-6 scale-75 origin-left sm:scale-100"></div>
@@ -606,18 +612,18 @@ function Home() {
 
           <motion.div 
             style={{ y: heroY, opacity: heroOpacity, scale: heroScale, willChange: 'transform, opacity' }}
-            className="absolute inset-0 w-full h-full z-0 bg-[url('/bg.webp')] bg-cover bg-center"
+            className={`absolute inset-0 w-full h-full z-0 bg-cover bg-center transition-all duration-1000 ${isNewLanding ? "bg-[url('/main.jpg')] brightness-[0.95]" : "bg-[url('/bg.webp')]"}`}
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-pink-50/40 to-emerald-50/90 pointer-events-none" />
+            <div className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${isNewLanding ? "bg-gradient-to-b from-white/30 via-transparent to-transparent" : "bg-gradient-to-b from-white/60 via-pink-50/40 to-emerald-50/90"}`} />
           </motion.div>
 
-          <div className="relative z-20 text-center px-6 max-w-5xl mx-auto mt-20">
-            <h1 className="font-heading italic text-4xl md:text-5xl lg:text-7xl tracking-tight text-balance leading-[0.9] mb-6 text-emerald-950 text-shadow-sm">
+          <div className={`relative z-20 text-center mx-auto mt-20 transition-all duration-500 ${isNewLanding ? "px-4 max-w-none w-full overflow-visible" : "px-6 max-w-5xl"}`}>
+            <h1 className={`font-heading italic tracking-tight leading-[0.9] mb-6 transition-all duration-500 ${isNewLanding ? "text-5xl md:text-6xl lg:text-7xl xl:text-[5.5rem] lg:whitespace-nowrap text-[#D4AF37] drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]" : "text-4xl md:text-5xl lg:text-7xl text-balance text-emerald-950 text-shadow-sm"}`}>
               <BlurText text="Decode Nature's Secrets with Precision AI" />
             </h1>
             
             <ScrollReveal delay={0.2}>
-              <p className="text-base md:text-lg text-emerald-800/90 font-body leading-relaxed max-w-2xl mx-auto mb-10 text-balance font-medium">
+              <p className={`text-base md:text-lg font-body leading-relaxed max-w-2xl mx-auto mb-10 text-balance font-medium transition-colors duration-500 ${isNewLanding ? "text-emerald-50/90 drop-shadow-md" : "text-emerald-800/90"}`}>
                 Advanced computer vision meets traditional phytochemistry. Ensure the quality, potency, and purity of herbal medicines with unparalleled microscopic accuracy in a bright, modern ecosystem.
               </p>
             </ScrollReveal>
