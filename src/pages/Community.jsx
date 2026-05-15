@@ -205,6 +205,11 @@ function PublicFeed({ t, lang }) {
   const handlePost = async (e) => {
     e.preventDefault();
     if (!name.trim() || !message.trim()) return;
+
+    if (!auth.currentUser) {
+      setErr("Please log in to post in the community feed.");
+      return;
+    }
     
     setIsPosting(true);
     setErr('');
@@ -429,6 +434,12 @@ function DistrictChats({ t, lang }) {
   const handleSend = async (e) => {
     e.preventDefault();
     if (!name.trim() || !msg.trim()) return;
+
+    if (!auth.currentUser) {
+      setErr("Please log in to send a message.");
+      return;
+    }
+
     setIsSending(true);
     setErr('');
     
@@ -551,6 +562,12 @@ function DirectMessaging({ t, lang, dmSessionId, setDmSessionId }) {
   const handleSend = async (e) => {
     e.preventDefault();
     if (!name.trim() || !msg.trim() || !activeSessionId) return;
+
+    if (!auth.currentUser) {
+      setErr("Please log in to send a message.");
+      return;
+    }
+
     setIsSending(true);
     setErr('');
     
