@@ -127,7 +127,8 @@ export default function RobotGuide() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           key={`bubble-${step.id}`}
-          className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-emerald-200/60 p-4 rounded-3xl shadow-2xl mb-2 w-full relative"
+          style={{ willChange: "transform, opacity" }}
+          className="pointer-events-auto bg-white/95 backdrop-blur-md border border-emerald-200/60 p-4 rounded-3xl shadow-xl mb-2 w-full relative"
         >
           {/* Bubble Tail */}
           <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-white/95 border-b border-r border-emerald-200/60 transform rotate-45 backdrop-blur-xl"></div>
@@ -194,6 +195,7 @@ export default function RobotGuide() {
         <motion.div
           animate={{ y: [0, -20, 0] }}
           transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+          style={{ willChange: "transform" }}
           className="w-[160px] h-[160px] sm:w-[220px] sm:h-[220px] pointer-events-auto relative"
         >
           {/* Shadow underneath */}
