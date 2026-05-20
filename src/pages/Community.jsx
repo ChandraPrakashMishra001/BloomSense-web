@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc, increment, getDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '../firebase';
 import { Leaf, MessageCircle, MapPin, Send, Loader2, ThumbsUp, AlertTriangle, Globe2, ChevronLeft, ShieldAlert, Pin, TrendingUp, Users, ArrowLeft, Tractor } from 'lucide-react';
 import EquipmentBoard from '../components/Community/EquipmentBoard';
@@ -73,6 +74,14 @@ export default function Community() {
   
   const [activeFarmers, setActiveFarmers] = useState(1284);
   const [dmSessionId, setDmSessionId] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsub();
+  }, []);
   
   // Extract DM from URL on mount
   useEffect(() => {
@@ -156,10 +165,10 @@ export default function Community() {
       {/* Main Content Area */}
       <main className="px-4 md:px-12 max-w-7xl mx-auto z-10 relative flex-1 w-full">
         <AnimatePresence mode="wait">
-          {activeTab === 'feed' && <PublicFeed key="feed" t={t} lang={lang} />}
-          {activeTab === 'district' && <DistrictChats key="district" t={t} lang={lang} />}
-          {activeTab === 'equipment' && <EquipmentBoard key="equipment" t={t} lang={lang} setDmSessionId={setDmSessionId} setActiveTab={setActiveTab} />}
-          {activeTab === 'dm' && <DirectMessaging key="dm" t={t} lang={lang} dmSessionId={dmSessionId} setDmSessionId={setDmSessionId} />}
+          {activeTab === 'feed' && <PublicFeed key="feed" t={t} lang={lang} user={user} />}
+          {activeTab === 'district' && <DistrictChats key="district" t={t} lang={lang} user={user} />}
+          {activeTab === 'equipment' && <EquipmentBoard key="equipment" t={t} lang={lang} setDmSessionId={setDmSessionId} setActiveTab={setActiveTab} user={user} />}
+          {activeTab === 'dm' && <DirectMessaging key="dm" t={t} lang={lang} dmSessionId={dmSessionId} setDmSessionId={setDmSessionId} user={user} />}
         </AnimatePresence>
       </main>
 
@@ -183,7 +192,7 @@ export default function Community() {
 // ---------------------------------------------------------
 // SECTION 1: PUBLIC FEED
 // ---------------------------------------------------------
-function PublicFeed({ t, lang }) {
+function PublicFeed({ t, lang, user }) {
   const [posts, setPosts] = useState([]);
   const [isPosting, setIsPosting] = useState(false);
   const [name, setName] = useState('');
@@ -250,8 +259,9 @@ function PublicFeed({ t, lang }) {
       <div className="lg:col-span-3 space-y-6">
         
         {/* Compose Box */}
-        <form onSubmit={handlePost} className="bg-white/80 liquid-glass rounded-2xl md:rounded-3xl p-4 md:p-6 border border-emerald-900/10 shadow-sm relative overflow-hidden">
-          {err && (
+        {user ? (
+          <form onSubmit={handlePost} className="bg-white/80 liquid-glass rounded-2xl md:rounded-3xl p-4 md:p-6 border border-emerald-900/10 shadow-sm relative overflow-hidden">
+            {err && (
             <div className="mb-4 p-3 bg-rose-50 text-rose-700 text-sm font-semibold rounded-xl border border-rose-200 flex items-center gap-2">
               <ShieldAlert className="w-5 h-5 flex-shrink-0" /> {err}
             </div>
@@ -285,6 +295,18 @@ function PublicFeed({ t, lang }) {
             </button>
           </div>
         </form>
+        ) : (
+          <div className="bg-white/80 liquid-glass rounded-2xl md:rounded-3xl p-6 border border-emerald-900/10 shadow-sm text-center">
+             <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+               <ShieldAlert className="w-6 h-6 text-emerald-600" />
+             </div>
+             <h3 className="text-emerald-950 font-bold text-lg mb-2">Login Required to Post</h3>
+             <p className="text-emerald-800/70 text-sm mb-4">Please log in from the Home page to join the conversation and post in the Krishi Chaupal.</p>
+             <Link to="/" className="inline-block bg-emerald-600 text-white px-6 py-2 rounded-full font-bold shadow-md shadow-emerald-500/20 hover:bg-emerald-700 transition-colors">
+               Go to Home
+             </Link>
+          </div>
+        )}
 
         {/* Feed list */}
         <div className="space-y-4">
@@ -411,7 +433,7 @@ function PostCard({ post, t, currentLang }) {
 // ---------------------------------------------------------
 // SECTION 2: DISTRICT GROUP CHATS
 // ---------------------------------------------------------
-function DistrictChats({ t, lang }) {
+function DistrictChats({ t, lang, user }) {
   const [activeDistrict, setActiveDistrict] = useState(DISTRICTS[0]);
   const [messages, setMessages] = useState([]);
   const [msg, setMsg] = useState('');
@@ -501,18 +523,30 @@ function DistrictChats({ t, lang }) {
           {messages.length === 0 && <div className="h-full flex items-center justify-center text-emerald-800/40 text-sm font-bold">{t.write}</div>}
         </div>
 
-        <form onSubmit={handleSend} className="p-3 md:p-4 bg-white border-t border-emerald-900/10">
-          {err && <div className="text-[10px] text-rose-600 font-bold mb-2 ml-2">{err}</div>}
-          <div className="flex gap-2 mb-2">
-            <input type="text" required placeholder={t.name} value={name} onChange={e => setName(e.target.value)} className="bg-pink-50/50 rounded-xl px-4 py-2 text-xs md:text-sm outline-none w-1/2 md:w-1/3 border border-emerald-50 focus:border-emerald-200" />
+        {user ? (
+          <form onSubmit={handleSend} className="p-3 md:p-4 bg-white border-t border-emerald-900/10">
+            {err && <div className="text-[10px] text-rose-600 font-bold mb-2 ml-2">{err}</div>}
+            <div className="flex gap-2 mb-2">
+              <input type="text" required placeholder={t.name} value={name} onChange={e => setName(e.target.value)} className="bg-pink-50/50 rounded-xl px-4 py-2 text-xs md:text-sm outline-none w-1/2 md:w-1/3 border border-emerald-50 focus:border-emerald-200" />
+            </div>
+            <div className="flex gap-2">
+              <input type="text" required placeholder={t.write} value={msg} onChange={e => setMsg(e.target.value)} className="flex-1 bg-pink-50/50 rounded-xl px-4 py-2 md:py-3 text-sm outline-none border border-emerald-50 focus:border-emerald-200" />
+              <button disabled={isSending} type="submit" className="bg-emerald-600 text-white w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl hover:bg-emerald-700 shadow-sm transition-all active:scale-95 disabled:opacity-50">
+                {isSending ? <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" /> : <Send className="w-4 h-4 md:w-5 md:h-5" />}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="p-4 bg-emerald-50 border-t border-emerald-100 flex items-center justify-between">
+             <span className="text-emerald-800 text-sm font-bold flex items-center gap-2">
+               <ShieldAlert className="w-4 h-4 text-emerald-600" />
+               Log in to send messages
+             </span>
+             <Link to="/" className="text-xs bg-white border border-emerald-200 text-emerald-800 px-4 py-2 rounded-full font-bold hover:bg-emerald-100 transition-colors">
+               Go Home
+             </Link>
           </div>
-          <div className="flex gap-2">
-            <input type="text" required placeholder={t.write} value={msg} onChange={e => setMsg(e.target.value)} className="flex-1 bg-pink-50/50 rounded-xl px-4 py-2 md:py-3 text-sm outline-none border border-emerald-50 focus:border-emerald-200" />
-            <button disabled={isSending} type="submit" className="bg-emerald-600 text-white w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl hover:bg-emerald-700 shadow-sm transition-all active:scale-95 disabled:opacity-50">
-              {isSending ? <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" /> : <Send className="w-4 h-4 md:w-5 md:h-5" />}
-            </button>
-          </div>
-        </form>
+        )}
       </div>
     </motion.div>
   );
@@ -521,7 +555,7 @@ function DistrictChats({ t, lang }) {
 // ---------------------------------------------------------
 // SECTION 3: DIRECT MESSAGES
 // ---------------------------------------------------------
-function DirectMessaging({ t, lang, dmSessionId, setDmSessionId }) {
+function DirectMessaging({ t, lang, dmSessionId, setDmSessionId, user }) {
   const [sessionId, setSessionId] = useState(dmSessionId || '');
   const [joinId, setJoinId] = useState('');
   const [messages, setMessages] = useState([]);
@@ -655,18 +689,30 @@ function DirectMessaging({ t, lang, dmSessionId, setDmSessionId }) {
         </div>}
       </div>
 
-      <form onSubmit={handleSend} className="p-3 md:p-4 bg-white border-t border-emerald-900/10">
-        {err && <div className="text-[10px] text-rose-600 font-bold mb-2 ml-2">{err}</div>}
-        <div className="flex gap-2 mb-2">
-          <input type="text" required placeholder={t.name} value={name} onChange={e => setName(e.target.value)} className="bg-pink-50/50 rounded-xl px-4 py-2 text-xs md:text-sm outline-none w-1/2 md:w-1/4 border border-emerald-50 focus:border-emerald-200" />
+      {user ? (
+        <form onSubmit={handleSend} className="p-3 md:p-4 bg-white border-t border-emerald-900/10">
+          {err && <div className="text-[10px] text-rose-600 font-bold mb-2 ml-2">{err}</div>}
+          <div className="flex gap-2 mb-2">
+            <input type="text" required placeholder={t.name} value={name} onChange={e => setName(e.target.value)} className="bg-pink-50/50 rounded-xl px-4 py-2 text-xs md:text-sm outline-none w-1/2 md:w-1/4 border border-emerald-50 focus:border-emerald-200" />
+          </div>
+          <div className="flex gap-2">
+            <input type="text" required placeholder={t.write} value={msg} onChange={e => setMsg(e.target.value)} className="flex-1 bg-pink-50/50 rounded-xl px-4 py-2 md:py-3 text-sm outline-none border border-emerald-50 focus:border-emerald-200" />
+            <button disabled={isSending} type="submit" className="bg-emerald-600 text-white w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl hover:bg-emerald-700 shadow-sm transition-all active:scale-95 disabled:opacity-50">
+              {isSending ? <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" /> : <Send className="w-4 h-4 md:w-5 md:h-5" />}
+            </button>
+          </div>
+        </form>
+      ) : (
+        <div className="p-4 bg-emerald-50 border-t border-emerald-100 flex items-center justify-between">
+           <span className="text-emerald-800 text-sm font-bold flex items-center gap-2">
+             <ShieldAlert className="w-4 h-4 text-emerald-600" />
+             Log in to send messages
+           </span>
+           <Link to="/" className="text-xs bg-white border border-emerald-200 text-emerald-800 px-4 py-2 rounded-full font-bold hover:bg-emerald-100 transition-colors">
+             Go Home
+           </Link>
         </div>
-        <div className="flex gap-2">
-          <input type="text" required placeholder={t.write} value={msg} onChange={e => setMsg(e.target.value)} className="flex-1 bg-pink-50/50 rounded-xl px-4 py-2 md:py-3 text-sm outline-none border border-emerald-50 focus:border-emerald-200" />
-          <button disabled={isSending} type="submit" className="bg-emerald-600 text-white w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl hover:bg-emerald-700 shadow-sm transition-all active:scale-95 disabled:opacity-50">
-            {isSending ? <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" /> : <Send className="w-4 h-4 md:w-5 md:h-5" />}
-          </button>
-        </div>
-      </form>
+      )}
     </motion.div>
   );
 }

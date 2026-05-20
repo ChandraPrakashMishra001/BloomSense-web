@@ -36,10 +36,24 @@ function SetupWizard({ onComplete }) {
 
   return (
     <div className="min-h-screen bg-pink-50 leaf-pattern-bg flex items-center justify-center px-4 py-20">
+      {/* Nav */}
+      <nav className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-12 py-3 flex items-center bg-pink-50/90 backdrop-blur-md border-b border-emerald-900/10 shadow-sm">
+        <Link to="/" className="flex items-center gap-2 group mr-auto">
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-emerald-100/50 group-hover:bg-emerald-200 transition-colors">
+            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 text-emerald-700" />
+          </div>
+          <span className="font-bold text-emerald-800 text-sm hidden lg:block mr-2 group-hover:text-emerald-950 transition-colors">Back to BloomSense</span>
+          <div className="flex flex-col drop-shadow-sm border-l border-emerald-900/10 pl-3">
+            <span className="font-heading italic text-lg md:text-xl text-emerald-950 leading-none">BloomSense</span>
+            <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 mt-0.5 pl-0.5">Neural Leaf</span>
+          </div>
+        </Link>
+      </nav>
+
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-2xl"
+        className="w-full max-w-2xl mt-12"
       >
         {/* Header */}
         <div className="text-center mb-10">

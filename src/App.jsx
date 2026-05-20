@@ -20,24 +20,12 @@ const Community = lazy(() => import('./pages/Community'));
 const CropCalendar = lazy(() => import('./pages/CropCalendar'));
 const About = lazy(() => import('./pages/About'));
 import { initialAlerts, initialDiseasePoints, floraDatabase } from './data/constants';
+import RobotGuide from './components/RobotGuide';
 
 
 
 
 
-const AmaniaChatbot = React.memo(() => {
-  useEffect(() => {
-    if (document.querySelector('script[src="https://cpmishra.lovable.app/embed.js"]')) {
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = "https://cpmishra.lovable.app/embed.js";
-    script.async = true;
-    document.body.appendChild(script);
-  }, []);
-
-  return null;
-});
 
 const AmaniaBadge = React.memo(() => (
   <motion.div 
@@ -979,8 +967,6 @@ function Home() {
           )}
         </AnimatePresence>
 
-        {/* Adds Amania AI globally */}
-        <AmaniaChatbot />
       </main>
     </div>
   );
@@ -1032,6 +1018,7 @@ export default function App() {
 
   return (
     <Suspense fallback={<div className="h-screen w-full bg-pink-50 flex flex-col items-center justify-center animate-pulse"><Leaf className="w-12 h-12 text-emerald-600 mb-4" /><p className="text-emerald-800 font-bold uppercase tracking-[0.2em] text-sm">Loading Environment...</p></div>}>
+      <RobotGuide />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/technology/hardware" element={<Hardware />} />
