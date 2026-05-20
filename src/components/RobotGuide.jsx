@@ -120,14 +120,14 @@ export default function RobotGuide() {
           )
         }}
         transition={{ type: "spring", stiffness: 80, damping: 20 }}
-        className="fixed z-[100] pointer-events-none flex flex-col items-center w-[90vw] sm:w-[300px]"
+        className="fixed z-[100] pointer-events-none flex flex-col items-center w-[75vw] max-w-[260px] sm:w-[280px]"
       >
         {/* Chat Bubble */}
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           key={`bubble-${step.id}`}
-          className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-emerald-200/60 p-5 rounded-[2rem] shadow-2xl mb-4 w-full relative"
+          className="pointer-events-auto bg-white/95 backdrop-blur-xl border border-emerald-200/60 p-4 rounded-3xl shadow-2xl mb-2 w-full relative"
         >
           {/* Bubble Tail */}
           <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-white/95 border-b border-r border-emerald-200/60 transform rotate-45 backdrop-blur-xl"></div>
@@ -204,7 +204,7 @@ export default function RobotGuide() {
           />
           
           <model-viewer
-            src="/robo.glb"
+            src="/utility_robot.glb"
             auto-rotate="true"
             camera-controls="false"
             disable-zoom="true"
