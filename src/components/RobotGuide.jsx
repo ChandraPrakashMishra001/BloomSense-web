@@ -204,7 +204,7 @@ export default function RobotGuide() {
           />
           
           <model-viewer
-            src="/utility_robot.glb"
+            src="/robo.glb"
             auto-rotate="true"
             camera-controls="false"
             disable-zoom="true"
