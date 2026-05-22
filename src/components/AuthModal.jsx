@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
 import { auth } from '../firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously } from 'firebase/auth';
 
 const AuthModal = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -10,6 +10,19 @@ const AuthModal = ({ onClose }) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const handleGuestLogin = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      await signInAnonymously(auth);
+      onClose();
+    } catch (err) {
+      setError(err.message.replace('Firebase: ', ''));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -101,6 +114,21 @@ const AuthModal = ({ onClose }) => {
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
               <>{isLogin ? 'Sign In' : 'Create Account'} <ArrowRight className="w-4 h-4" /></>
             )}
+          </button>
+
+          <div className="relative flex items-center gap-4 my-2">
+            <div className="flex-1 border-t border-emerald-900/10"></div>
+            <span className="text-xs font-bold text-emerald-800/40 uppercase tracking-widest">OR</span>
+            <div className="flex-1 border-t border-emerald-900/10"></div>
+          </div>
+
+          <button 
+            type="button" 
+            disabled={loading}
+            onClick={handleGuestLogin}
+            className="bg-emerald-50 text-emerald-800 w-full py-3.5 rounded-2xl font-bold text-sm hover:bg-emerald-100 transition-all border border-emerald-200/60 flex items-center justify-center gap-2 disabled:opacity-70"
+          >
+            Continue as Guest
           </button>
 
           <p className="text-center mt-2 text-xs font-semibold text-emerald-800/60">
