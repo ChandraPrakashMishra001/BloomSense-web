@@ -215,7 +215,7 @@ function PublicFeed({ t, lang, user }) {
     e.preventDefault();
     if (!name.trim() || !message.trim()) return;
 
-    if (!auth.currentUser) {
+    if (!auth.currentUser || auth.currentUser.isAnonymous) {
       setErr("Please log in to post in the community feed.");
       return;
     }
@@ -259,7 +259,7 @@ function PublicFeed({ t, lang, user }) {
       <div className="lg:col-span-3 space-y-6">
         
         {/* Compose Box */}
-        {user ? (
+        {user && !user.isAnonymous ? (
           <form onSubmit={handlePost} className="bg-white/80 liquid-glass rounded-2xl md:rounded-3xl p-4 md:p-6 border border-emerald-900/10 shadow-sm relative overflow-hidden">
             {err && (
             <div className="mb-4 p-3 bg-rose-50 text-rose-700 text-sm font-semibold rounded-xl border border-rose-200 flex items-center gap-2">
@@ -457,7 +457,7 @@ function DistrictChats({ t, lang, user }) {
     e.preventDefault();
     if (!name.trim() || !msg.trim()) return;
 
-    if (!auth.currentUser) {
+    if (!auth.currentUser || auth.currentUser.isAnonymous) {
       setErr("Please log in to send a message.");
       return;
     }
@@ -523,7 +523,7 @@ function DistrictChats({ t, lang, user }) {
           {messages.length === 0 && <div className="h-full flex items-center justify-center text-emerald-800/40 text-sm font-bold">{t.write}</div>}
         </div>
 
-        {user ? (
+        {user && !user.isAnonymous ? (
           <form onSubmit={handleSend} className="p-3 md:p-4 bg-white border-t border-emerald-900/10">
             {err && <div className="text-[10px] text-rose-600 font-bold mb-2 ml-2">{err}</div>}
             <div className="flex gap-2 mb-2">
@@ -597,7 +597,7 @@ function DirectMessaging({ t, lang, dmSessionId, setDmSessionId, user }) {
     e.preventDefault();
     if (!name.trim() || !msg.trim() || !activeSessionId) return;
 
-    if (!auth.currentUser) {
+    if (!auth.currentUser || auth.currentUser.isAnonymous) {
       setErr("Please log in to send a message.");
       return;
     }
@@ -689,7 +689,7 @@ function DirectMessaging({ t, lang, dmSessionId, setDmSessionId, user }) {
         </div>}
       </div>
 
-      {user ? (
+      {user && !user.isAnonymous ? (
         <form onSubmit={handleSend} className="p-3 md:p-4 bg-white border-t border-emerald-900/10">
           {err && <div className="text-[10px] text-rose-600 font-bold mb-2 ml-2">{err}</div>}
           <div className="flex gap-2 mb-2">
