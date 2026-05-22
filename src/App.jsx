@@ -27,8 +27,9 @@ import RobotGuide from './components/RobotGuide';
 
 
 
-const AmaniaBadge = React.memo(() => (
+const AmaniaBadge = React.memo(({ onClick }) => (
   <motion.div 
+    onClick={onClick}
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.8, delay: 0.5 }}
@@ -495,9 +496,12 @@ function Home() {
           })}
           
           {user ? (
-            <button onClick={() => signOut(auth)} className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-bold text-rose-600 hover:text-rose-700 transition-colors tracking-wide flex items-center gap-2">
-              Log Out
-            </button>
+            <div className="flex items-center gap-2">
+              {user.isAnonymous && <span className="hidden lg:inline-block px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 rounded-full border border-emerald-200">Guest</span>}
+              <button onClick={() => signOut(auth)} className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-bold text-rose-600 hover:text-rose-700 transition-colors tracking-wide flex items-center gap-2">
+                Log Out
+              </button>
+            </div>
           ) : (
             <button onClick={() => setShowAuthModal(true)} className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-bold text-emerald-900 hover:text-emerald-950 transition-colors tracking-wide flex items-center gap-2">
               <LogIn className="w-4 h-4" /> <span className="hidden xl:inline">Log In</span>
@@ -577,9 +581,12 @@ function Home() {
               })}
             </div>
             {user ? (
-                 <button onClick={() => { signOut(auth); setIsMobileMenuOpen(false); }} className="mt-8 px-5 py-4 text-xl font-bold rounded-full bg-rose-100 text-rose-600 flex items-center justify-center gap-2 w-full">
-                  <LogOut className="w-5 h-5" /> Log Out
-                </button>
+                 <div className="mt-8 flex flex-col gap-2">
+                   {user.isAnonymous && <div className="text-center text-xs font-bold text-emerald-600 uppercase tracking-widest">Logged in as Guest</div>}
+                   <button onClick={() => { signOut(auth); setIsMobileMenuOpen(false); }} className="px-5 py-4 text-xl font-bold rounded-full bg-rose-100 text-rose-600 flex items-center justify-center gap-2 w-full">
+                    <LogOut className="w-5 h-5" /> Log Out
+                  </button>
+                 </div>
             ) : (
                 <button onClick={() => { setShowAuthModal(true); setIsMobileMenuOpen(false); }} className="mt-8 px-5 py-4 text-xl font-bold rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center gap-2 w-full">
                   <LogIn className="w-5 h-5" /> Log In
@@ -591,7 +598,7 @@ function Home() {
 
       <main>
         <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden bg-pink-50">
-          <AmaniaBadge />
+          <AmaniaBadge onClick={handleScanClick} />
           {showAnimation && <MixedFlora />}
 
           <div 
