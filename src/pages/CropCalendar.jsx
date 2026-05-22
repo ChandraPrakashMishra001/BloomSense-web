@@ -19,6 +19,13 @@ const CROPS = [
   { id: 'Tomato', label: 'Tomato',       icon: '🍅', desc: 'Cash crop, year-round cultivation', hint: 'Solanum lycopersicum' },
   { id: 'Cotton', label: 'Cotton',       icon: '☁️', desc: 'Kharif cash crop, Vidarbha & Gujarat', hint: 'Gossypium hirsutum (Bt)' },
   { id: 'Maize',  label: 'Maize',        icon: '🌽', desc: 'Kharif & Rabi, versatile cereal', hint: 'Zea mays' },
+  { id: 'Sugarcane', label: 'Sugarcane', icon: '🎋', desc: 'Long duration cash crop, UP & Maharashtra', hint: 'Saccharum officinarum' },
+  { id: 'Potato', label: 'Potato',       icon: '🥔', desc: 'Rabi tuber crop, key vegetable', hint: 'Solanum tuberosum' },
+  { id: 'Soybean', label: 'Soybean',     icon: '🫘', desc: 'Kharif oilseed, MP & Maharashtra', hint: 'Glycine max' },
+  { id: 'Banana', label: 'Banana',       icon: '🍌', desc: 'Fruit crop, high water requirement', hint: 'Musa spp.' },
+  { id: 'Mango',  label: 'Mango',        icon: '🥭', desc: 'Perennial orchard crop, summer fruit', hint: 'Mangifera indica' },
+  { id: 'Onion',  label: 'Onion',        icon: '🧅', desc: 'Rabi & Kharif cash crop', hint: 'Allium cepa' },
+  { id: 'Chilli', label: 'Chilli',       icon: '🌶️', desc: 'Spice & vegetable crop, Andhra Pradesh', hint: 'Capsicum annuum' }
 ];
 
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -81,28 +88,37 @@ function SetupWizard({ onComplete }) {
           {step === 1 && (
             <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <h2 className="font-heading italic text-3xl text-emerald-950 mb-6 text-center">Which crop are you growing?</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
                 {CROPS.map(crop => (
                   <button
                     key={crop.id}
                     onClick={() => setSelectedCrop(crop.id)}
-                    className={`p-4 rounded-2xl border-2 text-left flex items-center gap-4 transition-all duration-200 group ${
+                    className={`relative p-5 rounded-3xl border text-left flex flex-col gap-3 transition-all duration-300 group overflow-hidden ${
                       selectedCrop === crop.id
-                        ? 'border-emerald-500 bg-emerald-50 shadow-md shadow-emerald-200'
-                        : 'border-emerald-100 bg-white hover:border-emerald-300 hover:bg-emerald-50/50'
+                        ? 'border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 shadow-xl shadow-emerald-600/20 scale-[1.02] ring-2 ring-emerald-500 ring-offset-2 ring-offset-pink-50'
+                        : 'border-emerald-200/60 bg-white/60 backdrop-blur-sm hover:border-emerald-400 hover:bg-white hover:shadow-lg hover:-translate-y-1'
                     }`}
                   >
-                    <span className="text-3xl">{crop.icon}</span>
-                    <div>
-                      <p className="font-bold text-emerald-950 text-sm">{crop.label}</p>
-                      <p className="text-emerald-600/70 text-xs font-semibold">{crop.hint}</p>
-                      <p className="text-emerald-700/50 text-xs mt-0.5">{crop.desc}</p>
+                    <div className="flex items-start justify-between w-full">
+                      <span className="text-4xl drop-shadow-sm group-hover:scale-110 transition-transform duration-300">{crop.icon}</span>
+                      <AnimatePresence>
+                        {selectedCrop === crop.id && (
+                          <motion.div 
+                            initial={{ scale: 0, opacity: 0 }} 
+                            animate={{ scale: 1, opacity: 1 }} 
+                            exit={{ scale: 0, opacity: 0 }}
+                            className="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/30"
+                          >
+                            <Check className="w-4 h-4 text-white" />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
-                    {selectedCrop === crop.id && (
-                      <div className="ml-auto w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
-                        <Check className="w-3.5 h-3.5 text-white" />
-                      </div>
-                    )}
+                    <div className="mt-2">
+                      <p className="font-heading italic text-xl text-emerald-950">{crop.label}</p>
+                      <p className="text-emerald-600/80 text-[10px] font-bold uppercase tracking-widest mt-1">{crop.hint}</p>
+                      <p className="text-emerald-700/60 text-xs mt-2 leading-relaxed line-clamp-2">{crop.desc}</p>
+                    </div>
                   </button>
                 ))}
               </div>
