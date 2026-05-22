@@ -280,10 +280,6 @@ const FloraArchive = React.memo(() => {
 
 function Home() {
   const [isNewLanding, setIsNewLanding] = useState(true);
-  const { scrollY } = useScroll();
-  const heroY = useTransform(scrollY, [0, 1000], [0, 200]);
-  const heroOpacity = useTransform(scrollY, [0, 800], [1, 0]);
-  const heroScale = useTransform(scrollY, [0, 800], [1, 1.05]);
 
 
   const [email, setEmail] = useState('');
@@ -598,12 +594,11 @@ function Home() {
           <AmaniaBadge />
           {showAnimation && <MixedFlora />}
 
-          <motion.div 
-            style={{ y: heroY, opacity: heroOpacity, scale: heroScale, willChange: 'transform, opacity' }}
+          <div 
             className={`absolute inset-0 w-full h-full z-0 bg-cover bg-center transition-all duration-1000 ${isNewLanding ? "bg-[url('/main.jpg')] brightness-[0.95]" : "bg-[url('/bg.webp')]"}`}
           >
             <div className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${isNewLanding ? "bg-gradient-to-b from-white/30 via-transparent to-transparent" : "bg-gradient-to-b from-white/60 via-pink-50/40 to-emerald-50/90"}`} />
-          </motion.div>
+          </div>
 
           <div className={`relative z-20 text-center mx-auto mt-20 transition-all duration-500 ${isNewLanding ? "px-4 max-w-none w-full overflow-visible" : "px-6 max-w-5xl"}`}>
             <h1 className={`font-heading italic tracking-tight leading-[0.9] mb-6 transition-all duration-500 ${isNewLanding ? "text-5xl md:text-6xl lg:text-7xl xl:text-[5.5rem] lg:whitespace-nowrap text-[#D4AF37] drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]" : "text-4xl md:text-5xl lg:text-7xl text-balance text-emerald-950 text-shadow-sm"}`}>
