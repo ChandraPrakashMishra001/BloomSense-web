@@ -2,26 +2,17 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
 import { auth } from '../firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
-const AuthModal = ({ onClose }) => {
+const AuthModal = ({ onClose, onGuestLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleGuestLogin = async () => {
-    setError('');
-    setLoading(true);
-    try {
-      await signInAnonymously(auth);
-      onClose();
-    } catch (err) {
-      setError(err.message.replace('Firebase: ', ''));
-    } finally {
-      setLoading(false);
-    }
+  const handleGuestLogin = () => {
+    onGuestLogin();
   };
 
   const handleSubmit = async (e) => {

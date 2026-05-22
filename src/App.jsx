@@ -90,7 +90,7 @@ const ScrollReveal = ({ children, className = "", delay = 0 }) => (
 );
 
 const MixedFlora = React.memo(() => {
-  const elements = useMemo(() => Array.from({ length: window.innerWidth < 768 ? 10 : 25 }).map((_, i) => ({
+  const elements = useMemo(() => Array.from({ length: window.innerWidth < 768 ? 8 : 12 }).map((_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
     duration: `${Math.random() * 12 + 12}s`,
@@ -293,6 +293,7 @@ function Home() {
 
   // Phase 3: Authentication
   const [user, setUser] = useState(null);
+  const [isGuestMode, setIsGuestMode] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [activeToast, setActiveToast] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -428,7 +429,7 @@ function Home() {
   };
 
   const handleScanClick = () => {
-    if (!user) {
+    if (!user && !isGuestMode) {
       setShowAuthModal(true);
       return;
     }
@@ -496,12 +497,9 @@ function Home() {
           })}
           
           {user ? (
-            <div className="flex items-center gap-2">
-              {user.isAnonymous && <span className="hidden lg:inline-block px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 rounded-full border border-emerald-200">Guest</span>}
-              <button onClick={() => signOut(auth)} className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-bold text-rose-600 hover:text-rose-700 transition-colors tracking-wide flex items-center gap-2">
-                Log Out
-              </button>
-            </div>
+            <button onClick={() => signOut(auth)} className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-bold text-rose-600 hover:text-rose-700 transition-colors tracking-wide flex items-center gap-2">
+              Log Out
+            </button>
           ) : (
             <button onClick={() => setShowAuthModal(true)} className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-bold text-emerald-900 hover:text-emerald-950 transition-colors tracking-wide flex items-center gap-2">
               <LogIn className="w-4 h-4" /> <span className="hidden xl:inline">Log In</span>
@@ -581,12 +579,9 @@ function Home() {
               })}
             </div>
             {user ? (
-                 <div className="mt-8 flex flex-col gap-2">
-                   {user.isAnonymous && <div className="text-center text-xs font-bold text-emerald-600 uppercase tracking-widest">Logged in as Guest</div>}
-                   <button onClick={() => { signOut(auth); setIsMobileMenuOpen(false); }} className="px-5 py-4 text-xl font-bold rounded-full bg-rose-100 text-rose-600 flex items-center justify-center gap-2 w-full">
-                    <LogOut className="w-5 h-5" /> Log Out
-                  </button>
-                 </div>
+                 <button onClick={() => { signOut(auth); setIsMobileMenuOpen(false); }} className="mt-8 px-5 py-4 text-xl font-bold rounded-full bg-rose-100 text-rose-600 flex items-center justify-center gap-2 w-full">
+                  <LogOut className="w-5 h-5" /> Log Out
+                </button>
             ) : (
                 <button onClick={() => { setShowAuthModal(true); setIsMobileMenuOpen(false); }} className="mt-8 px-5 py-4 text-xl font-bold rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center gap-2 w-full">
                   <LogIn className="w-5 h-5" /> Log In
@@ -936,7 +931,7 @@ function Home() {
 
 
         <AnimatePresence>
-          {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
+          {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} onGuestLogin={() => { setIsGuestMode(true); setShowAuthModal(false); setShowAmaniaCamera(true); }} />}
         </AnimatePresence>
 
         <InstallBanner />
