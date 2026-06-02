@@ -21,6 +21,7 @@ const CropCalendar = lazy(() => import('./pages/CropCalendar'));
 const About = lazy(() => import('./pages/About'));
 import { initialAlerts, initialDiseasePoints, floraDatabase } from './data/constants';
 import RobotGuide from './components/RobotGuide';
+import SplashScreen from './components/SplashScreen';
 
 
 
@@ -971,6 +972,19 @@ function Home() {
 
 export default function App() {
   const location = useLocation();
+  const [showSplash, setShowSplash] = useState(true);
+
+  // Prevent background scrolling while splash is active
+  useEffect(() => {
+    if (showSplash) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showSplash]);
 
   // Global Language Localization using Google Translate API
   useEffect(() => {
@@ -1014,15 +1028,34 @@ export default function App() {
   }, [location]);
 
   return (
-    <Suspense fallback={<div className="h-screen w-full bg-pink-50 flex flex-col items-center justify-center animate-pulse"><Leaf className="w-12 h-12 text-emerald-600 mb-4" /><p className="text-emerald-800 font-bold uppercase tracking-[0.2em] text-sm">Loading Environment...</p></div>}>
-      <RobotGuide />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/technology/hardware" element={<Hardware />} />
-        <Route path="/community" element={<Community />} />
-        <Route path="/calendar" element={<CropCalendar />} />
-        <Route path="/about" element={<About />} />
-      </Routes>
-    </Suspense>
+    <>
+      <AnimatePresence mode="wait">
+        {showSplash && (
+          <SplashScreen key="splash-screen" onComplete={() => setShowSplash(false)} />
+        )}
+      </AnimatePresence>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ 
+          opacity: showSplash ? 0 : 1, 
+          scale: showSplash ? 0.98 : 1,
+          filter: showSplash ? 'blur(10px)' : 'blur(0px)'
+        }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        style={{ pointerEvents: showSplash ? 'none' : 'auto' }}
+      >
+        <Suspense fallback={<div className="h-screen w-full bg-pink-50 flex flex-col items-center justify-center animate-pulse"><Leaf className="w-12 h-12 text-emerald-600 mb-4" /><p className="text-emerald-800 font-bold uppercase tracking-[0.2em] text-sm">Loading Environment...</p></div>}>
+          <RobotGuide />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/technology/hardware" element={<Hardware />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/calendar" element={<CropCalendar />} />
+            <Route path="/about" element={<About />} />
+          </Routes>
+        </Suspense>
+      </motion.div>
+    </>
   );
 }
