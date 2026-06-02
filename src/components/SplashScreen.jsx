@@ -15,8 +15,10 @@ export default function SplashScreen({ onComplete }) {
     const duration = 2200; // 2.2 seconds loader
     const incrementTime = duration / end;
 
+    // Increments by 2% to reduce React re-renders by 50% for optimal performance
     const timer = setInterval(() => {
-      start += 1;
+      start += 2;
+      if (start > end) start = end;
       setProgress(start);
       if (start >= end) {
         clearInterval(timer);
@@ -26,7 +28,7 @@ export default function SplashScreen({ onComplete }) {
           setTimeout(onComplete, 600);
         }, 300);
       }
-    }, incrementTime);
+    }, incrementTime * 2);
 
     return () => clearInterval(timer);
   }, [onComplete]);
@@ -47,7 +49,16 @@ export default function SplashScreen({ onComplete }) {
             filter: 'blur(10px)',
             transition: { duration: 0.6, ease: mainEase }
           }}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-pink-50 text-emerald-950 overflow-hidden select-none leaf-pattern-bg"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-pink-50 text-emerald-950 overflow-hidden select-none"
+          style={{
+            backgroundImage: `
+              radial-gradient(circle at 0% 0%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
+              radial-gradient(circle at 100% 100%, rgba(244, 114, 182, 0.12) 0%, transparent 50%),
+              radial-gradient(circle at 100% 0%, rgba(251, 146, 60, 0.08) 0%, transparent 40%),
+              radial-gradient(circle at 0% 100%, rgba(52, 211, 153, 0.08) 0%, transparent 40%),
+              url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 30c0-16.5-13.5-30-30-30v3c14.9 0 27 12.1 27 27s-12.1 27-27 27v3c16.5 0 30-13.5 30-30zm0 0c0 16.5 13.5 30 30 30v-3c-14.9 0-27-12.1-27-27s12.1-27 27-27V0c-16.5 0-30 13.5-30 30z' fill='%2310b981' fill-opacity='0.02' fill-rule='evenodd'/%3E%3C/svg%3E")
+            `
+          }}
         >
           {/* Subtle Ambient Radial Gradients to match Home page */}
           <div className="absolute inset-0 pointer-events-none z-0">
@@ -133,20 +144,20 @@ export default function SplashScreen({ onComplete }) {
 
           </div>
 
-          {/* Neural Laser Scan Effect - soft glow sweeps screen */}
+          {/* Neural Laser Scan Effect - soft glow sweeps screen using high-performance translate-y */}
           <motion.div
-            initial={{ top: "5%", opacity: 0 }}
+            initial={{ y: "5vh", opacity: 0 }}
             animate={{
-              top: ["5%", "95%", "5%"],
+              y: ["5vh", "95vh", "5vh"],
               opacity: [0, 0.6, 0.6, 0.6, 0],
             }}
             transition={{
-              duration: 2.5,
+              duration: 2.8,
               repeat: Infinity,
               ease: "easeInOut",
               delay: 0.3,
             }}
-            className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#10b981] to-transparent shadow-[0_0_10px_rgba(16,185,129,0.3)] z-20 pointer-events-none"
+            className="absolute left-0 right-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#10b981] to-transparent shadow-[0_0_10px_rgba(16,185,129,0.3)] z-20 pointer-events-none"
           >
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-emerald-500/10 blur-sm animate-pulse" />
           </motion.div>

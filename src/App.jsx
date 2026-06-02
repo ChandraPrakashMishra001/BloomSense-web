@@ -1036,13 +1036,11 @@ export default function App() {
       </AnimatePresence>
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
+        initial={{ opacity: 0 }}
         animate={{ 
-          opacity: showSplash ? 0 : 1, 
-          scale: showSplash ? 0.98 : 1,
-          filter: showSplash ? 'blur(10px)' : 'blur(0px)'
+          opacity: showSplash ? 0 : 1
         }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
         style={{ pointerEvents: showSplash ? 'none' : 'auto' }}
       >
         <Suspense fallback={<div className="h-screen w-full bg-pink-50 flex flex-col items-center justify-center animate-pulse"><Leaf className="w-12 h-12 text-emerald-600 mb-4" /><p className="text-emerald-800 font-bold uppercase tracking-[0.2em] text-sm">Loading Environment...</p></div>}>
