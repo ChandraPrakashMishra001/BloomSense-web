@@ -1,0 +1,654 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* BloomSense Nature Palette: Deep Forest Green, Earthy Sage, Soft White */
+    --background: 140 20% 96%;
+    --foreground: 153 40% 15%;
+
+    --card: 140 15% 97%;
+    --card-foreground: 153 40% 15%;
+
+    --popover: 140 18% 96%;
+    --popover-foreground: 153 40% 15%;
+
+    --primary: 153 50% 30%;
+    --primary-foreground: 140 20% 97%;
+
+    --secondary: 150 30% 88%;
+    --secondary-foreground: 153 40% 18%;
+
+    --muted: 140 15% 91%;
+    --muted-foreground: 150 15% 40%;
+
+    --accent: 152 55% 55%;
+    --accent-foreground: 140 20% 97%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 20% 82%;
+    --input: 140 25% 90%;
+    --ring: 153 50% 30%;
+
+    --radius: 1rem;
+
+    /* BloomSense brand colors */
+    --lia-pink: 152 55% 55%;
+    --lia-pink-glow: 152 60% 65%;
+    --lia-purple: 160 35% 40%;
+    --lia-purple-deep: 153 50% 25%;
+    --lia-blue: 148 45% 45%;
+    --lia-cyan: 165 50% 48%;
+    
+    /* Gradients - Nature theme */
+    --gradient-main: linear-gradient(180deg, hsl(140 30% 92%) 0%, hsl(145 25% 94%) 40%, hsl(140 20% 96%) 100%);
+    --gradient-glow: radial-gradient(circle at 50% 50%, hsl(152 55% 55% / 0.2) 0%, transparent 70%);
+    --gradient-card: linear-gradient(145deg, hsl(140 15% 98% / 0.9) 0%, hsl(145 12% 95% / 0.95) 100%);
+    
+    /* Shadows */
+    --shadow-glow: 0 0 40px hsl(152 55% 45% / 0.25);
+    --shadow-soft: 0 8px 32px hsl(153 40% 30% / 0.12);
+    --shadow-avatar: 0 0 60px hsl(152 55% 50% / 0.35), 0 0 120px hsl(153 40% 35% / 0.15);
+  }
+
+  /* Night theme */
+  .dark-sky {
+    --background: 153 30% 8%;
+    --foreground: 140 15% 92%;
+
+    --card: 153 25% 12%;
+    --card-foreground: 140 15% 92%;
+
+    --popover: 153 25% 10%;
+    --popover-foreground: 140 15% 92%;
+
+    --primary: 152 55% 50%;
+    --primary-foreground: 153 30% 8%;
+
+    --secondary: 153 25% 18%;
+    --secondary-foreground: 140 15% 92%;
+
+    --muted: 153 18% 16%;
+    --muted-foreground: 145 12% 60%;
+
+    --accent: 152 50% 60%;
+    --accent-foreground: 153 30% 8%;
+
+    --border: 153 20% 20%;
+    --input: 153 22% 14%;
+    --ring: 152 55% 50%;
+
+    /* BloomSense dark brand colors */
+    --lia-pink: 152 50% 60%;
+    --lia-pink-glow: 152 55% 70%;
+    --lia-purple: 160 30% 50%;
+    --lia-purple-deep: 153 40% 22%;
+    --lia-blue: 148 40% 55%;
+    --lia-cyan: 165 45% 55%;
+    
+    /* Gradients - Night forest theme */
+    --gradient-main: linear-gradient(180deg, hsl(153 35% 6%) 0%, hsl(155 30% 10%) 50%, hsl(153 25% 8%) 100%);
+    --gradient-glow: radial-gradient(circle at 50% 50%, hsl(152 55% 40% / 0.15) 0%, transparent 70%);
+    --gradient-card: linear-gradient(145deg, hsl(153 28% 14% / 0.9) 0%, hsl(155 22% 10% / 0.95) 100%);
+    
+    /* Shadows - Night theme */
+    --shadow-glow: 0 0 40px hsl(152 55% 40% / 0.3);
+    --shadow-soft: 0 8px 32px hsl(153 40% 4% / 0.5);
+    --shadow-avatar: 0 0 60px hsl(152 60% 50% / 0.35), 0 0 120px hsl(152 50% 40% / 0.15);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    background: var(--gradient-main);
+    min-height: 100vh;
+    transition: background 0.5s ease-in-out;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Quicksand', sans-serif;
+  }
+  
+  .font-body {
+    font-family: 'Nunito', sans-serif;
+  }
+  
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(var(--lia-blue)) 0%, hsl(var(--lia-purple)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .glow-pink {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .glow-avatar {
+    box-shadow: var(--shadow-avatar);
+  }
+}
+
+/* Cloud floating animation */
+@keyframes cloud-float {
+  0% {
+    transform: translateX(-20%);
+  }
+  100% {
+    transform: translateX(120vw);
+  }
+}
+
+.animate-cloud {
+  animation: cloud-float linear infinite;
+}
+
+/* Sun animations */
+@keyframes sun-pulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+}
+
+@keyframes sun-glow-outer {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.5;
+  }
+}
+
+@keyframes sun-glow-middle {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.6;
+  }
+}
+
+@keyframes sun-rays {
+  0%, 100% {
+    transform: rotate(0deg);
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: rotate(45deg);
+    opacity: 0.6;
+  }
+}
+
+.animate-sun-pulse {
+  animation: sun-pulse 4s ease-in-out infinite;
+}
+
+.animate-sun-glow-outer {
+  animation: sun-glow-outer 5s ease-in-out infinite;
+}
+
+.animate-sun-glow-middle {
+  animation: sun-glow-middle 4s ease-in-out infinite 0.5s;
+}
+
+.animate-sun-rays {
+  animation: sun-rays 20s linear infinite;
+}
+
+/* Moon animations */
+@keyframes moon-pulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.02);
+    filter: brightness(1.08);
+  }
+}
+
+@keyframes moon-glow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.45;
+  }
+}
+
+@keyframes moon-glow-inner {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.55;
+  }
+}
+
+@keyframes star-twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.animate-moon-pulse {
+  animation: moon-pulse 5s ease-in-out infinite;
+}
+
+.animate-moon-glow {
+  animation: moon-glow 6s ease-in-out infinite;
+}
+
+.animate-moon-glow-inner {
+  animation: moon-glow-inner 5s ease-in-out infinite 0.5s;
+}
+
+.animate-star-twinkle {
+  animation: star-twinkle ease-in-out infinite;
+}
+
+/* Avatar animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-10px) scale(1.02); }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; filter: blur(40px); }
+  50% { opacity: 0.8; filter: blur(60px); }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+/* Falling petals animation */
+@keyframes fall {
+  0% {
+    transform: translateY(-50px) rotate(0deg) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg) translateX(100px);
+    opacity: 0;
+  }
+}
+
+.animate-fall {
+  animation: fall linear infinite;
+}
+
+@keyframes blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+
+/* Emotion-specific animations */
+@keyframes talking {
+  0%, 100% { transform: translateY(0) scale(1); }
+  15% { transform: translateY(-2px) scale(1.02); }
+  30% { transform: translateY(1px) scale(0.99); }
+  45% { transform: translateY(-3px) scale(1.01); }
+  60% { transform: translateY(2px) scale(0.98); }
+  75% { transform: translateY(-1px) scale(1.01); }
+  90% { transform: translateY(1px) scale(1); }
+}
+
+@keyframes bounce-excited {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  20% { transform: translateY(-15px) rotate(3deg); }
+  40% { transform: translateY(-5px) rotate(-2deg); }
+  60% { transform: translateY(-12px) rotate(2deg); }
+  80% { transform: translateY(-3px) rotate(-1deg); }
+}
+
+@keyframes happy-sway {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-5px) rotate(2deg); }
+  50% { transform: translateY(-8px) rotate(0deg); }
+  75% { transform: translateY(-5px) rotate(-2deg); }
+}
+
+@keyframes sad-droop {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(5px) rotate(-2deg); }
+}
+
+@keyframes sleepy-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(3px) rotate(-3deg); }
+  70% { transform: translateY(2px) rotate(2deg); }
+}
+
+@keyframes loving-pulse {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.05); }
+  50% { transform: scale(1.02); }
+  75% { transform: scale(1.06); }
+}
+
+@keyframes curious-tilt {
+  0%, 100% { transform: translateY(0) rotate(0deg) translateX(0); }
+  25% { transform: translateY(-5px) rotate(5deg) translateX(3px); }
+  50% { transform: translateY(-3px) rotate(3deg) translateX(2px); }
+  75% { transform: translateY(-5px) rotate(6deg) translateX(4px); }
+}
+
+@keyframes thinking-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-3px) rotate(-1deg); }
+  50% { transform: translateY(-6px) rotate(1deg); }
+  75% { transform: translateY(-2px) rotate(-1deg); }
+}
+
+@keyframes surprised-jump {
+  0%, 100% { transform: translateY(0) scale(1); }
+  10% { transform: translateY(-20px) scale(1.1); }
+  30% { transform: translateY(-5px) scale(1.02); }
+  50% { transform: translateY(-10px) scale(1.05); }
+  70% { transform: translateY(-3px) scale(1.01); }
+}
+
+@keyframes confused-wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+  75% { transform: rotate(-3deg); }
+}
+
+@keyframes shy-hide {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  25% { transform: translateY(3px) rotate(-5deg) scale(0.98); }
+  50% { transform: translateY(5px) rotate(-8deg) scale(0.97); }
+  75% { transform: translateY(3px) rotate(-5deg) scale(0.98); }
+}
+
+@keyframes annoyed-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  10% { transform: translateX(-3px) rotate(-1deg); }
+  20% { transform: translateX(3px) rotate(1deg); }
+  30% { transform: translateX(-2px) rotate(-1deg); }
+  40% { transform: translateX(2px) rotate(1deg); }
+  50% { transform: translateX(0) rotate(0deg); }
+}
+
+@keyframes particle-float {
+  0% { 
+    opacity: 0; 
+    transform: translateY(0) scale(0.5); 
+  }
+  20% { 
+    opacity: 1; 
+    transform: translateY(-10px) scale(1); 
+  }
+  80% { 
+    opacity: 1; 
+    transform: translateY(-30px) scale(1); 
+  }
+  100% { 
+    opacity: 0; 
+    transform: translateY(-50px) scale(0.5); 
+  }
+}
+
+@keyframes emotion-pop {
+  0% { transform: translateX(-50%) scale(0.8); opacity: 0; }
+  50% { transform: translateX(-50%) scale(1.1); }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+@keyframes emoji-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+@keyframes ping-slow {
+  0% { transform: scale(1); opacity: 1; }
+  75%, 100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes angry-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  10% { transform: translateX(-3px) rotate(-2deg); }
+  20% { transform: translateX(3px) rotate(2deg); }
+  30% { transform: translateX(-3px) rotate(-1deg); }
+  40% { transform: translateX(3px) rotate(1deg); }
+  50% { transform: translateX(-2px) rotate(-1deg); }
+  60% { transform: translateX(2px) rotate(1deg); }
+  70% { transform: translateX(-1px) rotate(0deg); }
+  80% { transform: translateX(1px) rotate(0deg); }
+  90% { transform: translateX(0) rotate(0deg); }
+}
+
+@keyframes stressed-pulse {
+  0%, 100% { 
+    transform: scale(1); 
+    filter: brightness(1);
+  }
+  25% { 
+    transform: scale(0.98); 
+    filter: brightness(0.95);
+  }
+  50% { 
+    transform: scale(1.01); 
+    filter: brightness(1.02);
+  }
+  75% { 
+    transform: scale(0.99); 
+    filter: brightness(0.97);
+  }
+}
+
+@keyframes motivational-glow {
+  0%, 100% { 
+    transform: scale(1) translateY(0); 
+    filter: brightness(1.1) saturate(1.1);
+  }
+  50% { 
+    transform: scale(1.03) translateY(-2px); 
+    filter: brightness(1.2) saturate(1.2);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-sparkle {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.animate-blink {
+  animation: blink 4s ease-in-out infinite;
+}
+
+.animate-talking {
+  animation: talking 0.3s ease-in-out infinite;
+}
+
+.animate-bounce-excited {
+  animation: bounce-excited 0.6s ease-in-out infinite;
+}
+
+.animate-happy-sway {
+  animation: happy-sway 2s ease-in-out infinite;
+}
+
+.animate-sad-droop {
+  animation: sad-droop 3s ease-in-out infinite;
+}
+
+.animate-sleepy-bob {
+  animation: sleepy-bob 4s ease-in-out infinite;
+}
+
+.animate-loving-pulse {
+  animation: loving-pulse 1.5s ease-in-out infinite;
+}
+
+.animate-curious-tilt {
+  animation: curious-tilt 2s ease-in-out infinite;
+}
+
+.animate-thinking-bob {
+  animation: thinking-bob 2.5s ease-in-out infinite;
+}
+
+.animate-surprised-jump {
+  animation: surprised-jump 0.8s ease-out;
+}
+
+.animate-confused-wobble {
+  animation: confused-wobble 1s ease-in-out infinite;
+}
+
+.animate-shy-hide {
+  animation: shy-hide 3s ease-in-out infinite;
+}
+
+.animate-annoyed-shake {
+  animation: annoyed-shake 0.5s ease-in-out infinite;
+}
+
+.animate-angry-shake {
+  animation: angry-shake 0.4s ease-in-out infinite;
+}
+
+.animate-stressed-pulse {
+  animation: stressed-pulse 2s ease-in-out infinite;
+}
+
+.animate-motivational-glow {
+  animation: motivational-glow 1.5s ease-in-out infinite;
+}
+
+.animate-particle-float {
+  animation: particle-float 2.5s ease-out infinite;
+}
+
+.animate-emotion-pop {
+  animation: emotion-pop 0.4s ease-out forwards;
+}
+
+.animate-emoji-bounce {
+  animation: emoji-bounce 1s ease-in-out infinite;
+}
+
+.animate-ping-slow {
+  animation: ping-slow 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Floating sparkles animation */
+@keyframes sparkle-float {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0) scale(0.8);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-15px) scale(1.1) rotate(180deg);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(-25px) scale(1);
+  }
+}
+
+.animate-sparkle-float {
+  animation: sparkle-float ease-in-out infinite;
+}
+
+/* Message animations */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.6);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.8);
+}
