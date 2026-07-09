@@ -87,14 +87,18 @@ export default function EquipmentBoard({ t, lang, setDmSessionId, setActiveTab, 
           </h2>
           <p className="text-emerald-800/80 font-medium mt-1">Rent or borrow heavy machinery from local farmers.</p>
         </div>
-        {user && (
-          <button 
-            onClick={() => setShowAddModal(true)}
-            className="bg-emerald-600 text-white px-5 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 hover:bg-emerald-700 transition-all shadow-md"
-          >
-            <Plus className="w-4 h-4" /> List Equipment
-          </button>
-        )}
+        <button 
+          onClick={() => {
+            if (!user) {
+              alert('Please log in from the Home page to list equipment.');
+              return;
+            }
+            setShowAddModal(true);
+          }}
+          className="bg-emerald-600 text-white px-5 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 hover:bg-emerald-700 transition-all shadow-md"
+        >
+          <Plus className="w-4 h-4" /> List Equipment
+        </button>
       </div>
 
       {error && (
@@ -115,11 +119,15 @@ export default function EquipmentBoard({ t, lang, setDmSessionId, setActiveTab, 
           <Tractor className="w-16 h-16 text-emerald-800/20 mx-auto mb-4" />
           <h3 className="font-bold text-xl text-emerald-950 mb-2">No equipment listed yet</h3>
           <p className="text-emerald-800/60 mb-6">Be the first to list your tractor or tools for rent!</p>
-          {user && (
-            <button onClick={() => setShowAddModal(true)} className="px-6 py-2 bg-emerald-100 text-emerald-800 rounded-full font-bold hover:bg-emerald-200 transition-colors">
-              List Equipment
-            </button>
-          )}
+          <button onClick={() => {
+            if (!user) {
+              alert('Please log in from the Home page to list equipment.');
+              return;
+            }
+            setShowAddModal(true);
+          }} className="px-6 py-2 bg-emerald-100 text-emerald-800 rounded-full font-bold hover:bg-emerald-200 transition-colors">
+            List Equipment
+          </button>
         </div>
       )}
 
