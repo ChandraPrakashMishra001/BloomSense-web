@@ -52,7 +52,16 @@ function SetupWizard({ onComplete }) {
           <span className="font-bold text-emerald-800 text-sm hidden lg:block mr-2 group-hover:text-emerald-950 transition-colors">Back to BloomSense</span>
           <div className="flex flex-col drop-shadow-sm border-l border-emerald-900/10 pl-3">
             <span className="font-heading italic text-lg md:text-xl text-emerald-950 leading-none">BloomSense</span>
-            <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 mt-0.5 pl-0.5">Neural Leaf</span>
+            <a
+              href="https://neural-leaf.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={e => e.stopPropagation()}
+              className="inline-flex items-center gap-0.5 text-[8px] md:text-[9px] font-extrabold uppercase tracking-[0.25em] bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-pink-600 hover:to-purple-600 bg-clip-text text-transparent transition-all duration-300 hover:scale-[1.04] cursor-pointer select-none mt-0.5 pl-0.5"
+              title="Visit Neural Leaf"
+            >
+              Neural Leaf ↗
+            </a>
           </div>
         </Link>
       </nav>
@@ -301,7 +310,16 @@ export default function CropCalendar() {
           <span className="font-bold text-emerald-800 text-sm hidden lg:block mr-2 group-hover:text-emerald-950 transition-colors">Back to BloomSense</span>
           <div className="flex flex-col drop-shadow-sm border-l border-emerald-900/10 pl-3">
             <span className="font-heading italic text-lg md:text-xl text-emerald-950 leading-none">BloomSense</span>
-            <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 mt-0.5 pl-0.5">Neural Leaf</span>
+            <a
+              href="https://neural-leaf.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={e => e.stopPropagation()}
+              className="inline-flex items-center gap-0.5 text-[8px] md:text-[9px] font-extrabold uppercase tracking-[0.25em] bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-pink-600 hover:to-purple-600 bg-clip-text text-transparent transition-all duration-300 hover:scale-[1.04] cursor-pointer select-none mt-0.5 pl-0.5"
+              title="Visit Neural Leaf"
+            >
+              Neural Leaf ↗
+            </a>
           </div>
         </Link>
         <div className="hidden sm:flex items-center gap-2 mr-2">

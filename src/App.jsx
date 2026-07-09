@@ -148,92 +148,130 @@ const FloraArchive = React.memo(() => {
   }), [searchTerm]);
 
   return (
-    <section id="flora" className="py-32 px-6 lg:px-12 max-w-[1400px] mx-auto z-10 relative">
-      <ScrollReveal className="text-center mb-16">
-        <h2 className="font-heading italic text-6xl tracking-tight mb-8 text-emerald-950">Botanical Archive</h2>
-        
-        <div className="max-w-xl mx-auto relative group">
-          <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 opacity-70 group-hover:opacity-100 transition-opacity" />
-          <input 
-            type="text" 
-            placeholder="Search by plant name or disease (e.g., Anxiety)..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full liquid-glass rounded-full pl-14 pr-6 py-4 text-emerald-950 placeholder:text-emerald-800/50 outline-none focus:bg-white/80 transition-colors border border-emerald-900/10 shadow-lg font-body font-semibold"
-          />
-        </div>
-      </ScrollReveal>
+    <section id="flora" className="py-20 px-6 lg:px-12 max-w-[1400px] mx-auto z-10 relative">
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <AnimatePresence>
-          {filteredPlants.map((plant, i) => (
-            <motion.div 
-              key={plant.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
-              className="liquid-glass rounded-3xl overflow-hidden group border border-emerald-200/50 flex flex-col h-full hover:-translate-y-2 transition-transform duration-500"
-            >
-              <div 
-                className="h-56 overflow-hidden relative border-b border-emerald-900/5 cursor-pointer group/img"
-                onClick={() => setSelectedImage(plant)}
-              >
-                <div className="absolute inset-0 bg-emerald-950/20 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center backdrop-blur-[2px]">
-                  <div className="bg-white/90 p-3 rounded-full shadow-lg transform scale-90 group-hover/img:scale-100 transition-transform">
-                    <Scan className="w-6 h-6 text-emerald-700" />
-                  </div>
-                </div>
-                <img 
-                  src={plant.image} 
-                  alt={plant.name} 
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90"
+      {/* Ambient Background Glows */}
+      <div className="absolute -top-20 left-1/4 w-[500px] h-[500px] bg-emerald-300/20 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-pink-300/20 rounded-full blur-[100px] pointer-events-none -z-10" />
+
+      {/* Outer premium box */}
+      <div className="relative rounded-[2.5rem] border border-emerald-200/60 bg-white/50 backdrop-blur-xl shadow-2xl shadow-emerald-900/5 overflow-hidden">
+
+        {/* Top gradient shimmer bar */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-400 via-emerald-400 to-teal-400 opacity-80" />
+
+        {/* Inner ambient glow */}
+        <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-b from-emerald-100/50 to-transparent blur-3xl pointer-events-none" />
+
+        {/* Box Header */}
+        <div className="px-8 pt-10 pb-8 border-b border-emerald-900/8 relative">
+          <div className="flex flex-col items-center text-center gap-4">
+            <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200/70 rounded-full px-4 py-1.5 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-emerald-700 text-xs font-extrabold uppercase tracking-[0.2em]">Live Database</span>
+            </div>
+            <ScrollReveal>
+              <h2 className="font-heading italic text-5xl md:text-6xl tracking-tight text-emerald-950">Botanical Archive</h2>
+            </ScrollReveal>
+            <ScrollReveal delay={0.1}>
+              <p className="text-emerald-700/70 text-sm font-semibold max-w-lg">
+                Explore our curated index of medicinal plants — powered by BloomSense AI vision and phytochemical intelligence.
+              </p>
+            </ScrollReveal>
+            
+            {/* Search */}
+            <ScrollReveal delay={0.15} className="w-full max-w-xl">
+              <div className="relative group">
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 opacity-70 group-hover:opacity-100 transition-opacity" />
+                <input 
+                  type="text" 
+                  placeholder="Search by plant name or disease (e.g., Anxiety)..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-white/80 rounded-full pl-14 pr-6 py-4 text-emerald-950 placeholder:text-emerald-800/40 outline-none focus:bg-white border border-emerald-200/80 shadow-inner shadow-emerald-50 font-body font-semibold transition-all focus:border-emerald-400/50 focus:shadow-lg"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-pink-50 via-pink-50/20 to-transparent" />
-                <h3 className="absolute bottom-4 left-6 font-heading italic text-4xl text-emerald-950 drop-shadow-sm">{plant.name}</h3>
               </div>
-              
-              <div className="p-6 flex-1 flex flex-col gap-5 bg-white/40">
-                <p className="text-emerald-600 text-xs font-bold uppercase tracking-[0.2em]">{plant.scientificName}</p>
-                
-                <div>
-                  <h4 className="text-emerald-800/50 text-xs uppercase tracking-[0.2em] mb-2 font-bold">Key Properties</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {plant.properties.map(prop => (
-                      <span key={prop} className="text-xs border border-emerald-500/20 bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full font-bold">
-                        {prop}
-                      </span>
-                    ))}
+            </ScrollReveal>
+          </div>
+        </div>
+
+        {/* Cards Grid */}
+        <div className="p-6 md:p-10">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <AnimatePresence>
+              {filteredPlants.map((plant, i) => (
+                <motion.div 
+                  key={plant.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.4, delay: i * 0.05 }}
+                  className="liquid-glass rounded-3xl overflow-hidden group border border-emerald-200/50 flex flex-col h-full hover:-translate-y-2 transition-transform duration-500 shadow-md shadow-emerald-900/5 hover:shadow-xl hover:shadow-emerald-900/10"
+                >
+                  <div 
+                    className="h-56 overflow-hidden relative border-b border-emerald-900/5 cursor-pointer group/img"
+                    onClick={() => setSelectedImage(plant)}
+                  >
+                    <div className="absolute inset-0 bg-emerald-950/20 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center backdrop-blur-[2px]">
+                      <div className="bg-white/90 p-3 rounded-full shadow-lg transform scale-90 group-hover/img:scale-100 transition-transform">
+                        <Scan className="w-6 h-6 text-emerald-700" />
+                      </div>
+                    </div>
+                    <img 
+                      src={plant.image} 
+                      alt={plant.name} 
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-pink-50 via-pink-50/20 to-transparent" />
+                    <h3 className="absolute bottom-4 left-6 font-heading italic text-4xl text-emerald-950 drop-shadow-sm">{plant.name}</h3>
                   </div>
-                </div>
+                  
+                  <div className="p-6 flex-1 flex flex-col gap-5 bg-white/40">
+                    <p className="text-emerald-600 text-xs font-bold uppercase tracking-[0.2em]">{plant.scientificName}</p>
+                    
+                    <div>
+                      <h4 className="text-emerald-800/50 text-xs uppercase tracking-[0.2em] mb-2 font-bold">Key Properties</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {plant.properties.map(prop => (
+                          <span key={prop} className="text-xs border border-emerald-500/20 bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full font-bold">
+                            {prop}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
 
-                <div>
-                  <h4 className="text-emerald-800/50 text-xs uppercase tracking-[0.2em] mb-2 font-bold">Treats</h4>
-                  <p className="text-sm text-emerald-900 font-bold">{plant.diseasesTargeted.join(", ")}</p>
-                </div>
+                    <div>
+                      <h4 className="text-emerald-800/50 text-xs uppercase tracking-[0.2em] mb-2 font-bold">Treats</h4>
+                      <p className="text-sm text-emerald-900 font-bold">{plant.diseasesTargeted.join(", ")}</p>
+                    </div>
 
-                <div className="mt-auto pt-5 border-t border-emerald-900/10">
-                  <p className="text-sm text-emerald-800/80 leading-relaxed font-semibold">
-                    {plant.cures}
-                  </p>
-                </div>
-              </div>
+                    <div className="mt-auto pt-5 border-t border-emerald-900/10">
+                      <p className="text-sm text-emerald-800/80 leading-relaxed font-semibold">
+                        {plant.cures}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+          
+          {filteredPlants.length === 0 && (
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              className="text-center text-emerald-800/50 py-12 font-body text-lg font-bold"
+            >
+              No botanical records found matching "{searchTerm}".
             </motion.div>
-          ))}
-        </AnimatePresence>
+          )}
+        </div>
+
+        {/* Bottom gradient shimmer bar */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-300/50 to-transparent" />
       </div>
-      
-      {filteredPlants.length === 0 && (
-        <motion.div 
-          initial={{ opacity: 0 }} 
-          animate={{ opacity: 1 }} 
-          className="text-center text-emerald-800/50 py-12 font-body text-lg font-bold"
-        >
-          No botanical records found matching "{searchTerm}".
-        </motion.div>
-      )}
 
       <AnimatePresence>
         {selectedImage && (
@@ -277,6 +315,7 @@ const FloraArchive = React.memo(() => {
         )}
       </AnimatePresence>
     </section>
+
   );
 });
 
@@ -452,7 +491,15 @@ function Home() {
             <div className="flex flex-col drop-shadow-sm">
               <span className="font-heading italic  text-2xl md:text-3xl xl:text-4xl text-emerald-950 leading-none">BloomSense</span>
               <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 mt-1 pl-1">
-                <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-800/70 block">Neural Leaf</span>
+                <a 
+                  href="https://neural-leaf.vercel.app" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="inline-flex items-center gap-0.5 text-[9px] md:text-[10px] font-extrabold uppercase tracking-[0.25em] bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-pink-600 hover:to-purple-600 bg-clip-text text-transparent transition-all duration-300 transform hover:scale-[1.03] select-none cursor-pointer"
+                  title="Visit Neural Leaf"
+                >
+                  Neural Leaf <ArrowUpRight className="w-2.5 h-2.5 text-teal-500 hover:text-purple-600" />
+                </a>
                 <span className="text-[8px] md:text-[9px] text-emerald-600/80 font-medium animate-pulse mt-0.5 sm:mt-0">
                   (Tap logo to switch theme)
                 </span>

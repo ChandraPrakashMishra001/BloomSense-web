@@ -313,7 +313,15 @@ export default function About() {
             <Leaf className="w-4 h-4 text-white" />
           </div>
           <span className="font-heading italic text-xl text-emerald-950">BloomSense</span>
-          <span className="text-emerald-800/40 text-xs font-bold uppercase tracking-[0.2em]">Neural Leaf</span>
+          <a
+            href="https://neural-leaf.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-0.5 text-[10px] font-extrabold uppercase tracking-[0.2em] bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-pink-600 hover:to-purple-600 bg-clip-text text-transparent transition-all duration-300 hover:scale-[1.04] cursor-pointer select-none"
+            title="Visit Neural Leaf"
+          >
+            Neural Leaf ↗
+          </a>
         </div>
         <p className="text-emerald-800/50 text-sm font-semibold">
           © {new Date().getFullYear()} BloomSense. Made by Chandra Prakash Mishra.
