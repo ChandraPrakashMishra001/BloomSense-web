@@ -7,7 +7,7 @@ import { Tractor, MapPin, IndianRupee, User, Plus, X, MessageCircle, Loader2 } f
 const CATEGORIES = ['Tractor', 'Harvester', 'Sprayer', 'Hand Tools', 'Pump', 'Other'];
 const DISTRICTS = ['All Odisha', 'Sambalpur', 'Cuttack', 'Bhubaneswar', 'Bolangir', 'Koraput', 'Mayurbhanj', 'Ganjam', 'Sundargarh', 'Puri'];
 
-export default function EquipmentBoard({ t, lang, setDmSessionId, setActiveTab }) {
+export default function EquipmentBoard({ t, lang, setDmSessionId, setActiveTab, user }) {
   const [equipmentList, setEquipmentList] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   
