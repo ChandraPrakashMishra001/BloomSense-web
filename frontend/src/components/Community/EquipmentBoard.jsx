@@ -23,7 +23,7 @@ export default function EquipmentBoard({ t, lang, setDmSessionId, setActiveTab, 
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const q = query(collection(db, 'krishinet_equipment'), orderBy('timestamp', 'desc'));
+    const q = query(collection(db, 'equipment_listings'), orderBy('timestamp', 'desc'));
     const unsub = onSnapshot(q, (snapshot) => {
       setEquipmentList(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     }, (err) => {
@@ -47,7 +47,7 @@ export default function EquipmentBoard({ t, lang, setDmSessionId, setActiveTab, 
     const sessionId = Math.random().toString(36).substring(2, 10);
 
     try {
-      await addDoc(collection(db, 'krishinet_equipment'), {
+      await addDoc(collection(db, 'equipment_listings'), {
         ...formData,
         price: Number(formData.price),
         timestamp: Date.now(),
