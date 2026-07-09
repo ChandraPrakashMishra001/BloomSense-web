@@ -1,78 +1,46 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Global functions
-    function isLoggedIn() {
-      return request.auth != null;
-    }
-    
-    // Community Posts
-    match /community_posts/{postId} {
-      allow read: if true;
-      allow create: if isLoggedIn() 
-                    && request.resource.data.message is string
-                    && request.resource.data.message.size() < 1000
-                    && request.resource.data.likes == 0
-                    && request.resource.data.reported_count == 0;
-      // Allow updates only for incrementing likes or reported_count
-      allow update: if isLoggedIn() 
-                    && (
-                      (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']) && request.resource.data.likes == resource.data.likes + 1) ||
-                      (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reported_count']) && request.resource.data.reported_count == resource.data.reported_count + 1)
-                    );
-      allow delete: if false; // Only admins can delete
-    }
 
-    // District Chats
-    match /district_chats_{district}/{messageId} {
+    // 1. Community & Moderation
+    match /community_posts/{docId} {
       allow read: if true;
-      allow create: if isLoggedIn()
-                    && request.resource.data.message is string
-                    && request.resource.data.message.size() < 1000;
-      allow update, delete: if false;
-    }
-
-    // Direct Messages
-    match /direct_messages_{sessionId}/{messageId} {
-      allow read: if true;
-      allow create: if isLoggedIn()
-                    && request.resource.data.message is string
-                    && request.resource.data.message.size() < 1000;
-      allow update, delete: if false;
-    }
-
-    // Moderation Queue
-    match /moderation_queue/{queueId} {
-      allow read: if false; // Only backend/admins read this
-      allow create: if isLoggedIn();
-      allow update, delete: if false;
-    }
-
-    // Disease Points (Map)
-    match /diseasePoints/{pointId} {
-      allow read: if true;
-      allow create: if isLoggedIn() && request.resource.data.lat is number && request.resource.data.lng is number;
-      allow update, delete: if false;
-    }
-
-    // Alerts (Map)
-    match /alerts/{alertId} {
-      allow read: if true;
-      allow create: if isLoggedIn();
-      allow update, delete: if false;
-    }
-
-    // Equipment Listings (Krishi-Net)
-    match /equipment_listings/{listingId} {
-      allow read: if true;
-      allow create, update, delete: if isLoggedIn(); 
+      allow write: if request.auth != null;
     }
     
-    // Any other collection falls back to read-only for public, or full deny.
-    match /{document=**} {
+    match /moderation_queue/{docId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // 2. Dynamic Collections (district_chats_X and direct_messages_X)
+    match /{collectionName}/{docId} {
+      allow read, write: if request.auth != null && 
+        (collectionName.matches('district_chats_.*') || collectionName.matches('direct_messages_.*'));
+    }
+
+    // 3. Krishi-Net Equipment Board
+    match /krishinet_equipment/{docId} {
       allow read: if true;
-      allow write: if false;
+      allow write: if request.auth != null;
+    }
+
+    // 4. Heatmap & Alerts
+    match /diseasePoints/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    match /alerts/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // 5. Amanai Field Logs (User-specific access)
+    match /amanai_field_logs/{doc} {
+      allow read, delete: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow update: if request.auth != null && resource.data.uid == request.auth.uid && request.resource.data.uid == request.auth.uid;
     }
   }
 }
