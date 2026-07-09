@@ -10,6 +10,7 @@ const DISTRICTS = ['All Odisha', 'Sambalpur', 'Cuttack', 'Bhubaneswar', 'Bolangi
 export default function EquipmentBoard({ t, lang, setDmSessionId, setActiveTab, user }) {
   const [equipmentList, setEquipmentList] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [loading, setLoading] = useState(true);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -23,14 +24,23 @@ export default function EquipmentBoard({ t, lang, setDmSessionId, setActiveTab, 
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const q = query(collection(db, 'equipment_listings'), orderBy('timestamp', 'desc'));
-    const unsub = onSnapshot(q, (snapshot) => {
-      setEquipmentList(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    }, (err) => {
-      console.error("Error fetching equipment:", err);
-      setError("Please ensure you have added the 'krishinet_equipment' rule in Firebase!");
-    });
-    return () => unsub();
+    let unsub;
+    try {
+      const q = query(collection(db, 'equipment_listings'), orderBy('timestamp', 'desc'));
+      unsub = onSnapshot(q, (snapshot) => {
+        setEquipmentList(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        setLoading(false);
+      }, (err) => {
+        console.error("Error fetching equipment:", err);
+        setError("Could not load equipment listings. Firebase may need the 'equipment_listings' collection or index.");
+        setLoading(false);
+      });
+    } catch (err) {
+      console.error("Failed to set up equipment listener:", err);
+      setError("Failed to connect to equipment database.");
+      setLoading(false);
+    }
+    return () => { if (unsub) unsub(); };
   }, []);
 
   const handleSubmit = async (e) => {
@@ -58,7 +68,7 @@ export default function EquipmentBoard({ t, lang, setDmSessionId, setActiveTab, 
       setFormData({ name: '', category: 'Tractor', price: '', district: '', ownerName: '', description: '' });
     } catch (err) {
       console.error(err);
-      setError("Failed to post listing. Check Firebase rules.");
+      setError("Failed to post listing. Please make sure you're logged in.");
     }
     setIsSubmitting(false);
   };
@@ -70,7 +80,7 @@ export default function EquipmentBoard({ t, lang, setDmSessionId, setActiveTab, 
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h2 className="font-heading italic text-3xl text-emerald-950 flex items-center gap-3">
             <Tractor className="w-8 h-8 text-emerald-600" /> Krishi-Net Equipment
@@ -93,7 +103,14 @@ export default function EquipmentBoard({ t, lang, setDmSessionId, setActiveTab, 
         </div>
       )}
 
-      {equipmentList.length === 0 && !error && (
+      {loading && (
+        <div className="bg-white/60 border border-emerald-900/10 rounded-3xl p-12 text-center">
+          <Loader2 className="w-10 h-10 text-emerald-600 mx-auto mb-4 animate-spin" />
+          <h3 className="font-bold text-lg text-emerald-950">Loading equipment listings...</h3>
+        </div>
+      )}
+
+      {!loading && equipmentList.length === 0 && !error && (
         <div className="bg-white/60 border border-emerald-900/10 rounded-3xl p-12 text-center">
           <Tractor className="w-16 h-16 text-emerald-800/20 mx-auto mb-4" />
           <h3 className="font-bold text-xl text-emerald-950 mb-2">No equipment listed yet</h3>
