@@ -22,6 +22,7 @@ const About = lazy(() => import('./pages/About'));
 import { initialAlerts, initialDiseasePoints, floraDatabase } from './data/constants';
 import RobotGuide from './components/RobotGuide';
 import SplashScreen from './components/SplashScreen';
+import { InteractiveHoverButton, InteractiveHoverLink } from './components/ui/interactive-hover-button';
 
 
 
@@ -513,45 +514,31 @@ function Home() {
           {['Home', 'Community', 'Calendar', 'Technology', 'Map'].map((item) => {
             if (item === 'Technology') {
               return (
-                <Link key={item} to="/technology/hardware" className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-[0.05em] xl:tracking-wide">
-                  Technology
-                </Link>
+                <InteractiveHoverLink key={item} as={Link} to="/technology/hardware" text="Technology" />
               );
             } else if (item === 'Map') {
               return (
-                <a key={item} href="/#network" className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-[0.05em] xl:tracking-wide">
-                  Map
-                </a>
+                <InteractiveHoverLink key={item} as="a" href="/#network" text="Map" />
               );
             } else if (item === 'Community') {
               return (
-                <Link key={item} to="/community" className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-[0.05em] xl:tracking-wide">
-                  Community
-                </Link>
+                <InteractiveHoverLink key={item} as={Link} to="/community" text="Community" />
               );
             } else if (item === 'Calendar') {
               return (
-                <Link key={item} to="/calendar" className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-[0.05em] xl:tracking-wide">
-                  Calendar
-                </Link>
+                <InteractiveHoverLink key={item} as={Link} to="/calendar" text="Calendar" />
               );
             } else {
               return (
-                <a key={item} href={`#${item.toLowerCase()}`} className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-semibold text-emerald-800 hover:text-emerald-950 transition-colors tracking-[0.05em] xl:tracking-wide">
-                  {item}
-                </a>
+                <InteractiveHoverLink key={item} as="a" href={`#${item.toLowerCase()}`} text={item} />
               );
             }
           })}
           
           {user ? (
-            <button onClick={() => signOut(auth)} className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-bold text-rose-600 hover:text-rose-700 transition-colors tracking-wide flex items-center gap-2">
-              Log Out
-            </button>
+            <InteractiveHoverButton onClick={() => signOut(auth)} text="Log Out" className="border-rose-200/50 bg-rose-50/30 [&_span]:text-rose-600 [&>div:last-child]:bg-rose-500 [&>div.absolute:nth-child(2)]:text-white" />
           ) : (
-            <button onClick={() => setShowAuthModal(true)} className="px-3 lg:px-5 py-2 lg:py-2.5 text-sm font-bold text-emerald-900 hover:text-emerald-950 transition-colors tracking-wide flex items-center gap-2">
-              <LogIn className="w-4 h-4" /> <span className="hidden xl:inline">Log In</span>
-            </button>
+            <InteractiveHoverButton onClick={() => setShowAuthModal(true)} text="Log In" />
           )}
 
           <button onClick={handleScanClick} className="ml-1 bg-emerald-600/90 text-white px-4 lg:px-7 py-2 lg:py-2.5 rounded-full text-sm font-bold flex items-center gap-1.5 lg:gap-2 hover:bg-emerald-700 transition-colors shadow-lg hover:shadow-emerald-500/30">
