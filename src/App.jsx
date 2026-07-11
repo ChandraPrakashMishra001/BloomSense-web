@@ -5,7 +5,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { db, auth } from './firebase';
 import { 
   Leaf, ArrowUpRight, Play, Zap, Shield, Microscope, 
-  Cpu, Cloud, Database, Scan, Beaker, ChevronDown, 
+  Cpu, Cloud, Database, Scan, Beaker, ChevronDown, Camera,
   Layers, Focus, Activity, X, Loader2, CheckCircle, AlertTriangle, Search, Sparkles, Map, Bell, LogIn, LogOut, Menu, Brain
 } from 'lucide-react';
 const DiseaseMap = lazy(() => import('./components/DiseaseMap'));
@@ -127,9 +127,28 @@ const MixedFlora = React.memo(() => {
   );
 });
 
-const FloraArchive = React.memo(() => {
+const FloraArchive = React.memo(({ onCameraClick }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isSearchingWeb, setIsSearchingWeb] = useState(false);
+  const [webResult, setWebResult] = useState(null);
+  const [webSearchError, setWebSearchError] = useState(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  useEffect(() => {
+    setWebResult(null);
+    setWebSearchError(null);
+    
+    if (searchTerm.trim() !== "" && floraDatabase.filter(plant => 
+      plant.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      plant.diseasesTargeted.some(disease => disease.toLowerCase().includes(searchTerm.toLowerCase()))
+    ).length === 0) {
+      const timer = setTimeout(() => {
+        searchWeb(searchTerm);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [searchTerm]);
 
   useEffect(() => {
     if (selectedImage) {
@@ -147,6 +166,70 @@ const FloraArchive = React.memo(() => {
     return plant.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
       plant.diseasesTargeted.some(disease => disease.toLowerCase().includes(searchTerm.toLowerCase()));
   }), [searchTerm]);
+
+  const displayPlants = useMemo(() => {
+    return webResult ? [...filteredPlants, webResult] : filteredPlants;
+  }, [filteredPlants, webResult]);
+
+  const searchWeb = async (query) => {
+    if (!query.trim()) return;
+    setIsSearchingWeb(true);
+    setWebResult(null);
+    setWebSearchError(null);
+    
+    try {
+      const response = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query.trim())}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.type !== 'disambiguation' && data.title) {
+          setWebResult({
+            id: `web-${Date.now()}`,
+            name: data.title,
+            scientificName: data.description || 'Web Database',
+            image: data.thumbnail?.source || 'https://images.unsplash.com/photo-1466692476877-361ad33333cc?auto=format&fit=crop&w=800&q=80',
+            properties: ['Web Result'],
+            diseasesTargeted: ['General Info'],
+            cures: data.extract,
+            description: data.extract,
+            preparation: 'Information fetched dynamically from the web.',
+            isWeb: true,
+            hasFullDetails: false,
+            wikiTitle: data.title
+          });
+        } else {
+          setWebSearchError("No specific botanical records found on the web.");
+        }
+      } else {
+        setWebSearchError(`No botanical records found on the web for "${query}".`);
+      }
+    } catch (err) {
+      setWebSearchError("Failed to search the web. Please try again.");
+    }
+    setIsSearchingWeb(false);
+  };
+
+  const fetchMoreDetails = async (title) => {
+    setIsLoadingMore(true);
+    try {
+      const response = await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=false&explaintext=true&titles=${encodeURIComponent(title)}&format=json&origin=*`);
+      if (response.ok) {
+        const data = await response.json();
+        const pages = data.query?.pages;
+        if (pages) {
+          const pageId = Object.keys(pages)[0];
+          const extract = pages[pageId].extract;
+          if (extract) {
+            setSelectedImage(prev => ({ ...prev, cures: extract, hasFullDetails: true }));
+            // Also update the webResult so if they close and reopen it's still there
+            setWebResult(prev => ({ ...prev, cures: extract, hasFullDetails: true }));
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch full details", err);
+    }
+    setIsLoadingMore(false);
+  };
 
   return (
     <section id="flora" className="py-20 px-6 lg:px-12 max-w-[1400px] mx-auto z-10 relative">
@@ -182,15 +265,22 @@ const FloraArchive = React.memo(() => {
             
             {/* Search */}
             <ScrollReveal delay={0.15} className="w-full max-w-xl">
-              <div className="relative group">
-                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 opacity-70 group-hover:opacity-100 transition-opacity" />
+              <div className="relative group flex items-center">
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 opacity-70 group-hover:opacity-100 transition-opacity pointer-events-none" />
                 <input 
                   type="text" 
                   placeholder="Search by plant name or disease (e.g., Anxiety)..." 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-white/80 rounded-full pl-14 pr-6 py-4 text-emerald-950 placeholder:text-emerald-800/40 outline-none focus:bg-white border border-emerald-200/80 shadow-inner shadow-emerald-50 font-body font-semibold transition-all focus:border-emerald-400/50 focus:shadow-lg"
+                  className="w-full bg-white/80 rounded-full pl-14 pr-16 py-4 text-emerald-950 placeholder:text-emerald-800/40 outline-none focus:bg-white border border-emerald-200/80 shadow-inner shadow-emerald-50 font-body font-semibold transition-all focus:border-emerald-400/50 focus:shadow-lg"
                 />
+                <button 
+                  onClick={onCameraClick}
+                  title="Use AI Camera"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-full flex items-center justify-center transition-colors shadow-sm border border-emerald-200"
+                >
+                  <Camera className="w-5 h-5" />
+                </button>
               </div>
             </ScrollReveal>
           </div>
@@ -200,7 +290,7 @@ const FloraArchive = React.memo(() => {
         <div className="p-6 md:p-10">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             <AnimatePresence>
-              {filteredPlants.map((plant, i) => (
+              {displayPlants.map((plant, i) => (
                 <motion.div 
                   key={plant.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -259,13 +349,25 @@ const FloraArchive = React.memo(() => {
             </AnimatePresence>
           </div>
           
-          {filteredPlants.length === 0 && (
+          {filteredPlants.length === 0 && !webResult && (
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
-              className="text-center text-emerald-800/50 py-12 font-body text-lg font-bold"
+              className="flex flex-col items-center gap-5 py-12"
             >
-              No botanical records found matching "{searchTerm}".
+              {webSearchError ? (
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-emerald-800/50 font-body text-lg font-bold">
+                    No local botanical records found matching "{searchTerm}".
+                  </p>
+                  <p className="text-rose-500 font-bold mt-2 bg-rose-50 px-4 py-2 rounded-lg border border-rose-100">{webSearchError}</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-4 py-12">
+                  <Loader2 className="w-10 h-10 text-emerald-500 animate-spin" />
+                  <p className="text-emerald-800/70 font-bold animate-pulse">Searching global botanical databases for "{searchTerm}"...</p>
+                </div>
+              )}
             </motion.div>
           )}
         </div>
@@ -309,7 +411,20 @@ const FloraArchive = React.memo(() => {
               <div className="px-8 py-6 text-center w-full bg-white border-t border-emerald-50 relative z-20">
                 <span className="text-pink-500 font-bold uppercase tracking-[0.2em] text-xs mb-1 block">{selectedImage.scientificName}</span>
                 <h3 className="font-heading italic text-4xl text-emerald-950 mb-3">{selectedImage.name}</h3>
-                <p className="text-sm text-emerald-800/80 font-medium max-w-2xl mx-auto">{selectedImage.cures}</p>
+                <div className="text-sm text-emerald-800/80 font-medium max-w-4xl mx-auto whitespace-pre-wrap text-left leading-relaxed max-h-[40vh] overflow-y-auto p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100/50">
+                  {selectedImage.cures}
+                </div>
+                
+                {selectedImage.isWeb && !selectedImage.hasFullDetails && (
+                  <button 
+                    onClick={() => fetchMoreDetails(selectedImage.wikiTitle)}
+                    disabled={isLoadingMore}
+                    className="mt-6 inline-flex items-center gap-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-6 py-2.5 rounded-full font-bold transition-colors disabled:opacity-50"
+                  >
+                    {isLoadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                    {isLoadingMore ? "Fetching Data..." : "Load Full Wikipedia Data"}
+                  </button>
+                )}
               </div>
             </motion.div>
           </motion.div>
@@ -656,7 +771,7 @@ function Home() {
           </div>
         </section>
 
-        <FloraArchive />
+        <FloraArchive onCameraClick={handleScanClick} />
 
         <section id="technology" className="py-24 px-6 lg:px-12 max-w-[1400px] mx-auto relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
