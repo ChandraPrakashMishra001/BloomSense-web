@@ -35,7 +35,7 @@ const AmaniaBadge = React.memo(({ onClick }) => (
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.8, delay: 0.5 }}
-    className="absolute bottom-6 left-6 md:bottom-12 md:left-12 z-[60] flex items-center gap-3 liquid-glass px-4 py-2 rounded-full cursor-pointer hover:scale-105 transition-all shadow-xl hover:shadow-pink-500/20 border border-pink-200/50 bg-white/40"
+    className="absolute bottom-3 left-3 md:bottom-4 md:left-6 z-[60] flex items-center gap-3 liquid-glass px-4 py-2 rounded-full cursor-pointer hover:scale-105 transition-all shadow-xl hover:shadow-pink-500/20 border border-pink-200/50 bg-white/40"
   >
     <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center shadow-inner">
       <Sparkles className="w-4 h-4 text-white" />
@@ -605,20 +605,17 @@ function Home() {
               <Leaf className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
             </button>
             <div className="flex flex-col drop-shadow-sm">
-              <span className="font-heading italic  text-2xl md:text-3xl xl:text-4xl text-emerald-950 leading-none">BloomSense</span>
+              <span className="font-heading italic  text-2xl md:text-3xl xl:text-4xl text-[#D4AF37] leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]">BloomSense</span>
               <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 mt-1 pl-1">
                 <a 
                   href="https://neural-leaf.vercel.app" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="inline-flex items-center gap-0.5 text-[9px] md:text-[10px] font-extrabold uppercase tracking-[0.25em] bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-pink-600 hover:to-purple-600 bg-clip-text text-transparent transition-all duration-300 transform hover:scale-[1.03] select-none cursor-pointer"
+                  className="inline-flex items-center gap-0.5 text-[9px] md:text-[10px] font-extrabold uppercase tracking-[0.25em] bg-gradient-to-r from-[#D4AF37] to-[#B8972E] hover:from-pink-600 hover:to-purple-600 bg-clip-text text-transparent transition-all duration-300 transform hover:scale-[1.03] select-none cursor-pointer"
                   title="Visit Neural Leaf"
                 >
-                  Neural Leaf <ArrowUpRight className="w-2.5 h-2.5 text-teal-500 hover:text-purple-600" />
+                  Neural Leaf <ArrowUpRight className="w-2.5 h-2.5 text-[#D4AF37] hover:text-purple-600" />
                 </a>
-                <span className="text-[8px] md:text-[9px] text-emerald-600/80 font-medium animate-pulse mt-0.5 sm:mt-0">
-                  (Tap logo to switch theme)
-                </span>
               </div>
             </div>
           </div>
@@ -656,7 +653,7 @@ function Home() {
             <InteractiveHoverButton onClick={() => setShowAuthModal(true)} text="Log In" />
           )}
 
-          <button onClick={handleScanClick} className="ml-1 bg-emerald-600/90 text-white px-4 lg:px-7 py-2 lg:py-2.5 rounded-full text-sm font-bold flex items-center gap-1.5 lg:gap-2 hover:bg-emerald-700 transition-colors shadow-lg hover:shadow-emerald-500/30">
+          <button onClick={handleScanClick} className="ml-1 bg-[#D4AF37] text-black px-4 lg:px-7 py-2 lg:py-2.5 rounded-full text-sm font-bold flex items-center gap-1.5 lg:gap-2 hover:bg-[#C5A028] transition-colors shadow-lg hover:shadow-[#D4AF37]/30">
             <span className="hidden lg:inline">Scan Sample</span><span className="lg:hidden">Scan</span> <ArrowUpRight className="w-4 h-4" />
           </button>
         </div>
@@ -671,7 +668,7 @@ function Home() {
                <LogIn className="w-5 h-5" />
             </button>
           )}
-          <button onClick={handleScanClick} className="bg-emerald-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-emerald-700 transition-colors">
+          <button onClick={handleScanClick} className="bg-[#D4AF37] text-black w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-[#C5A028] transition-colors">
             <Scan className="w-5 h-5" />
           </button>
           <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 ml-1 rounded-full focus:bg-emerald-50 border border-emerald-900/10 shadow-sm transition-colors text-emerald-800">
@@ -742,32 +739,49 @@ function Home() {
       </AnimatePresence>
 
       <main>
-        <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden bg-pink-50">
-          <AmaniaBadge onClick={handleScanClick} />
-          {showAnimation && <MixedFlora />}
-
-          <div 
-            className={`absolute inset-0 w-full h-full z-0 bg-cover bg-center transition-all duration-1000 ${isNewLanding ? "bg-[url('/main.jpg')] brightness-[0.95]" : "bg-[url('/bg.webp')]"}`}
+        <section id="home" className="relative h-screen w-full overflow-hidden bg-black flowpath-font">
+          {/* Background Video */}
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline 
+            className="absolute inset-0 w-full h-full object-cover z-0"
           >
-            <div className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${isNewLanding ? "bg-gradient-to-b from-white/30 via-transparent to-transparent" : "bg-gradient-to-b from-white/60 via-pink-50/40 to-emerald-50/90"}`} />
-          </div>
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260703_053131_1ec3dd1c-d627-44fb-ab20-6e1fce41b0d5.mp4" type="video/mp4" />
+          </video>
+          
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 bg-black/10 z-0" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-transparent z-0 pointer-events-none" />
 
-          <div className={`relative z-20 text-center mx-auto mt-20 transition-all duration-500 ${isNewLanding ? "px-4 max-w-none w-full overflow-visible" : "px-6 max-w-5xl"}`}>
-            <h1 className={`font-heading italic tracking-tight leading-[0.9] mb-6 transition-all duration-500 ${isNewLanding ? "text-5xl md:text-6xl lg:text-7xl xl:text-[5.5rem] lg:whitespace-nowrap text-[#D4AF37] drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]" : "text-4xl md:text-5xl lg:text-7xl text-balance text-emerald-950 text-shadow-sm"}`}>
-              <BlurText text="Decode Nature's Secrets with Precision AI" />
-            </h1>
-            
-            <ScrollReveal delay={0.2}>
-              <p className={`text-base md:text-lg font-body leading-relaxed max-w-2xl mx-auto mb-10 text-balance font-medium transition-colors duration-500 ${isNewLanding ? "text-emerald-50/90 drop-shadow-md" : "text-emerald-800/90"}`}>
-                Advanced computer vision meets traditional phytochemistry. Ensure the quality, potency, and purity of herbal medicines with unparalleled microscopic accuracy in a bright, modern ecosystem.
-              </p>
-            </ScrollReveal>
+          {/* Hero Content */}
+          <div className="relative z-20 flex-1 flex flex-col items-center justify-start pt-48 sm:pt-56 md:pt-64 px-6 text-center">
 
-            <ScrollReveal delay={0.3} className="flex flex-col sm:flex-row items-center justify-center gap-5">
-              <button onClick={handleScanClick} className="bg-emerald-600 text-white px-12 py-5 rounded-full text-lg font-extrabold flex items-center gap-3 hover:bg-emerald-700 hover:scale-105 transition-all shadow-xl shadow-emerald-600/30">
-                Initiate Analysis <Scan className="w-5 h-5" />
-              </button>
-            </ScrollReveal>
+            <div className="max-w-4xl mx-auto mt-6">
+              <h1 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.05] tracking-[-0.02em] font-semibold drop-shadow-lg text-balance">
+                <BlurText text="Decode Nature's Secrets" />
+                <br />
+                <span className="text-white/80">with Precision AI.</span>
+              </h1>
+              
+              <ScrollReveal delay={0.2}>
+                <p className="text-white/80 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto mt-6 sm:mt-8 font-medium drop-shadow">
+                  Advanced computer vision meets traditional phytochemistry. Ensure the quality, potency, and purity of herbal medicines with unparalleled microscopic accuracy in a bright, modern ecosystem.
+                </p>
+              </ScrollReveal>
+
+              <ScrollReveal delay={0.3} className="flex flex-wrap items-center justify-center gap-4 mt-10 sm:mt-12">
+                <div className="flowpath-glass rounded-2xl p-1.5 shadow-2xl shadow-black/20">
+                  <button 
+                    onClick={handleScanClick} 
+                    className="px-8 sm:px-10 py-4 sm:py-5 bg-[#D4AF37] text-black text-lg font-bold rounded-xl hover:bg-[#C5A028] transition-all flex items-center gap-3 hover:scale-[1.02] shadow-lg shadow-[#D4AF37]/30"
+                  >
+                    Initiate Analysis <Scan className="w-6 h-6" />
+                  </button>
+                </div>
+              </ScrollReveal>
+            </div>
           </div>
         </section>
 

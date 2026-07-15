@@ -1,0 +1,70 @@
+{
+  "lastUpdated": "2026-07-16",
+  "ticker": "New: ₹3,100 Paddy Price set for Kharif 2026 | PM-KISAN 18th Installment released | Fasal Bima claims portal now live | Odisha CM-KISAN benefits extended to landless farmers",
+  "schemes": [
+    {
+      "id": 1,
+      "nameEn": "Samrudha Krushaka Yojana",
+      "nameOr": "ସମୃଦ୍ଧ କୃଷକ ଯୋଜନା",
+      "benefit": "Paddy procurement price raised to ₹3,100/quintal for Kharif 2026 season in Odisha.",
+      "category": "Price Support",
+      "status": "Active"
+    },
+    {
+      "id": 2,
+      "nameEn": "CM-KISAN (Odisha)",
+      "nameOr": "ସିଏମ-କିଷାନ (ଓଡ଼ିଶା)",
+      "benefit": "₹2,030 Crore allocated for 51 lakh farming families. ₹4,000 per family annually.",
+      "category": "Direct Benefit",
+      "status": "Active"
+    },
+    {
+      "id": 3,
+      "nameEn": "PM-KISAN (Central)",
+      "nameOr": "ପିଏମ-କିଷାନ (କେନ୍ଦ୍ରୀୟ)",
+      "benefit": "Annual assistance increased to ₹9,000 per farmer family. 18th installment released July 2026.",
+      "category": "Direct Benefit",
+      "status": "Active"
+    },
+    {
+      "id": 4,
+      "nameEn": "Shree Anna Abhiyan",
+      "nameOr": "ଶ୍ରୀ ଅନ୍ନ ଅଭିଯାନ",
+      "benefit": "₹400 Crore for Millet cultivation promotion in Odisha. Subsidies on millet seeds and equipment.",
+      "category": "Crop Promotion",
+      "status": "Active"
+    },
+    {
+      "id": 5,
+      "nameEn": "PM Fasal Bima Yojana",
+      "nameOr": "ପ୍ରଧାନମନ୍ତ୍ରୀ ଫସଲ ବୀମା ଯୋଜନା",
+      "benefit": "Crop insurance at just 2% premium for Kharif, 1.5% for Rabi. Claims portal now fully digital.",
+      "category": "Insurance",
+      "status": "Active"
+    },
+    {
+      "id": 6,
+      "nameEn": "Kisan Credit Card (KCC)",
+      "nameOr": "କିଷାନ କ୍ରେଡିଟ୍ କାର୍ଡ",
+      "benefit": "Collateral-free loans up to ₹1.6 lakh at 4% interest (with subvention). Dairy & fisheries now included.",
+      "category": "Credit",
+      "status": "Active"
+    },
+    {
+      "id": 7,
+      "nameEn": "PM Kisan Samman Nidhi Correction",
+      "nameOr": "ପିଏମ କିଷାନ ସମ୍ମାନ ସଂଶୋଧନ",
+      "benefit": "eKYC and Aadhaar-bank linking correction window open till Sept 2026 for pending beneficiaries.",
+      "category": "Administrative",
+      "status": "Deadline"
+    },
+    {
+      "id": 8,
+      "nameEn": "Soil Health Card Scheme",
+      "nameOr": "ମୃତ୍ତିକା ସ୍ୱାସ୍ଥ୍ୟ କାର୍ଡ ଯୋଜନା",
+      "benefit": "Free soil testing and nutrient recommendations. Over 23 Crore cards issued nationwide since 2015.",
+      "category": "Technical Support",
+      "status": "Active"
+    }
+  ]
+}
