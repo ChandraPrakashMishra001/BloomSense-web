@@ -6,12 +6,17 @@ import 'leaflet/dist/leaflet.css';
 // Tile layer URLs (no API keys needed)
 const TILES = {
   street: {
-    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   },
   satellite: {
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     attribution: '&copy; <a href="https://www.esri.com/">Esri</a>',
+  },
+  // Labels overlay for satellite mode so city/place names are visible
+  labels: {
+    url: 'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
   },
 };
 
@@ -67,6 +72,17 @@ const DiseaseMap = ({ diseasePoints }) => {
           attribution={activeTile.attribution}
           maxZoom={19}
         />
+
+        {/* Labels overlay on satellite view so city/road names are visible */}
+        {isSatellite && (
+          <TileLayer
+            key="labels-overlay"
+            url={TILES.labels.url}
+            attribution={TILES.labels.attribution}
+            maxZoom={19}
+            pane="overlayPane"
+          />
+        )}
 
         <LayerToggle isSatellite={isSatellite} setIsSatellite={setIsSatellite} />
 
