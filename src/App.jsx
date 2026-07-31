@@ -177,31 +177,78 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
     setWebResult(null);
     setWebSearchError(null);
     
+    const botanicalKeywords = ['plant', 'flower', 'herb', 'tree', 'shrub', 'fern', 'moss', 'succulent', 'vine', 'grass', 'weed', 'flora', 'botanical', 'species', 'genus', 'family'];
+    
+    const isBotanicalResult = (description = '', extract = '') => {
+      const text = `${description} ${extract}`.toLowerCase();
+      return botanicalKeywords.some(kw => text.includes(kw)) || 
+        /\b(flowering|perennial|annual|biennial|deciduous|evergreen|cultivar|leaf|leaves|petal|seed|root|stem|bloom|blossom|garden|cultivat)/i.test(text);
+    };
+
+    const fetchSummary = async (title) => {
+      const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data.type === 'disambiguation' || !data.title) return null;
+      return data;
+    };
+
+    const buildResult = (data) => ({
+      id: `web-${Date.now()}`,
+      name: data.title,
+      scientificName: data.description || 'Web Database',
+      image: data.thumbnail?.source || 'https://images.unsplash.com/photo-1466692476877-361ad33333cc?auto=format&fit=crop&w=800&q=80',
+      properties: ['Web Result'],
+      diseasesTargeted: ['General Info'],
+      cures: data.extract,
+      description: data.extract,
+      preparation: 'Information fetched dynamically from the web.',
+      isWeb: true,
+      hasFullDetails: false,
+      wikiTitle: data.title
+    });
+
     try {
-      const response = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query.trim())}`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.type !== 'disambiguation' && data.title) {
-          setWebResult({
-            id: `web-${Date.now()}`,
-            name: data.title,
-            scientificName: data.description || 'Web Database',
-            image: data.thumbnail?.source || 'https://images.unsplash.com/photo-1466692476877-361ad33333cc?auto=format&fit=crop&w=800&q=80',
-            properties: ['Web Result'],
-            diseasesTargeted: ['General Info'],
-            cures: data.extract,
-            description: data.extract,
-            preparation: 'Information fetched dynamically from the web.',
-            isWeb: true,
-            hasFullDetails: false,
-            wikiTitle: data.title
-          });
-        } else {
-          setWebSearchError("No specific botanical records found on the web.");
-        }
-      } else {
-        setWebSearchError(`No botanical records found on the web for "${query}".`);
+      // Step 1: Try direct page summary first (handles exact matches like "Rose", "Tulip")
+      const directResult = await fetchSummary(query.trim());
+      if (directResult) {
+        setWebResult(buildResult(directResult));
+        setIsSearchingWeb(false);
+        return;
       }
+
+      // Step 2: Use Wikipedia search API to find the best matching article
+      const searchQueries = [
+        query.trim(),
+        `${query.trim()} plant`,
+        `${query.trim()} flower`
+      ];
+
+      for (const searchQuery of searchQueries) {
+        const searchRes = await fetch(
+          `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&srlimit=5&format=json&origin=*`
+        );
+        
+        if (searchRes.ok) {
+          const searchData = await searchRes.json();
+          const results = searchData.query?.search || [];
+          
+          for (const result of results) {
+            const summaryData = await fetchSummary(result.title);
+            if (summaryData) {
+              // For the original query (without "plant"/"flower" suffix), accept any result
+              // For plant/flower suffixed queries, prefer botanical results
+              if (searchQuery === query.trim() || isBotanicalResult(summaryData.description, summaryData.extract)) {
+                setWebResult(buildResult(summaryData));
+                setIsSearchingWeb(false);
+                return;
+              }
+            }
+          }
+        }
+      }
+      
+      setWebSearchError(`No botanical records found on the web for "${query}".`);
     } catch (err) {
       setWebSearchError("Failed to search the web. Please try again.");
     }
