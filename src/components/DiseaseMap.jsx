@@ -1,97 +1,121 @@
 import React, { useState } from 'react';
-import { Map, Overlay } from 'pigeon-maps';
+import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
 import { Layers } from 'lucide-react';
+import 'leaflet/dist/leaflet.css';
 
-// Custom CartoDB Positron Tile Provider for a premium look with no API keys
-const lightProvider = (x, y, z, dpr) => {
-  return `https://${String.fromCharCode(97 + (x + y + z) % 3)}.basemaps.cartocdn.com/light_all/${z}/${x}/${y}${dpr >= 2 ? '@2x' : ''}.png`;
+// Tile layer URLs (no API keys needed)
+const TILES = {
+  street: {
+    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+  },
+  satellite: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; <a href="https://www.esri.com/">Esri</a>',
+  },
 };
 
-// High-resolution Satellite Hybrid provider (Satellite + City Labels/Roads), completely free
-const satelliteProvider = (x, y, z) => {
-  return `https://mt1.google.com/vt/lyrs=y&x=${x}&y=${y}&z=${z}`;
+// Inner component to toggle tile layers (useMap must be inside MapContainer)
+const LayerToggle = ({ isSatellite, setIsSatellite }) => {
+  const map = useMap();
+
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        setIsSatellite(!isSatellite);
+        // Invalidate size after tile switch to avoid rendering glitches
+        setTimeout(() => map.invalidateSize(), 100);
+      }}
+      className="absolute top-4 left-4 z-[1000] bg-white/95 backdrop-blur-md p-2.5 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-emerald-100 text-emerald-900 hover:scale-105 hover:bg-white transition-all duration-300 flex items-center justify-center gap-0 group/btn"
+      title="Toggle Satellite View"
+    >
+      <Layers className="w-5 h-5 text-emerald-700 mx-1" />
+      <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 transition-all duration-300 overflow-hidden whitespace-nowrap max-w-0 group-hover/btn:max-w-[120px] group-hover/btn:px-2 opacity-0 group-hover/btn:opacity-100">
+        {isSatellite ? 'Street View' : 'Satellite'}
+      </span>
+    </button>
+  );
 };
 
 const DiseaseMap = ({ diseasePoints }) => {
-    const [selectedPoint, setSelectedPoint] = useState(null);
-    const [isSatellite, setIsSatellite] = useState(false);
+  const [isSatellite, setIsSatellite] = useState(false);
+  const activeTile = isSatellite ? TILES.satellite : TILES.street;
 
-    return (
-        <div className="w-full h-[500px] lg:h-[600px] rounded-[2.5rem] overflow-hidden shadow-xl border border-emerald-900/10 z-0 relative liquid-glass group/map">
-            
-            {/* Map Theme Toggle Button */}
-            <button 
-                onClick={() => setIsSatellite(!isSatellite)}
-                className="absolute top-4 left-4 z-[100] bg-white/95 backdrop-blur-md p-2.5 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-emerald-100 text-emerald-900 hover:scale-105 hover:bg-white transition-all duration-300 flex items-center justify-center gap-0 group-hover/map:opacity-100"
-                title="Toggle Satellite View"
+  const getSeverityColor = (severity) => {
+    switch (severity) {
+      case 'high': return '#e11d48';
+      case 'medium': return '#f59e0b';
+      case 'low': return '#22c55e';
+      default: return '#fbbf24';
+    }
+  };
+
+  return (
+    <div className="w-full h-[500px] lg:h-[600px] rounded-[2.5rem] overflow-hidden shadow-xl border border-emerald-900/10 z-0 relative liquid-glass">
+      <MapContainer
+        center={[20.2961, 85.8245]}
+        zoom={10}
+        scrollWheelZoom={true}
+        className="w-full h-full z-0"
+        style={{ borderRadius: 'inherit' }}
+        zoomControl={false}
+      >
+        <TileLayer
+          key={isSatellite ? 'satellite' : 'street'}
+          url={activeTile.url}
+          attribution={activeTile.attribution}
+          maxZoom={19}
+        />
+
+        <LayerToggle isSatellite={isSatellite} setIsSatellite={setIsSatellite} />
+
+        {/* Heatmap-style Disease Overlays */}
+        {diseasePoints.map((pt, idx) => {
+          const color = getSeverityColor(pt.severity);
+          const radius = pt.radius ? pt.radius / 40 : 25;
+
+          return (
+            <CircleMarker
+              key={idx}
+              center={[pt.lat, pt.lng]}
+              radius={radius}
+              pathOptions={{
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.35 + (pt.intensity || 0.2),
+                weight: isSatellite ? 1.5 : 1,
+                opacity: 0.6,
+              }}
             >
-                <Layers className="w-5 h-5 text-emerald-700 mx-1" />
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 transition-all duration-300 overflow-hidden whitespace-nowrap max-w-0 group-hover:max-w-[120px] group-hover:px-2 opacity-0 group-hover:opacity-100">
-                    {isSatellite ? 'Street View' : 'Satellite'}
-                </span>
-            </button>
-
-            <Map 
-                defaultCenter={[20.2961, 85.8245]} 
-                defaultZoom={10} 
-                provider={isSatellite ? satelliteProvider : lightProvider}
-                mouseEvents={true}
-                touchEvents={true}
-                animate={true}
-            >
-                {/* Heatmap Disease Simulation using Overlays */}
-                {diseasePoints.map((pt, idx) => {
-                    const dynamicWidth = pt.radius ? pt.radius / 15 : 100;
-
-                    return (
-                        <Overlay key={idx} anchor={[pt.lat, pt.lng]} offset={[dynamicWidth / 2, dynamicWidth / 2]}>
-                            <div 
-                                className="rounded-full cursor-pointer hover:scale-[1.15] transition-transform duration-300"
-                                style={{ 
-                                    width: dynamicWidth, 
-                                    height: dynamicWidth, 
-                                    backgroundColor: pt.severity === 'high' ? '#e11d48' : '#fbbf24', 
-                                    opacity: 0.35 + (pt.intensity || 0.2),
-                                    boxShadow: '0 0 40px rgba(225,29,72,0.3)',
-                                    // Add a slight white border on satellite to make zones pop out against dark backgrounds
-                                    border: isSatellite ? '2px solid rgba(255,255,255,0.2)' : 'none'
-                                }}
-                                onClick={() => setSelectedPoint(pt)}
-                            />
-                        </Overlay>
-                    );
-                })}
-
-                {/* Custom Popups via Overlay */}
-                {selectedPoint && (
-                    <Overlay anchor={[selectedPoint.lat, selectedPoint.lng]} offset={[90, 130]}>
-                        <div className="bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-emerald-100 min-w-[200px] relative z-50 animate-in fade-in zoom-in duration-200">
-                            <button 
-                                onClick={() => setSelectedPoint(null)} 
-                                className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full hover:bg-emerald-50 text-emerald-900/40 hover:text-emerald-900 transition-colors font-bold text-lg"
-                            >
-                                ×
-                            </button>
-                            <span className="font-heading italic font-bold text-emerald-950 block text-2xl leading-none mb-2 pr-4">{selectedPoint.disease}</span>
-                            <div className="flex gap-2 items-center mb-2">
-                                <span className="text-[10px] text-rose-600 font-bold uppercase tracking-widest px-2.5 py-1 bg-rose-50 rounded-md inline-block">
-                                    {selectedPoint.severity} Risk Zone
-                                </span>
-                                {(selectedPoint.confidence_score || selectedPoint.intensity) && (
-                                    <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-widest px-2.5 py-1 bg-emerald-50 rounded-md inline-block">
-                                        {selectedPoint.confidence_score ? `${selectedPoint.confidence_score}% Confidence` : `${Math.round(selectedPoint.intensity * 100)}% Confidence`}
-                                    </span>
-                                )}
-                            </div>
-                            <span className="text-xs text-emerald-800/80 block font-semibold">
-                                Detected: {new Date(selectedPoint.timestamp).toLocaleDateString()}
-                            </span>
-                        </div>
-                    </Overlay>
-                )}
-            </Map>
-        </div>
-    );
+              <Popup className="disease-popup">
+                <div className="min-w-[200px] p-1">
+                  <span className="font-heading italic font-bold text-emerald-950 block text-xl leading-none mb-2">
+                    {pt.disease}
+                  </span>
+                  <div className="flex gap-2 items-center mb-2 flex-wrap">
+                    <span className="text-[10px] text-rose-600 font-bold uppercase tracking-widest px-2.5 py-1 bg-rose-50 rounded-md inline-block">
+                      {pt.severity} Risk Zone
+                    </span>
+                    {(pt.confidence_score || pt.intensity) && (
+                      <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-widest px-2.5 py-1 bg-emerald-50 rounded-md inline-block">
+                        {pt.confidence_score
+                          ? `${pt.confidence_score}% Confidence`
+                          : `${Math.round(pt.intensity * 100)}% Confidence`}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs text-emerald-800/80 block font-semibold">
+                    Detected: {new Date(pt.timestamp).toLocaleDateString()}
+                  </span>
+                </div>
+              </Popup>
+            </CircleMarker>
+          );
+        })}
+      </MapContainer>
+    </div>
+  );
 };
 
 export default React.memo(DiseaseMap);
