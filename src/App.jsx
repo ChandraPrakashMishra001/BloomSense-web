@@ -177,12 +177,39 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
     setWebResult(null);
     setWebSearchError(null);
     
-    const botanicalKeywords = ['plant', 'flower', 'herb', 'tree', 'shrub', 'fern', 'moss', 'succulent', 'vine', 'grass', 'weed', 'flora', 'botanical', 'species', 'genus', 'family'];
+    const botanicalKeywords = [
+      // Core botanical terms
+      'plant', 'flower', 'herb', 'tree', 'shrub', 'fern', 'moss', 'succulent',
+      'vine', 'grass', 'weed', 'flora', 'botanical', 'botany', 'horticulture',
+      // Taxonomy
+      'species', 'genus', 'family', 'cultivar', 'hybrid', 'variety', 'subspecies',
+      'kingdom plantae', 'angiosperm', 'gymnosperm', 'bryophyte', 'pteridophyte',
+      // Plant parts & biology
+      'leaf', 'leaves', 'petal', 'petals', 'seed', 'seeds', 'root', 'roots',
+      'stem', 'stems', 'bark', 'trunk', 'branch', 'frond', 'tendril', 'tuber',
+      'bulb', 'rhizome', 'stamen', 'pistil', 'sepal', 'stigma', 'pollen',
+      'ovule', 'fruit', 'berry', 'nut', 'cone', 'spore', 'nectar',
+      'photosynthesis', 'chlorophyll', 'phytochemical', 'alkaloid', 'terpene',
+      // Growth & characteristics
+      'flowering', 'perennial', 'annual', 'biennial', 'deciduous', 'evergreen',
+      'bloom', 'blossom', 'sprout', 'germinate', 'propagat', 'pollination',
+      'tropical', 'herbaceous', 'woody', 'aromatic', 'fragrant', 'ornamental',
+      'native to', 'endemic', 'invasive species', 'wildflower',
+      // Usage & context
+      'garden', 'cultivat', 'nursery', 'greenhouse', 'landscap', 'crop',
+      'medicinal plant', 'herbal', 'ayurved', 'phytotherapy', 'ethnobotany',
+      'edible', 'poisonous plant', 'toxic plant', 'houseplant', 'indoor plant',
+      'aquatic plant', 'epiphyte', 'parasite plant', 'carnivorous plant',
+      // Common plant families
+      'rosaceae', 'fabaceae', 'asteraceae', 'poaceae', 'orchidaceae', 'solanaceae',
+      'lamiaceae', 'brassicaceae', 'apiaceae', 'liliaceae', 'cactaceae',
+    ];
+
+    const botanicalRegex = /\b(flower(?:ing|s)?|plant(?:s|ae|ation)?|herb(?:s|aceous|al)?|leaf|leaves|bloom(?:s|ing)?|blossom|seed(?:s|ling)?|root(?:s|ed)?|petal(?:s)?|cultivar|perennial|annual|biennial|deciduous|evergreen|shrub(?:s)?|tree(?:s)?|fern(?:s)?|vine(?:s)?|botanical|succulent|bulb(?:s)?|tuber(?:s)?|pollination|photosynthesis|chlorophyll|germination|propagation|ornamental|tropical plant|medicinal|phytochemical|native to|genus |family [A-Z]|order [A-Z])\b/i;
     
     const isBotanicalResult = (description = '', extract = '') => {
       const text = `${description} ${extract}`.toLowerCase();
-      return botanicalKeywords.some(kw => text.includes(kw)) || 
-        /\b(flowering|perennial|annual|biennial|deciduous|evergreen|cultivar|leaf|leaves|petal|seed|root|stem|bloom|blossom|garden|cultivat)/i.test(text);
+      return botanicalKeywords.some(kw => text.includes(kw)) || botanicalRegex.test(`${description} ${extract}`);
     };
 
     const fetchSummary = async (title) => {
@@ -210,18 +237,21 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
 
     try {
       // Step 1: Try direct page summary first (handles exact matches like "Rose", "Tulip")
+      // BUT only accept it if the content is actually botanical
       const directResult = await fetchSummary(query.trim());
-      if (directResult) {
+      if (directResult && isBotanicalResult(directResult.description, directResult.extract)) {
         setWebResult(buildResult(directResult));
         setIsSearchingWeb(false);
         return;
       }
 
-      // Step 2: Use Wikipedia search API to find the best matching article
+      // Step 2: Use Wikipedia search API with plant/flower suffixed queries
+      // to specifically look for botanical articles
       const searchQueries = [
-        query.trim(),
         `${query.trim()} plant`,
-        `${query.trim()} flower`
+        `${query.trim()} flower`,
+        `${query.trim()} herb`,
+        query.trim(),
       ];
 
       for (const searchQuery of searchQueries) {
@@ -235,20 +265,16 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
           
           for (const result of results) {
             const summaryData = await fetchSummary(result.title);
-            if (summaryData) {
-              // For the original query (without "plant"/"flower" suffix), accept any result
-              // For plant/flower suffixed queries, prefer botanical results
-              if (searchQuery === query.trim() || isBotanicalResult(summaryData.description, summaryData.extract)) {
-                setWebResult(buildResult(summaryData));
-                setIsSearchingWeb(false);
-                return;
-              }
+            if (summaryData && isBotanicalResult(summaryData.description, summaryData.extract)) {
+              setWebResult(buildResult(summaryData));
+              setIsSearchingWeb(false);
+              return;
             }
           }
         }
       }
       
-      setWebSearchError(`No botanical records found on the web for "${query}".`);
+      setWebSearchError(`No botanical records found for "${query}". Try searching for a plant, flower, or herb name.`);
     } catch (err) {
       setWebSearchError("Failed to search the web. Please try again.");
     }
