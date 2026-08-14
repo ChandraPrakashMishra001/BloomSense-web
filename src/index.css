@@ -243,23 +243,24 @@ body {
 
 /* --- Leaflet Map Customization --- */
 .leaflet-popup-content-wrapper {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border-radius: 1rem !important;
-  border: 1px solid rgba(16, 185, 129, 0.15) !important;
-  box-shadow: 0 8px 32px rgba(6, 78, 59, 0.12) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-radius: 1.25rem !important;
+  border: 1px solid rgba(16, 185, 129, 0.12) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255,255,255,0.1) !important;
   padding: 4px !important;
 }
 
 .leaflet-popup-content {
-  margin: 8px 12px !important;
+  margin: 10px 14px !important;
   font-family: var(--font-body) !important;
+  line-height: 1.5 !important;
 }
 
 .leaflet-popup-tip {
-  background: rgba(255, 255, 255, 0.95) !important;
-  box-shadow: 0 4px 12px rgba(6, 78, 59, 0.08) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
 
 .leaflet-popup-close-button {
@@ -275,26 +276,22 @@ body {
   color: #064e3b !important;
 }
 
-/* Clean up Leaflet attribution bar */
+/* Attribution bar — subtle, blends with any theme */
 .leaflet-control-attribution {
-  background: rgba(255, 255, 255, 0.7) !important;
+  background: rgba(0, 0, 0, 0.35) !important;
   backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
   font-size: 10px !important;
   border-radius: 8px 0 0 0 !important;
   padding: 2px 8px !important;
+  color: rgba(255, 255, 255, 0.6) !important;
 }
 
-/* Style zoom controls */
-.leaflet-control-zoom a {
-  background: rgba(255, 255, 255, 0.9) !important;
-  backdrop-filter: blur(12px) !important;
-  color: #064e3b !important;
-  border-color: rgba(16, 185, 129, 0.15) !important;
-  font-weight: 600 !important;
-  transition: all 0.2s ease !important;
+.leaflet-control-attribution a {
+  color: rgba(255, 255, 255, 0.75) !important;
 }
 
-.leaflet-control-zoom a:hover {
-  background: white !important;
-  color: #064e3b !important;
+/* Hide the default Leaflet zoom control (we removed it via zoomControl={false}) */
+.leaflet-control-zoom {
+  display: none !important;
 }
