@@ -6,25 +6,69 @@ import {
   ZoomIn, ZoomOut, Maximize2, Minimize2, Compass, Box, Square
 } from 'lucide-react';
 
-// Free high-definition MapLibre Vector Styles (No API key needed)
+// High-performance direct tile layer styles for MapLibre GL
 const MAP_STYLES = {
+  cartoVoyager: {
+    name: '3D Clean Street',
+    dark: false,
+    style: {
+      version: 8,
+      sources: {
+        'voyager-tiles': {
+          type: 'raster',
+          tiles: [
+            'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+            'https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+            'https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+            'https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png'
+          ],
+          tileSize: 256,
+          attribution: '&copy; CARTO &copy; OpenStreetMap'
+        }
+      },
+      layers: [
+        {
+          id: 'voyager-layer',
+          type: 'raster',
+          source: 'voyager-tiles',
+          minzoom: 0,
+          maxzoom: 20
+        }
+      ]
+    }
+  },
   cartoDark: {
     name: '3D Tactical Dark',
-    style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
     dark: true,
-  },
-  cartoVoyager: {
-    name: '3D Clean Voyager',
-    style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
-    dark: false,
-  },
-  cartoPositron: {
-    name: '3D Minimal Light',
-    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-    dark: false,
+    style: {
+      version: 8,
+      sources: {
+        'dark-tiles': {
+          type: 'raster',
+          tiles: [
+            'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+            'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+            'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+            'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png'
+          ],
+          tileSize: 256,
+          attribution: '&copy; CARTO &copy; OpenStreetMap'
+        }
+      },
+      layers: [
+        {
+          id: 'dark-layer',
+          type: 'raster',
+          source: 'dark-tiles',
+          minzoom: 0,
+          maxzoom: 20
+        }
+      ]
+    }
   },
   satellite: {
     name: '3D Satellite Hybrid',
+    dark: true,
     style: {
       version: 8,
       sources: {
@@ -39,7 +83,10 @@ const MAP_STYLES = {
         'carto-labels': {
           type: 'raster',
           tiles: [
-            'https://basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
+            'https://a.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png',
+            'https://b.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png',
+            'https://c.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png',
+            'https://d.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png'
           ],
           tileSize: 256
         }
@@ -60,8 +107,35 @@ const MAP_STYLES = {
           maxzoom: 19
         }
       ]
-    },
-    dark: true,
+    }
+  },
+  osm: {
+    name: '3D Standard OSM',
+    dark: false,
+    style: {
+      version: 8,
+      sources: {
+        'osm-tiles': {
+          type: 'raster',
+          tiles: [
+            'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
+          ],
+          tileSize: 256,
+          attribution: '&copy; OpenStreetMap contributors'
+        }
+      },
+      layers: [
+        {
+          id: 'osm-layer',
+          type: 'raster',
+          source: 'osm-tiles',
+          minzoom: 0,
+          maxzoom: 19
+        }
+      ]
+    }
   }
 };
 
@@ -224,9 +298,15 @@ const DiseaseMap = ({ diseasePoints = [], userLocation = null }) => {
 
     map.on('load', () => {
       renderFarmSafetyZone(map);
+      map.resize();
     });
 
+    const resizeTimer = setTimeout(() => {
+      if (mapRef.current) mapRef.current.resize();
+    }, 250);
+
     return () => {
+      clearTimeout(resizeTimer);
       map.remove();
       mapRef.current = null;
     };
@@ -438,8 +518,8 @@ const DiseaseMap = ({ diseasePoints = [], userLocation = null }) => {
       </div>
 
       {/* MapLibre WebGL Canvas Container */}
-      <div className="flex-1 relative w-full h-full overflow-hidden">
-        <div ref={mapContainerRef} className="w-full h-full" />
+      <div className="flex-1 relative w-full h-full overflow-hidden" style={{ minHeight: '480px' }}>
+        <div ref={mapContainerRef} className="w-full h-full" style={{ width: '100%', height: '100%', minHeight: '480px' }} />
 
         {/* Floating Top-Left Style Switcher */}
         <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 pointer-events-auto">
