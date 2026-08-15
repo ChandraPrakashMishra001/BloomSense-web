@@ -1114,7 +1114,7 @@ function Home() {
             <div className="lg:col-span-3 h-[600px]">
               <ScrollReveal delay={0.2} className="h-full">
                 <Suspense fallback={<div className="w-full h-full liquid-glass rounded-[2rem] animate-pulse"></div>}>
-                   <DiseaseMap diseasePoints={diseasePoints} />
+                   <DiseaseMap diseasePoints={diseasePoints} userLocation={userLocation} />
                 </Suspense>
               </ScrollReveal>
             </div>
