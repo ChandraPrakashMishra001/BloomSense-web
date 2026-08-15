@@ -6,7 +6,8 @@ import { db, auth } from './firebase';
 import { 
   Leaf, ArrowUpRight, Play, Zap, Shield, Microscope, 
   Cpu, Cloud, Database, Scan, Beaker, ChevronDown, Camera,
-  Layers, Focus, Activity, X, Loader2, CheckCircle, AlertTriangle, Search, Sparkles, Map, Bell, LogIn, LogOut, Menu, Brain
+  Layers, Focus, Activity, X, Loader2, CheckCircle, AlertTriangle, Search, Sparkles, Map, Bell, LogIn, LogOut, Menu, Brain,
+  Mic, MicOff, Volume2, VolumeX
 } from 'lucide-react';
 const DiseaseMap = lazy(() => import('./components/DiseaseMap'));
 const AlertNetwork = lazy(() => import('./components/AlertNetwork'));
@@ -14,6 +15,7 @@ import AuthModal from './components/AuthModal';
 import WeatherIntelligence from './components/WeatherIntelligence';
 import GovernmentSchemesHub from './components/GovernmentSchemesHub';
 import InstallBanner from './components/InstallBanner';
+import KisanEmergencyBar from './components/KisanEmergencyBar';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 const Hardware = lazy(() => import('./pages/Hardware'));
 const Community = lazy(() => import('./pages/Community'));
@@ -134,6 +136,72 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
   const [webResult, setWebResult] = useState(null);
   const [webSearchError, setWebSearchError] = useState(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [speakingPlantId, setSpeakingPlantId] = useState(null);
+
+  // Speech-to-text Voice Search for farmers
+  const handleVoiceSearch = () => {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+      alert("Voice search is not supported on this browser. Please use Chrome or Edge.");
+      return;
+    }
+
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRec();
+      recognition.lang = 'en-IN';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => setIsListening(true);
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (transcript) setSearchTerm(transcript);
+        setIsListening(false);
+      };
+      recognition.onerror = () => setIsListening(false);
+      recognition.onend = () => setIsListening(false);
+      recognition.start();
+    } catch (err) {
+      console.warn("Speech recognition error:", err);
+      setIsListening(false);
+    }
+  };
+
+  // Text-to-speech Audio Reader for farmers
+  const handleToggleSpeech = (plant, e) => {
+    if (e) e.stopPropagation();
+    if (!('speechSynthesis' in window)) return;
+
+    if (speakingPlantId === plant.id) {
+      window.speechSynthesis.cancel();
+      setSpeakingPlantId(null);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const curesText = typeof plant.cures === 'string' ? plant.cures : '';
+    const textToSpeak = `${plant.name}. ${plant.scientificName ? 'Botanical name: ' + plant.scientificName + '.' : ''} Properties: ${plant.properties ? plant.properties.join(', ') : ''}. Treats: ${plant.diseasesTargeted ? plant.diseasesTargeted.join(', ') : ''}. Cure details: ${curesText}`;
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    utterance.rate = 0.95;
+    utterance.onend = () => setSpeakingPlantId(null);
+    utterance.onerror = () => setSpeakingPlantId(null);
+    setSpeakingPlantId(plant.id);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  useEffect(() => {
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     setWebResult(null);
@@ -342,11 +410,23 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
                 <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 opacity-70 group-hover:opacity-100 transition-opacity pointer-events-none" />
                 <input 
                   type="text" 
-                  placeholder="Search by plant name or disease (e.g., Anxiety)..." 
+                  placeholder={isListening ? "Listening... Speak plant/disease name now..." : "Search by plant name or disease (e.g., Anxiety)..."} 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-white/80 rounded-full pl-14 pr-16 py-4 text-emerald-950 placeholder:text-emerald-800/40 outline-none focus:bg-white border border-emerald-200/80 shadow-inner shadow-emerald-50 font-body font-semibold transition-all focus:border-emerald-400/50 focus:shadow-lg"
+                  className={`w-full bg-white/80 rounded-full pl-14 pr-28 py-4 text-emerald-950 placeholder:text-emerald-800/40 outline-none focus:bg-white border shadow-inner shadow-emerald-50 font-body font-semibold transition-all focus:shadow-lg ${isListening ? 'border-rose-400 bg-rose-50/40 animate-pulse' : 'border-emerald-200/80 focus:border-emerald-400/50'}`}
                 />
+                
+                {/* Voice Search Button for Farmers */}
+                <button 
+                  type="button"
+                  onClick={handleVoiceSearch}
+                  title={isListening ? "Listening... Click to stop" : "Voice Search (Speak plant/disease name)"}
+                  className={`absolute right-14 top-1/2 -translate-y-1/2 w-10 h-10 ${isListening ? 'bg-rose-500 text-white animate-pulse' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700'} rounded-full flex items-center justify-center transition-colors shadow-sm border border-emerald-200`}
+                >
+                  <Mic className="w-5 h-5" />
+                </button>
+
+                {/* AI Camera Button */}
                 <button 
                   onClick={onCameraClick}
                   title="Use AI Camera"
@@ -393,7 +473,17 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
                   </div>
                   
                   <div className="p-6 flex-1 flex flex-col gap-5 bg-white/40">
-                    <p className="text-emerald-600 text-xs font-bold uppercase tracking-[0.2em]">{plant.scientificName}</p>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-emerald-600 text-xs font-bold uppercase tracking-[0.2em]">{plant.scientificName}</p>
+                      <button
+                        type="button"
+                        onClick={(e) => handleToggleSpeech(plant, e)}
+                        title={speakingPlantId === plant.id ? "Stop Reading" : "Listen to Plant Details (Voice Reader)"}
+                        className={`p-1.5 rounded-full border transition-all ${speakingPlantId === plant.id ? 'bg-emerald-600 text-white border-emerald-600 animate-pulse' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'}`}
+                      >
+                        {speakingPlantId === plant.id ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
                     
                     <div>
                       <h4 className="text-emerald-800/50 text-xs uppercase tracking-[0.2em] mb-2 font-bold">Key Properties</h4>
@@ -482,7 +572,18 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
               </div>
               
               <div className="px-8 py-6 text-center w-full bg-white border-t border-emerald-50 relative z-20">
-                <span className="text-pink-500 font-bold uppercase tracking-[0.2em] text-xs mb-1 block">{selectedImage.scientificName}</span>
+                <div className="flex items-center justify-center gap-3 mb-2 flex-wrap">
+                  <span className="text-pink-500 font-bold uppercase tracking-[0.2em] text-xs block">{selectedImage.scientificName}</span>
+                  <button
+                    type="button"
+                    onClick={(e) => handleToggleSpeech(selectedImage, e)}
+                    title={speakingPlantId === selectedImage.id ? "Stop Voice Reader" : "Listen to Plant Cures & Preparation"}
+                    className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold border transition-all ${speakingPlantId === selectedImage.id ? 'bg-emerald-600 text-white border-emerald-600 animate-pulse' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'}`}
+                  >
+                    {speakingPlantId === selectedImage.id ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                    <span>{speakingPlantId === selectedImage.id ? "Stop Audio" : "Voice Reader"}</span>
+                  </button>
+                </div>
                 <h3 className="font-heading italic text-4xl text-emerald-950 mb-3">{selectedImage.name}</h3>
                 <div className="text-sm text-emerald-800/80 font-medium max-w-4xl mx-auto whitespace-pre-wrap text-left leading-relaxed max-h-[40vh] overflow-y-auto p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100/50">
                   {selectedImage.cures}
@@ -1281,6 +1382,7 @@ export default function App() {
       >
         <Suspense fallback={<div className="h-screen w-full bg-pink-50 flex flex-col items-center justify-center animate-pulse"><Leaf className="w-12 h-12 text-emerald-600 mb-4" /><p className="text-emerald-800 font-bold uppercase tracking-[0.2em] text-sm">Loading Environment...</p></div>}>
           <RobotGuide />
+          <KisanEmergencyBar />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/technology/hardware" element={<Hardware />} />

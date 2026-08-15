@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 
+# Environment & API secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,6 +30,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-node_modules
 
 .vercel
+
