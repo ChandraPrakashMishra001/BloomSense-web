@@ -241,57 +241,21 @@ body {
   display: inline-flex;
 }
 
-/* --- Leaflet Map Customization --- */
-.leaflet-popup-content-wrapper {
-  background: rgba(255, 255, 255, 0.96) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border-radius: 1.25rem !important;
-  border: 1px solid rgba(16, 185, 129, 0.12) !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255,255,255,0.1) !important;
-  padding: 4px !important;
+/* --- MapLibre GL Customization --- */
+.maplibregl-canvas {
+  outline: none !important;
 }
 
-.leaflet-popup-content {
-  margin: 10px 14px !important;
-  font-family: var(--font-body) !important;
-  line-height: 1.5 !important;
-}
-
-.leaflet-popup-tip {
-  background: rgba(255, 255, 255, 0.96) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-}
-
-.leaflet-popup-close-button {
-  color: #064e3b !important;
-  font-size: 20px !important;
-  padding: 6px 8px !important;
-  opacity: 0.5;
-  transition: opacity 0.2s ease !important;
-}
-
-.leaflet-popup-close-button:hover {
-  opacity: 1;
-  color: #064e3b !important;
-}
-
-/* Attribution bar — subtle, blends with any theme */
-.leaflet-control-attribution {
-  background: rgba(0, 0, 0, 0.35) !important;
+.maplibregl-ctrl-attrib {
+  background: rgba(0, 0, 0, 0.4) !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
-  font-size: 10px !important;
+  color: rgba(255, 255, 255, 0.7) !important;
   border-radius: 8px 0 0 0 !important;
-  padding: 2px 8px !important;
-  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 10px !important;
+  padding: 2px 6px !important;
 }
 
-.leaflet-control-attribution a {
-  color: rgba(255, 255, 255, 0.75) !important;
-}
-
-/* Hide the default Leaflet zoom control (we removed it via zoomControl={false}) */
-.leaflet-control-zoom {
-  display: none !important;
-}
+.maplibregl-ctrl-attrib a {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
