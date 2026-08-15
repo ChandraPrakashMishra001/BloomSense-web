@@ -713,39 +713,107 @@ function Home() {
     };
   }, [userLocation]);
 
-  const handleSimulateScan = async () => {
-    if (!user) {
+  // Processes scan results from Amania AI Vision and links with the 3D Outbreak Map
+  const processAmaniaScanResult = async ({ disease, severity, isContagious, confidence, notes }) => {
+    const contagiousDiseases = [
+      'Rice Blast', 'Bacterial Blight', 'Bacterial Leaf Blight', 
+      'Brown Spot', 'Sheath Blight', 'Late Blight', 'Downy Mildew', 
+      'Powdery Mildew', 'Brown Plant Hopper', 'Leaf Folder'
+    ];
+
+    // Determine if this diagnosis represents a contagious crop disease
+    const isActuallyContagious = isContagious !== undefined 
+      ? isContagious 
+      : contagiousDiseases.some(d => (disease || '').toLowerCase().includes(d.toLowerCase())) || severity === 'high' || severity === 'medium';
+
+    const baseLat = userLocation ? userLocation.lat : 20.2961;
+    const baseLng = userLocation ? userLocation.lng : 85.8245;
+    const lat = baseLat + (Math.random() - 0.5) * 0.03;
+    const lng = baseLng + (Math.random() - 0.5) * 0.03;
+
+    if (isActuallyContagious) {
+      const diseaseName = disease || 'Rice Blast';
+      const severityLevel = severity || 'high';
+      const confidenceScore = confidence || 94;
+
+      const newPoint = {
+        lat,
+        lng,
+        disease: diseaseName,
+        severity: severityLevel,
+        intensity: severityLevel === 'high' ? 0.92 : 0.82,
+        confidence_score: confidenceScore,
+        timestamp: Date.now(),
+        radius: 1400,
+        source: 'Amania AI Neural Vision'
+      };
+
+      try {
+        await addDoc(collection(db, 'diseasePoints'), newPoint);
+        await addDoc(collection(db, 'alerts'), {
+          disease: diseaseName,
+          severity: severityLevel,
+          farmCount: 1,
+          lat,
+          lng,
+          timestamp: Date.now()
+        });
+      } catch (err) {
+        // Fallback for offline / demo mode
+        setDiseasePoints(prev => [newPoint, ...prev]);
+        setAlerts(prev => [{ id: `alt-${Date.now()}`, ...newPoint, timeAgo: 'Just now', distance: '<1' }, ...prev]);
+      }
+
+      setActiveToast({
+        disease: `${diseaseName} (Contagious Outbreak)`,
+        severity: severityLevel
+      });
+      setTimeout(() => setActiveToast(null), 8000);
+    } else {
+      // Non-contagious / healthy plant scan: do NOT mark the map
+      setActiveToast({
+        disease: `${disease || 'Crop'} (Healthy / Non-Contagious)`,
+        severity: 'low',
+        isHealthy: true
+      });
+      setTimeout(() => setActiveToast(null), 5000);
+    }
+  };
+
+  // Listen for real-time messages from Amania AI Camera scanner iframe
+  useEffect(() => {
+    const handleAmaniaMessage = (event) => {
+      if (event.data && typeof event.data === 'object' && event.data.type === 'AMANIA_SCAN_RESULT') {
+        processAmaniaScanResult(event.data.payload);
+      }
+    };
+    window.addEventListener('message', handleAmaniaMessage);
+    return () => window.removeEventListener('message', handleAmaniaMessage);
+  }, [userLocation]);
+
+  const handleSimulateContagiousScan = async () => {
+    if (!user && !isGuestMode) {
       setShowAuthModal(true);
       return;
     }
-
-    // Drop the pin using the user's ACTUAL real-world GPS coordinates!
-    const baseLat = userLocation ? userLocation.lat : 20.2961;
-    const baseLng = userLocation ? userLocation.lng : 85.8245;
-
-    // Add a slight jitter to simulate scanning a neighboring farm 
-    const lat = baseLat + (Math.random() - 0.5) * 0.08;
-    const lng = baseLng + (Math.random() - 0.5) * 0.08;
-
-    // Push the disease detection to the unified Global Firebase Database!
-    await addDoc(collection(db, 'diseasePoints'), {
-      lat,
-      lng,
-      disease: 'Rice Blast (Local)',
+    await processAmaniaScanResult({
+      disease: 'Rice Blast (Magnaporthe oryzae)',
       severity: 'high',
-      intensity: 0.6 + Math.random() * 0.3,
-      timestamp: Date.now(),
-      radius: 800 + Math.random() * 800
+      isContagious: true,
+      confidence: 96
     });
+  };
 
-    // Broadcast the alert to the feed globally across all devices instantly!
-    await addDoc(collection(db, 'alerts'), {
-      disease: 'Rice Blast',
-      severity: 'high',
-      farmCount: 1,
-      lat,
-      lng,
-      timestamp: Date.now()
+  const handleSimulateHealthyScan = async () => {
+    if (!user && !isGuestMode) {
+      setShowAuthModal(true);
+      return;
+    }
+    await processAmaniaScanResult({
+      disease: 'Healthy Paddy (Oryza sativa)',
+      severity: 'none',
+      isContagious: false,
+      confidence: 99
     });
   };
 
@@ -1100,12 +1168,28 @@ function Home() {
               Every Amania scan logs disease signatures. Discover hyper-local infection zones before they reach your farm. This decentralized, farmer-to-farmer alert network is the first of its kind.
             </p>
             
-            <button 
-              onClick={handleSimulateScan}
-              className="mt-8 bg-pink-500/10 text-pink-600 border border-pink-500/30 px-6 py-3 rounded-full text-sm font-bold flex items-center justify-center gap-2 hover:bg-pink-500 hover:text-white transition-all mx-auto shadow-sm"
-            >
-              <Zap className="w-4 h-4" /> Simulate Local Scan Detection
-            </button>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <button 
+                onClick={handleSimulateContagiousScan}
+                className="bg-rose-500/10 text-rose-700 border border-rose-500/30 px-6 py-3 rounded-full text-sm font-bold flex items-center justify-center gap-2 hover:bg-rose-600 hover:text-white transition-all shadow-sm"
+                title="Simulate Amania AI detecting contagious Rice Blast"
+              >
+                <Zap className="w-4 h-4 text-rose-500" /> Amania Scan: Contagious Outbreak
+              </button>
+
+              <button 
+                onClick={handleSimulateHealthyScan}
+                className="bg-emerald-500/10 text-emerald-800 border border-emerald-500/30 px-6 py-3 rounded-full text-sm font-bold flex items-center justify-center gap-2 hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
+                title="Simulate Amania AI detecting healthy crop (no map marking)"
+              >
+                <CheckCircle className="w-4 h-4 text-emerald-600" /> Amania Scan: Healthy Field
+              </button>
+            </div>
+
+            <p className="mt-4 text-xs font-semibold text-emerald-800/60 uppercase tracking-widest flex items-center justify-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-pink-500" />
+              Connected to Amania AI • Only verified contagious infections create markings on the map
+            </p>
           </ScrollReveal>
 
           <WeatherIntelligence userLocation={userLocation} />
