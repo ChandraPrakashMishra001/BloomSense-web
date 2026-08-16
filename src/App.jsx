@@ -16,6 +16,7 @@ import WeatherIntelligence from './components/WeatherIntelligence';
 import GovernmentSchemesHub from './components/GovernmentSchemesHub';
 import InstallBanner from './components/InstallBanner';
 import KisanEmergencyBar from './components/KisanEmergencyBar';
+import AmaniaVoiceModal from './components/AmaniaVoiceModal';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 const Hardware = lazy(() => import('./pages/Hardware'));
 const Community = lazy(() => import('./pages/Community'));
@@ -617,6 +618,7 @@ function Home() {
   const [subscribed, setSubscribed] = useState(false);
   const [showAnimation, setShowAnimation] = useState(true);
   const [showAmaniaCamera, setShowAmaniaCamera] = useState(false);
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
   const [alerts, setAlerts] = useState(initialAlerts);
   const [diseasePoints, setDiseasePoints] = useState(initialDiseasePoints);
   const [userLocation, setUserLocation] = useState(null);
@@ -895,6 +897,15 @@ function Home() {
             <InteractiveHoverButton onClick={() => setShowAuthModal(true)} text="Log In" />
           )}
 
+          <button 
+            onClick={() => setShowVoiceModal(true)} 
+            className="liquid-glass border border-pink-200/80 bg-white/60 text-pink-700 px-3.5 lg:px-4 py-2 lg:py-2.5 rounded-full text-xs lg:text-sm font-bold flex items-center gap-1.5 hover:bg-white transition-all shadow-sm hover:shadow-pink-500/20"
+            title="Talk with Amania Voice AI"
+          >
+            <Mic className="w-4 h-4 text-pink-500" />
+            <span className="hidden sm:inline">Voice AI</span>
+          </button>
+
           <button onClick={handleScanClick} className="ml-1 bg-[#D4AF37] text-black px-4 lg:px-7 py-2 lg:py-2.5 rounded-full text-sm font-bold flex items-center gap-1.5 lg:gap-2 hover:bg-[#C5A028] transition-colors shadow-lg hover:shadow-[#D4AF37]/30">
             <span className="hidden lg:inline">Scan Sample</span><span className="lg:hidden">Scan</span> <ArrowUpRight className="w-4 h-4" />
           </button>
@@ -910,6 +921,13 @@ function Home() {
                <LogIn className="w-5 h-5" />
             </button>
           )}
+          <button 
+            onClick={() => setShowVoiceModal(true)} 
+            className="w-11 h-11 rounded-full bg-pink-100 text-pink-700 flex items-center justify-center border border-pink-200 shadow-sm"
+            title="Voice AI"
+          >
+            <Mic className="w-5 h-5" />
+          </button>
           <button onClick={handleScanClick} className="bg-[#D4AF37] text-black w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-[#C5A028] transition-colors">
             <Scan className="w-5 h-5" />
           </button>
@@ -1025,6 +1043,9 @@ function Home() {
               </ScrollReveal>
             </div>
           </div>
+
+          {/* Interactive Floating Amania AI Badge */}
+          <AmaniaBadge onClick={() => setShowVoiceModal(true)} />
         </section>
 
         <FloraArchive onCameraClick={handleScanClick} />
@@ -1329,12 +1350,27 @@ function Home() {
                       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-600 mt-1">Botanical Analysis Mode</p>
                     </div>
                   </div>
-                  <button 
-                    onClick={() => setShowAmaniaCamera(false)}
-                    className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors border border-emerald-100 shadow-sm"
-                  >
-                    <X className="w-6 h-6 text-emerald-900/60" />
-                  </button>
+                  
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => {
+                        setShowAmaniaCamera(false);
+                        setShowVoiceModal(true);
+                      }}
+                      className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-pink-50 text-pink-700 hover:bg-pink-100 border border-pink-200 transition-colors shadow-sm"
+                      title="Switch to Voice AI Conversation"
+                    >
+                      <Mic className="w-3.5 h-3.5 text-pink-500" />
+                      <span>Voice Conversation Mode</span>
+                    </button>
+                    
+                    <button 
+                      onClick={() => setShowAmaniaCamera(false)}
+                      className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors border border-emerald-100 shadow-sm"
+                    >
+                      <X className="w-6 h-6 text-emerald-900/60" />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="flex-1 w-full h-full pt-[73px]">
@@ -1350,7 +1386,19 @@ function Home() {
           )}
         </AnimatePresence>
 
-
+        {/* Full-Duplex Amania AI Voice Modal */}
+        <AmaniaVoiceModal 
+          isOpen={showVoiceModal} 
+          onClose={() => setShowVoiceModal(false)} 
+          onContagiousOutbreakDetected={(text) => {
+            processAmaniaScanResult({
+              disease: text.toLowerCase().includes('blast') ? 'Rice Blast (Voice Report)' : 'Bacterial Blight (Voice Report)',
+              severity: 'high',
+              isContagious: true,
+              confidence: 93
+            });
+          }}
+        />
 
         <AnimatePresence>
           {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} onGuestLogin={() => { setIsGuestMode(true); setShowAuthModal(false); setShowAmaniaCamera(true); }} />}
