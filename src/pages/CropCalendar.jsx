@@ -185,15 +185,103 @@ function SetupWizard({ onComplete }) {
 
 // ── Main Calendar Page ────────────────────────────────────────────────────────
 
+const CROP_METADATA = {
+  Rice: {
+    durationDays: 125,
+    msp: "₹2,300 / quintal (Common) | ₹2,320 / quintal (Grade A)",
+    waterReq: "1100 - 1250 mm",
+    soilType: "Clayey loam to silty clay (high water retention)",
+    optimalPh: "5.5 - 6.5",
+    fertilizerDose: { basalDAP: 40, basalMOP: 25, basalZinc: 10, topDress1Urea: 45, topDress2Urea: 35, topDress2MOP: 15, organicCompostTons: 4 },
+    keyThreats: [
+      { name: "Rice Blast (Pyricularia oryzae)", stage: "Tillering to Panicle", chemical: "Tricyclazole 75% WP @ 0.6g/L", organic: "5% Neem Seed Extract or Pseudomonas fluorescens @ 5g/L", severity: "high" },
+      { name: "Yellow Stem Borer (Scirpophaga incertulas)", stage: "Active Tillering", chemical: "Chlorantraniliprole 18.5% SC @ 0.3ml/L", organic: "Install Pheromone Traps @ 8/acre + Trichogramma parasitoids", severity: "high" },
+      { name: "Brown Plant Hopper (Nilaparvata lugens)", stage: "Milking to Dough", chemical: "Pymetrozine 50% WDG @ 0.6g/L", organic: "Azadirachtin 1500 ppm @ 3ml/L targeting lower stem", severity: "medium" }
+    ],
+    schemes: [
+      { name: "PM-KISAN", desc: "Direct benefit transfer of ₹6,000/yr in 3 installments", link: "https://pmkisan.gov.in" },
+      { name: "PMFBY Crop Insurance", desc: "Comprehensive risk coverage against flood, drought & pest epidemic", link: "https://pmfby.gov.in" },
+      { name: "Kalia & Samrudha Krushaka (Odisha)", desc: "Direct seed subsidy & input support for paddy farmers", link: "https://agri.odisha.gov.in" }
+    ]
+  },
+  Wheat: {
+    durationDays: 120,
+    msp: "₹2,275 / quintal",
+    waterReq: "450 - 650 mm (4-6 irrigations)",
+    soilType: "Well-drained fertile loamy soil",
+    optimalPh: "6.0 - 7.5",
+    fertilizerDose: { basalDAP: 55, basalMOP: 20, basalZinc: 8, topDress1Urea: 50, topDress2Urea: 40, topDress2MOP: 10, organicCompostTons: 3 },
+    keyThreats: [
+      { name: "Yellow Rust (Puccinia striiformis)", stage: "Tillering to Heading", chemical: "Propiconazole 25% EC @ 1ml/L", organic: "Foliar spray of Sour Buttermilk (10%) + Cow Urine", severity: "high" },
+      { name: "Termites (Odontotermes obesus)", stage: "Seedling Stage", chemical: "Chlorpyrifos 20% EC @ 3ml/kg seed", organic: "Neem cake soil application @ 100kg/acre", severity: "medium" },
+      { name: "Karnal Bunt (Tilletia indica)", stage: "Earhead Stage", chemical: "Tebuconazole 25.9% EC @ 1ml/L", organic: "Trichoderma viride seed treatment @ 4g/kg", severity: "high" }
+    ],
+    schemes: [
+      { name: "National Food Security Mission (NFSM)", desc: "High Yield Variety (HYV) seed distribution subsidies", link: "https://nfsm.gov.in" },
+      { name: "Sub-Mission on Agricultural Mechanization", desc: "Up to 50% subsidy on Happy Seeder & Super Seeder", link: "https://agrimachinery.nic.in" }
+    ]
+  },
+  Tomato: {
+    durationDays: 105,
+    msp: "Market Price Driven (Cold Storage Subsidy ₹10,000/ton)",
+    waterReq: "600 - 800 mm (Drip recommended)",
+    soilType: "Rich organic sandy loam with good drainage",
+    optimalPh: "6.0 - 6.8",
+    fertilizerDose: { basalDAP: 50, basalMOP: 30, basalZinc: 5, topDress1Urea: 35, topDress2Urea: 35, topDress2MOP: 20, organicCompostTons: 6 },
+    keyThreats: [
+      { name: "Early & Late Blight", stage: "Vegetative & Flowering", chemical: "Mancozeb 75% WP @ 2.5g/L or Metalaxyl", organic: "Bordeaux Mixture 1% foliar spray", severity: "high" },
+      { name: "Tomato Fruit Borer (Helicoverpa armigera)", stage: "Fruiting Stage", chemical: "Emamectin Benzoate 5% SG @ 0.5g/L", organic: "Helicoverpa NPV @ 250 LE/acre + Marigold trap crops", severity: "high" }
+    ],
+    schemes: [
+      { name: "MIDH (Mission for Integrated Horticulture)", desc: "Subsidies for Polyhouse, Shadenet & Drip Irrigation", link: "https://midh.gov.in" }
+    ]
+  },
+  Cotton: {
+    durationDays: 165,
+    msp: "₹7,121 / quintal (Medium) | ₹7,521 / quintal (Long Staple)",
+    waterReq: "700 - 1200 mm",
+    soilType: "Deep black cotton soil (Regur) with good aeration",
+    optimalPh: "6.5 - 8.0",
+    fertilizerDose: { basalDAP: 45, basalMOP: 35, basalZinc: 10, topDress1Urea: 40, topDress2Urea: 40, topDress2MOP: 25, organicCompostTons: 5 },
+    keyThreats: [
+      { name: "Pink Bollworm (Pectinophora gossypiella)", stage: "Squaring & Boll Formation", chemical: "Profenofos 50% EC @ 2ml/L", organic: "Pheromone traps (PB-Rope L) @ 10/acre", severity: "high" },
+      { name: "Whitefly & Leaf Curl Virus", stage: "Early Vegetative", chemical: "Diafenthiuron 50% WP @ 1.2g/L", organic: "Yellow Sticky Traps @ 20/acre + Neem oil 1500ppm", severity: "high" }
+    ],
+    schemes: [
+      { name: "Cotton Corporation of India (CCI) MSP Procurement", desc: "Guaranteed minimum support price at designated APMC mandis", link: "https://cotcorp.org.in" }
+    ]
+  },
+  Maize: {
+    durationDays: 100,
+    msp: "₹2,090 / quintal",
+    waterReq: "500 - 700 mm",
+    soilType: "Deep, well-drained loamy soil",
+    optimalPh: "5.8 - 7.2",
+    fertilizerDose: { basalDAP: 45, basalMOP: 25, basalZinc: 10, topDress1Urea: 45, topDress2Urea: 30, topDress2MOP: 15, organicCompostTons: 4 },
+    keyThreats: [
+      { name: "Fall Armyworm (Spodoptera frugiperda)", stage: "Seedling to Knee-High", chemical: "Chlorantraniliprole @ 0.4ml/L in whorl", organic: "Metarhizium anisopliae @ 5g/L bio-spray", severity: "high" }
+    ],
+    schemes: [
+      { name: "NFSM Coarse Cereals", desc: "Seed minikit and bio-fertilizer incentives", link: "https://nfsm.gov.in" }
+    ]
+  }
+};
+
 export default function CropCalendar() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null); // { crop, sowingMonth }
   const [loading, setLoading] = useState(true);
-  const [notifStatus, setNotifStatus] = useState('default'); // 'default' | 'granted' | 'denied'
-  const [savingProfile, setSavingProfile] = useState(false);
+  const [notifStatus, setNotifStatus] = useState('default');
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [activeTab, setActiveTab] = useState('tasks'); // 'tasks' | 'fertilizer' | 'pests' | 'water' | 'schemes'
+  const [acreage, setAcreage] = useState(2);
+  const [completedTasks, setCompletedTasks] = useState({});
+  const [voiceLang, setVoiceLang] = useState('en-IN');
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
-  const currentMonth = new Date().getMonth() + 1; // 1-indexed
-  const currentMonthData = profile ? (advisories[profile.crop]?.[String(currentMonth)] || null) : null;
+  const currentActualMonth = new Date().getMonth() + 1; // 1-indexed
+  const meta = (profile && CROP_METADATA[profile.crop]) || CROP_METADATA['Rice'];
+  const monthData = profile ? (advisories[profile.crop]?.[String(selectedMonth)] || advisories['Rice']?.[String(selectedMonth)] || null) : null;
 
   // Auth listener
   useEffect(() => {
@@ -201,66 +289,92 @@ export default function CropCalendar() {
     return unsub;
   }, []);
 
-  // Load saved profile from Firestore or localStorage
+  // Load saved profile & completed checklist from localStorage / Firestore
   useEffect(() => {
     let isMounted = true;
-    const loadProfile = async () => {
-      // Try localStorage first (works offline)
-      const local = localStorage.getItem('bloomsense_crop_profile');
-      let hasLocalProfile = false;
-      if (local) {
-        try { 
-          setProfile(JSON.parse(local));
-          hasLocalProfile = true;
-          if (isMounted) setLoading(false); // Instantly show UI if we have offline/local data
+    const loadData = async () => {
+      const localProfile = localStorage.getItem('bloomsense_crop_profile');
+      const localTasks = localStorage.getItem('bloomsense_completed_tasks');
+      if (localTasks) {
+        try { setCompletedTasks(JSON.parse(localTasks)); } catch {}
+      }
+
+      let hasLocal = false;
+      if (localProfile) {
+        try {
+          const parsed = JSON.parse(localProfile);
+          setProfile(parsed);
+          setSelectedMonth(new Date().getMonth() + 1);
+          hasLocal = true;
+          if (isMounted) setLoading(false);
         } catch {}
       }
 
-      // If logged in, fetch from Firestore to sync any new data
       if (user) {
         try {
-          // Use Promise.race to ensure it doesn't hang indefinitely on poor networks
-          const fetchPromise = getDoc(doc(db, 'users', user.uid, 'cropProfile', 'main'));
-          const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000));
-          const snap = await Promise.race([fetchPromise, timeoutPromise]);
-          
+          const snap = await getDoc(doc(db, 'users', user.uid, 'cropProfile', 'main'));
           if (snap.exists() && isMounted) {
             const data = snap.data();
             setProfile({ crop: data.crop, sowingMonth: data.sowingMonth });
             localStorage.setItem('bloomsense_crop_profile', JSON.stringify({ crop: data.crop, sowingMonth: data.sowingMonth }));
           }
         } catch (e) {
-          console.warn("Could not sync remote calendar profile:", e.message);
+          console.warn("Sync error:", e.message);
         }
       }
-      
-      if (isMounted && !hasLocalProfile) {
-        setLoading(false);
-      }
 
-      // Notification permission status
+      if (isMounted && !hasLocal) setLoading(false);
       if ('Notification' in window && isMounted) setNotifStatus(Notification.permission);
     };
-    
-    loadProfile();
+
+    loadData();
     return () => { isMounted = false; };
   }, [user]);
+
+  // Toggle checklist item done state
+  const handleToggleTask = (taskKey) => {
+    const updated = { ...completedTasks, [taskKey]: !completedTasks[taskKey] };
+    setCompletedTasks(updated);
+    localStorage.setItem('bloomsense_completed_tasks', JSON.stringify(updated));
+  };
+
+  // Text-to-speech voice reader
+  const handleSpeakText = (text) => {
+    if (!('speechSynthesis' in window)) return;
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.rate = 0.92;
+    utt.pitch = 1.05;
+
+    const voices = window.speechSynthesis.getVoices();
+    const pref = voices.find(v => (v.lang.startsWith(voiceLang.split('-')[0])) && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google')))
+      || voices.find(v => v.lang.startsWith('en'));
+    if (pref) utt.voice = pref;
+
+    utt.onstart = () => setIsSpeaking(true);
+    utt.onend = () => setIsSpeaking(false);
+    utt.onerror = () => setIsSpeaking(false);
+    window.speechSynthesis.speak(utt);
+  };
 
   const handleSetupComplete = async ({ crop, sowingMonth }) => {
     const profileData = { crop, sowingMonth };
     setProfile(profileData);
-    setSavingProfile(true);
-    // Persist locally (offline-safe)
+    setSelectedMonth(new Date().getMonth() + 1);
     localStorage.setItem('bloomsense_crop_profile', JSON.stringify(profileData));
-    // Persist to Firestore if logged in
     if (user) {
       try {
         await setDoc(doc(db, 'users', user.uid, 'cropProfile', 'main'), {
           crop, sowingMonth, updatedAt: Date.now()
         }, { merge: true });
-      } catch (e) { /* offline — will sync later */ }
+      } catch (e) {}
     }
-    setSavingProfile(false);
   };
 
   const handleRequestNotifications = async () => {
@@ -268,10 +382,8 @@ export default function CropCalendar() {
     const permission = await Notification.requestPermission();
     setNotifStatus(permission);
     if (permission === 'granted') {
-      // In a full setup you'd grab FCM token here and save to Firestore
-      // For now show a success notification as demonstration
-      new Notification('🌾 BloomSense Advisories Enabled', {
-        body: `You'll get weekly ${profile?.crop || 'crop'} tips every Monday morning.`,
+      new Notification('🌾 BloomSense Crop Intelligence Active', {
+        body: `Weekly precision agronomic alerts scheduled for your ${profile?.crop || 'farm'}.`,
         icon: '/icons/icon-192.png'
       });
     }
@@ -287,7 +399,7 @@ export default function CropCalendar() {
       <div className="min-h-screen bg-pink-50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <Leaf className="w-10 h-10 text-emerald-600 animate-bounce" />
-          <p className="text-emerald-800 font-bold text-sm uppercase tracking-widest">Loading your farm...</p>
+          <p className="text-emerald-800 font-bold text-sm uppercase tracking-widest">Loading Crop Intelligence...</p>
         </div>
       </div>
     );
@@ -297,12 +409,19 @@ export default function CropCalendar() {
     return <SetupWizard onComplete={handleSetupComplete} />;
   }
 
-  const cropInfo = CROPS.find(c => c.id === profile.crop);
+  const cropInfo = CROPS.find(c => c.id === profile.crop) || CROPS[0];
+
+  // Calculate approximate Days After Sowing (DAS)
+  const currentMonthIdx = new Date().getMonth() + 1;
+  const monthDiff = (currentMonthIdx - profile.sowingMonth + 12) % 12;
+  const approximateDAS = Math.min(meta.durationDays, Math.max(10, monthDiff * 30 + 15));
+  const progressPercent = Math.min(100, Math.round((approximateDAS / meta.durationDays) * 100));
+  const daysRemaining = Math.max(0, meta.durationDays - approximateDAS);
 
   return (
     <div className="min-h-screen bg-pink-50 leaf-pattern-bg text-emerald-950 font-body">
-      {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-12 py-3 flex items-center bg-pink-50/90 backdrop-blur-md border-b border-emerald-900/10 shadow-sm">
+      {/* Top Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-12 py-3 flex items-center bg-pink-50/90 backdrop-blur-md border-b border-emerald-900/10 shadow-sm print:hidden">
         <Link to="/" className="flex items-center gap-2 group mr-auto">
           <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-emerald-100/50 group-hover:bg-emerald-200 transition-colors">
             <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 text-emerald-700" />
@@ -310,181 +429,473 @@ export default function CropCalendar() {
           <span className="font-bold text-emerald-800 text-sm hidden lg:block mr-2 group-hover:text-emerald-950 transition-colors">Back to BloomSense</span>
           <div className="flex flex-col drop-shadow-sm border-l border-emerald-900/10 pl-3">
             <span className="font-heading italic text-lg md:text-xl text-emerald-950 leading-none">BloomSense</span>
-            <a
-              href="https://neural-leaf.vercel.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={e => e.stopPropagation()}
-              className="inline-flex items-center gap-0.5 text-[8px] md:text-[9px] font-extrabold uppercase tracking-[0.25em] bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-pink-600 hover:to-purple-600 bg-clip-text text-transparent transition-all duration-300 hover:scale-[1.04] cursor-pointer select-none mt-0.5 pl-0.5"
-              title="Visit Neural Leaf"
-            >
-              Neural Leaf ↗
-            </a>
+            <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">Crop Calendar 3.0</span>
           </div>
         </Link>
-        <div className="hidden sm:flex items-center gap-2 mr-2">
-          <Calendar className="w-4 h-4 text-emerald-600" />
-          <span className="font-bold text-emerald-950 text-sm">Crop Calendar</span>
-        </div>
+
+        {/* Action Controls */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <span className="text-xs sm:text-sm font-semibold text-emerald-700/60 hidden sm:inline">{cropInfo?.icon} {profile.crop}</span>
-          <span className="text-xs sm:text-sm font-semibold text-emerald-700/60 sm:hidden">{cropInfo?.icon}</span>
-          <button onClick={handleReset} className="text-[10px] sm:text-xs text-emerald-600 hover:text-emerald-800 font-bold flex items-center gap-1 border border-emerald-200 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full hover:bg-emerald-50 transition-colors shadow-sm">
-            <RefreshCw className="w-3 h-3" /> <span className="hidden sm:inline">Change Crop</span><span className="sm:hidden">Reset</span>
+          {/* Print Farm Plan Button */}
+          <button
+            onClick={() => window.print()}
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white/80 hover:bg-white text-emerald-800 border border-emerald-200 shadow-sm transition-all"
+            title="Print printable farm schedule sheet"
+          >
+            🖨️ <span>Print Plan</span>
+          </button>
+
+          {/* Switch Crop */}
+          <button 
+            onClick={handleReset} 
+            className="text-xs text-emerald-700 hover:text-emerald-950 font-bold flex items-center gap-1.5 bg-emerald-100/70 hover:bg-emerald-200/80 border border-emerald-200 px-3 py-1.5 rounded-full transition-colors shadow-sm"
+          >
+            <RefreshCw className="w-3.5 h-3.5" /> 
+            <span>{cropInfo.icon} {profile.crop}</span>
           </button>
         </div>
       </nav>
 
-      <main className="pt-24 pb-20 px-6 lg:px-12 max-w-[1400px] mx-auto">
-
-        {/* Hero Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
-          <span className="text-pink-500 font-bold uppercase tracking-[0.25em] text-xs mb-3 block">Personalised Farm Intelligence</span>
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-            <div>
-              <h1 className="font-heading italic text-5xl md:text-7xl text-emerald-950 leading-none">
-                {cropInfo?.icon} {profile.crop}
-              </h1>
-              <p className="text-emerald-700/70 font-medium mt-2 text-lg">{cropInfo?.hint} · Sowing month: {MONTH_NAMES[profile.sowingMonth - 1]}</p>
-            </div>
-
-            {/* Notification CTA */}
-            <div>
-              {notifStatus === 'granted' ? (
-                <div className="flex items-center gap-2 bg-emerald-100 text-emerald-700 px-5 py-3 rounded-full text-sm font-bold">
-                  <Bell className="w-4 h-4" /> Weekly advisories enabled
+      <main className="pt-24 pb-20 px-4 sm:px-6 lg:px-12 max-w-[1400px] mx-auto">
+        
+        {/* ── Section 1: Dynamic Farm & Crop Progress Dashboard ── */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+          <div className="liquid-glass rounded-[2.5rem] p-6 sm:p-8 border border-emerald-200/60 shadow-xl bg-gradient-to-r from-emerald-50/90 via-white to-pink-50/80 relative overflow-hidden">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+              
+              {/* Crop identity & Sowing Meta */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-3xl sm:text-4xl">{cropInfo.icon}</span>
+                  <div>
+                    <h1 className="font-heading italic text-3xl sm:text-5xl text-emerald-950 leading-none">
+                      {profile.crop} Farm Plan
+                    </h1>
+                    <p className="text-emerald-700/80 font-bold text-xs sm:text-sm mt-0.5">{cropInfo.hint} • Sown in {MONTH_NAMES[profile.sowingMonth - 1]}</p>
+                  </div>
                 </div>
-              ) : notifStatus === 'denied' ? (
-                <div className="flex items-center gap-2 bg-rose-50 text-rose-600 px-5 py-3 rounded-full text-sm font-bold border border-rose-200">
-                  <BellOff className="w-4 h-4" /> Notifications blocked
+
+                <div className="flex flex-wrap gap-2 mt-3 text-xs font-semibold text-emerald-900/80">
+                  <span className="bg-emerald-100/80 px-3 py-1 rounded-full border border-emerald-200">
+                    ⏱️ Total Cycle: {meta.durationDays} Days
+                  </span>
+                  <span className="bg-pink-100/80 text-pink-900 px-3 py-1 rounded-full border border-pink-200">
+                    💧 Water Req: {meta.waterReq}
+                  </span>
+                  <span className="bg-amber-100/80 text-amber-900 px-3 py-1 rounded-full border border-amber-200">
+                    🌱 Soil pH: {meta.optimalPh}
+                  </span>
                 </div>
-              ) : (
-                <button
-                  onClick={handleRequestNotifications}
-                  className="flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20"
-                >
-                  <Bell className="w-4 h-4" /> Enable Weekly Alerts
-                </button>
-              )}
+              </div>
+
+              {/* Live Growth Stage Tracker */}
+              <div className="bg-white/90 backdrop-blur-md p-5 rounded-3xl border border-emerald-200/80 shadow-md min-w-[280px] sm:min-w-[340px]">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-black uppercase tracking-wider text-emerald-700">Crop Growth Tracker</span>
+                  <span className="text-xs font-black text-emerald-950">{approximateDAS} DAS ({progressPercent}%)</span>
+                </div>
+
+                {/* Progress bar */}
+                <div className="w-full h-3 bg-emerald-100 rounded-full overflow-hidden mb-3 relative">
+                  <motion.div 
+                    initial={{ width: 0 }} 
+                    animate={{ width: `${progressPercent}%` }} 
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                    className="h-full bg-gradient-to-r from-lime-500 via-emerald-500 to-teal-600 rounded-full"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between text-xs font-bold text-emerald-900/80">
+                  <span>Current: {monthData?.phase || "Vegetative Stage"}</span>
+                  <span className="text-pink-600 font-extrabold">{daysRemaining > 0 ? `${daysRemaining}d to Harvest` : "Ready to Harvest!"}</span>
+                </div>
+              </div>
+
             </div>
           </div>
         </motion.div>
 
-        {/* Phase Calendar */}
+        {/* ── Section 2: Interactive 12-Month Timeline ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="liquid-glass rounded-3xl p-6 md:p-8 mb-8 border border-emerald-200/50"
+          className="liquid-glass rounded-3xl p-6 sm:p-8 mb-8 border border-emerald-200/60 shadow-lg"
         >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-emerald-600" />
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
+                <Calendar className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="font-heading italic text-2xl text-emerald-950">12-Month Phenological Roadmap</h2>
+                <p className="text-emerald-700/70 text-xs font-semibold">Click any month below to switch the advisory & field schedule</p>
+              </div>
             </div>
-            <div>
-              <h2 className="font-heading italic text-2xl text-emerald-950">Growth Phase Timeline</h2>
-              <p className="text-emerald-700/60 text-xs font-semibold uppercase tracking-wider">Full year at a glance</p>
+
+            {/* Viewing Month Badge */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-emerald-800/80">Viewing:</span>
+              <span className="bg-emerald-600 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-full shadow-sm">
+                {MONTH_NAMES[selectedMonth - 1]} ({monthData?.phase || 'Active Stage'})
+              </span>
             </div>
           </div>
-          <CropPhaseCalendar crop={profile.crop} />
+
+          <CropPhaseCalendar 
+            crop={profile.crop} 
+            selectedMonth={selectedMonth} 
+            onSelectMonth={(m) => setSelectedMonth(m)} 
+          />
         </motion.div>
 
-        {/* Current Month Advisory */}
-        <div className="grid lg:grid-cols-3 gap-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="lg:col-span-2"
-          >
-            <div className="liquid-glass rounded-3xl p-6 md:p-8 border border-emerald-200/50 h-full">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
-                  <Sun className="w-5 h-5 text-pink-500" />
-                </div>
-                <div>
-                  <h2 className="font-heading italic text-2xl text-emerald-950">
-                    {MONTH_NAMES[currentMonth - 1]} Advisory
-                  </h2>
-                  {currentMonthData && (
-                    <span className="text-xs font-black uppercase tracking-widest text-emerald-600 bg-emerald-100 px-3 py-1 rounded-full mt-1 inline-block">
-                      {currentMonthData.phase}
-                    </span>
-                  )}
-                </div>
-              </div>
+        {/* ── Section 3: 5-Tab Production Agronomy Suite ── */}
+        <div className="mb-6">
+          {/* Tab buttons */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar border-b border-emerald-900/10">
+            {[
+              { id: 'tasks', label: '📋 Weekly Action Tasks', desc: 'Step-by-step field checklist' },
+              { id: 'fertilizer', label: '🧪 NPK Nutrient Calculator', desc: 'Precision fertilizer doses' },
+              { id: 'pests', label: '🛡️ Pest & Disease Radar', desc: 'Bio & chemical protocols' },
+              { id: 'water', label: '💧 Water & Irrigation', desc: 'Moisture requirements' },
+              { id: 'schemes', label: '🏛️ MSP & Govt Subsidies', desc: 'Direct financial assistance' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer
+                  ${activeTab === tab.id 
+                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30 scale-[1.02]' 
+                    : 'bg-white/70 text-emerald-900/70 hover:bg-white hover:text-emerald-950 border border-emerald-100'}`}
+              >
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
-              {currentMonthData ? (
-                <div className="flex flex-col gap-3">
-                  {['week1','week2','week3','week4'].map((week, i) => (
-                    currentMonthData[week] && (
-                      <AdvisoryCard
-                        key={week}
-                        week={`Week ${i + 1}`}
-                        tip={currentMonthData[week]}
-                        delay={i * 0.08}
-                      />
-                    )
-                  ))}
+        {/* Tab 1: Weekly Action Checklist */}
+        {activeTab === 'tasks' && (
+          <div className="grid lg:grid-cols-3 gap-8 animate-in fade-in duration-200">
+            <div className="lg:col-span-2 space-y-4">
+              <div className="liquid-glass rounded-3xl p-6 sm:p-8 border border-emerald-200/60 shadow-lg">
+                <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
+                  <div>
+                    <h3 className="font-heading italic text-2xl text-emerald-950">
+                      {MONTH_NAMES[selectedMonth - 1]} Field Checklist
+                    </h3>
+                    <p className="text-emerald-700/70 text-xs font-semibold">Mark completed tasks as you perform them in your field</p>
+                  </div>
+
+                  {/* Audio voice advisory reader */}
+                  <button
+                    onClick={() => {
+                      const allTips = ['week1', 'week2', 'week3', 'week4'].map((w, i) => monthData?.[w] ? `Week ${i + 1}: ${monthData[w]}` : '').filter(Boolean).join('. ');
+                      handleSpeakText(`Advisory for ${MONTH_NAMES[selectedMonth - 1]}. ${allTips}`);
+                    }}
+                    className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold border transition-all shadow-sm
+                      ${isSpeaking ? 'bg-pink-500 text-white border-pink-400 animate-pulse' : 'bg-pink-50 text-pink-700 border-pink-200 hover:bg-pink-100'}`}
+                    title="Listen to full monthly advisory aloud"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                    <span>{isSpeaking ? "Speaking..." : "Read Month Advisory"}</span>
+                  </button>
                 </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <Leaf className="w-12 h-12 text-emerald-200 mb-4" />
-                  <p className="text-emerald-800/40 font-semibold">No advisory data for this month yet.</p>
-                  <p className="text-emerald-700/30 text-sm mt-1">We're adding more crops and months continuously.</p>
+
+                {monthData ? (
+                  <div className="flex flex-col gap-3.5">
+                    {['week1', 'week2', 'week3', 'week4'].map((weekKey, i) => {
+                      const tip = monthData[weekKey];
+                      if (!tip) return null;
+                      const taskKey = `${profile.crop}-${selectedMonth}-${weekKey}`;
+                      const isDone = !!completedTasks[taskKey];
+
+                      return (
+                        <AdvisoryCard
+                          key={weekKey}
+                          week={`Week ${i + 1}`}
+                          tip={tip}
+                          delay={i * 0.06}
+                          isCompleted={isDone}
+                          onToggleComplete={() => handleToggleTask(taskKey)}
+                          onSpeak={(t) => handleSpeakText(t)}
+                        />
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="py-12 text-center text-emerald-800/50 font-bold">
+                    <p>No specific field operations recorded for this rest period.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right sidebar: Alerts & Notifications */}
+            <div className="space-y-6">
+              {/* Critical Season Alerts */}
+              {monthData?.alerts?.length > 0 && (
+                <div className="liquid-glass rounded-3xl p-6 border border-rose-200/60 shadow-lg bg-rose-50/40">
+                  <div className="flex items-center gap-2.5 mb-4">
+                    <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600">
+                      <Bell className="w-4 h-4" />
+                    </div>
+                    <h4 className="font-heading italic text-xl text-rose-950">High-Risk Season Alerts</h4>
+                  </div>
+                  <div className="space-y-2.5">
+                    {monthData.alerts.map((alert, idx) => (
+                      <AdvisoryCard key={idx} week="Critical" tip={alert} delay={idx * 0.08} isAlert />
+                    ))}
+                  </div>
                 </div>
               )}
-            </div>
-          </motion.div>
 
-          {/* Alerts & Right Panel */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="flex flex-col gap-6"
-          >
-            {/* Season Alerts */}
-            {currentMonthData?.alerts?.length > 0 && (
-              <div className="liquid-glass rounded-3xl p-6 border border-rose-200/50">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center">
-                    <Bell className="w-5 h-5 text-rose-500" />
+              {/* Notification Banner */}
+              <div className="liquid-glass rounded-3xl p-6 border border-emerald-200/60 shadow-sm">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
+                    <Bell className="w-4 h-4" />
                   </div>
-                  <h3 className="font-heading italic text-xl text-emerald-950">Season Alerts</h3>
+                  <div>
+                    <h4 className="font-heading italic text-lg text-emerald-950">Weekly SMS & Push Alerts</h4>
+                    <p className="text-emerald-700/70 text-xs">Never miss fertilizer timing or spray windows</p>
+                  </div>
                 </div>
-                <div className="flex flex-col gap-3">
-                  {currentMonthData.alerts.map((alert, i) => (
-                    <AdvisoryCard key={i} week="Alert" tip={alert} delay={i * 0.1} isAlert />
-                  ))}
-                </div>
-              </div>
-            )}
 
-            {/* Offline Note */}
-            <div className="bg-emerald-950 rounded-3xl p-6 text-white">
-              <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center mb-4">
-                <CloudRain className="w-5 h-5 text-white" />
-              </div>
-              <h3 className="font-heading italic text-xl mb-2">Works Offline</h3>
-              <p className="text-emerald-300/80 text-sm font-medium leading-relaxed">
-                All advisory data is stored on your device. Your crop calendar works even without internet — perfect for the field.
-              </p>
-            </div>
-
-            {/* Quick links */}
-            <div className="liquid-glass rounded-3xl p-6 border border-emerald-200/50">
-              <h3 className="font-heading italic text-xl text-emerald-950 mb-4">More from BloomSense</h3>
-              <div className="flex flex-col gap-2">
-                {[
-                  { to: '/#network', label: 'Disease Heatmap', icon: '🗺️' },
-                  { to: '/#home',   label: 'Scan Your Crop',  icon: '🔬' },
-                  { to: '/community', label: 'Farmer Community', icon: '👨‍🌾' },
-                ].map(link => (
-                  <Link key={link.to} to={link.to} className="flex items-center gap-3 p-3 rounded-xl hover:bg-emerald-50 transition-colors group">
-                    <span className="text-xl">{link.icon}</span>
-                    <span className="text-sm font-bold text-emerald-800 group-hover:text-emerald-950 transition-colors">{link.label}</span>
-                    <ChevronRight className="w-4 h-4 text-emerald-400 ml-auto group-hover:text-emerald-600 transition-colors" />
-                  </Link>
-                ))}
+                {notifStatus === 'granted' ? (
+                  <div className="bg-emerald-100/90 text-emerald-800 text-xs font-bold p-3 rounded-2xl flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600" /> Weekly alerts active for {profile.crop}
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleRequestNotifications}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-2xl shadow-md transition-colors"
+                  >
+                    Enable Browser Push Advisories
+                  </button>
+                )}
               </div>
             </div>
-          </motion.div>
-        </div>
+          </div>
+        )}
+
+        {/* Tab 2: NPK & Fertilizer Calculator */}
+        {activeTab === 'fertilizer' && (
+          <div className="liquid-glass rounded-3xl p-6 sm:p-8 border border-emerald-200/60 shadow-lg animate-in fade-in duration-200">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-emerald-900/10">
+              <div>
+                <h3 className="font-heading italic text-3xl text-emerald-950">
+                  Precision NPK & Micronutrient Calculator
+                </h3>
+                <p className="text-emerald-700/80 text-xs sm:text-sm font-semibold mt-1">
+                  Scientifically calculated based on ICAR & State Agricultural University fertilizer dosage charts
+                </p>
+              </div>
+
+              {/* Acreage Slider */}
+              <div className="bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm min-w-[260px]">
+                <div className="flex justify-between items-center text-xs font-bold text-emerald-950 mb-2">
+                  <span>Farm Size (Acres):</span>
+                  <span className="bg-emerald-600 text-white px-2.5 py-0.5 rounded-full text-xs font-extrabold">{acreage} Acres</span>
+                </div>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="25"
+                  step="0.5"
+                  value={acreage}
+                  onChange={(e) => setAcreage(parseFloat(e.target.value))}
+                  className="w-full accent-emerald-600 cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Split Dosages Grid */}
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              {/* Basal Dose */}
+              <div className="bg-white/90 p-5 rounded-2xl border border-emerald-200/80 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xs font-black uppercase tracking-wider bg-lime-100 text-lime-900 px-2.5 py-0.5 rounded-full">Basal Dose</span>
+                  <span className="text-[11px] text-emerald-700/60 font-semibold">At Sowing / Transplanting</span>
+                </div>
+                <ul className="space-y-2 text-xs font-semibold text-emerald-950">
+                  <li className="flex justify-between border-b border-emerald-100 pb-1.5">
+                    <span>DAP (18:46:0):</span>
+                    <strong className="text-emerald-700">{Math.round(meta.fertilizerDose.basalDAP * acreage)} kg</strong>
+                  </li>
+                  <li className="flex justify-between border-b border-emerald-100 pb-1.5">
+                    <span>MOP (Potash):</span>
+                    <strong className="text-emerald-700">{Math.round(meta.fertilizerDose.basalMOP * acreage)} kg</strong>
+                  </li>
+                  <li className="flex justify-between">
+                    <span>Zinc Sulphate (21%):</span>
+                    <strong className="text-emerald-700">{Math.round(meta.fertilizerDose.basalZinc * acreage)} kg</strong>
+                  </li>
+                </ul>
+              </div>
+
+              {/* 1st Top Dressing */}
+              <div className="bg-white/90 p-5 rounded-2xl border border-emerald-200/80 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xs font-black uppercase tracking-wider bg-emerald-100 text-emerald-900 px-2.5 py-0.5 rounded-full">1st Top Dressing</span>
+                  <span className="text-[11px] text-emerald-700/60 font-semibold">20–25 DAT (Active Tillering)</span>
+                </div>
+                <ul className="space-y-2 text-xs font-semibold text-emerald-950">
+                  <li className="flex justify-between border-b border-emerald-100 pb-1.5">
+                    <span>Neem-Coated Urea:</span>
+                    <strong className="text-emerald-700">{Math.round(meta.fertilizerDose.topDress1Urea * acreage)} kg</strong>
+                  </li>
+                  <li className="flex justify-between">
+                    <span>Neem Cake Bio-Shield:</span>
+                    <strong className="text-emerald-700">{Math.round(50 * acreage)} kg</strong>
+                  </li>
+                </ul>
+              </div>
+
+              {/* 2nd Top Dressing */}
+              <div className="bg-white/90 p-5 rounded-2xl border border-emerald-200/80 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xs font-black uppercase tracking-wider bg-teal-100 text-teal-900 px-2.5 py-0.5 rounded-full">2nd Top Dressing</span>
+                  <span className="text-[11px] text-emerald-700/60 font-semibold">45–50 DAT (Panicle Initiation)</span>
+                </div>
+                <ul className="space-y-2 text-xs font-semibold text-emerald-950">
+                  <li className="flex justify-between border-b border-emerald-100 pb-1.5">
+                    <span>Neem-Coated Urea:</span>
+                    <strong className="text-emerald-700">{Math.round(meta.fertilizerDose.topDress2Urea * acreage)} kg</strong>
+                  </li>
+                  <li className="flex justify-between">
+                    <span>MOP (Potash for Grain Size):</span>
+                    <strong className="text-emerald-700">{Math.round(meta.fertilizerDose.topDress2MOP * acreage)} kg</strong>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Organic Alternative Box */}
+            <div className="bg-emerald-950 text-white p-6 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">🌿 Zero-Chemical Organic Alternative</span>
+                <h4 className="font-heading italic text-xl mt-1">Bio-Enriched Soil Nutrition Package</h4>
+                <p className="text-xs text-emerald-200/80 mt-1 max-w-2xl">
+                  Incorporate {Math.round(meta.fertilizerDose.organicCompostTons * acreage)} tonnes of well-rotted FYM enriched with Trichoderma viride (5kg) + 200L Jeevamrutha per acre during peak tillering.
+                </p>
+              </div>
+              <span className="bg-emerald-800 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">
+                100% Soil Friendly
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 3: Pest & Disease Threat Radar */}
+        {activeTab === 'pests' && (
+          <div className="liquid-glass rounded-3xl p-6 sm:p-8 border border-emerald-200/60 shadow-lg animate-in fade-in duration-200">
+            <h3 className="font-heading italic text-3xl text-emerald-950 mb-2">
+              Pathogen & Pest Defense Matrix for {profile.crop}
+            </h3>
+            <p className="text-emerald-700/80 text-xs sm:text-sm font-semibold mb-6">
+              Clinical symptoms and dual-protocol treatments (Chemical vs 100% Organic)
+            </p>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              {meta.keyThreats.map((threat, idx) => (
+                <div key={idx} className="bg-white/90 p-5 rounded-3xl border border-rose-200/80 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <span className="text-[10px] font-black uppercase tracking-wider bg-rose-100 text-rose-700 px-2.5 py-0.5 rounded-full">
+                        {threat.severity} Risk
+                      </span>
+                      <span className="text-[10px] text-emerald-800 font-bold">{threat.stage}</span>
+                    </div>
+
+                    <h4 className="font-heading italic text-xl text-emerald-950 mb-3">{threat.name}</h4>
+
+                    <div className="space-y-2.5 text-xs">
+                      <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-200/60">
+                        <strong className="text-emerald-950 block mb-0.5">🧪 Chemical Intervention:</strong>
+                        <p className="text-emerald-800">{threat.chemical}</p>
+                      </div>
+
+                      <div className="bg-lime-50 p-2.5 rounded-xl border border-lime-200/60">
+                        <strong className="text-lime-950 block mb-0.5">🌿 Organic Bio-Shield:</strong>
+                        <p className="text-lime-900">{threat.organic}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Tab 4: Water & Irrigation Schedule */}
+        {activeTab === 'water' && (
+          <div className="liquid-glass rounded-3xl p-6 sm:p-8 border border-emerald-200/60 shadow-lg animate-in fade-in duration-200">
+            <h3 className="font-heading italic text-3xl text-emerald-950 mb-2">
+              Irrigation & Water Depth Protocol
+            </h3>
+            <p className="text-emerald-700/80 text-xs sm:text-sm font-semibold mb-6">
+              Optimized for water savings, root aeration, and preventing fungal mycelium buildup
+            </p>
+
+            <div className="grid md:grid-cols-4 gap-4 mb-6">
+              {[
+                { stage: "Transplanting / Seedling", depth: "2–3 cm Standing Water", desc: "Prevents seedling shock and suppresses early broadleaf weeds." },
+                { stage: "Active Tillering", depth: "Intermittent Drying (AWD)", desc: "Drain field for 3–4 days to allow oxygen into root zone and stimulate tillers." },
+                { stage: "Panicle Initiation & Flowering", depth: "3–5 cm Continuous Saturation", desc: "Most moisture-critical phase. Moisture stress causes spikelet sterility." },
+                { stage: "Pre-Harvest Drying", depth: "Completely Drain Field", desc: "Drain 10–12 days prior to harvest for uniform grain drying & machine harvesting." }
+              ].map((item, idx) => (
+                <div key={idx} className="bg-white/90 p-5 rounded-2xl border border-emerald-200 shadow-sm">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 block mb-1">Stage {idx + 1}</span>
+                  <h4 className="font-heading italic text-lg text-emerald-950 mb-2">{item.stage}</h4>
+                  <span className="bg-sky-100 text-sky-900 font-extrabold text-xs px-2.5 py-1 rounded-md block mb-2">{item.depth}</span>
+                  <p className="text-xs text-emerald-800/80 leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Tab 5: Government Schemes & MSP */}
+        {activeTab === 'schemes' && (
+          <div className="liquid-glass rounded-3xl p-6 sm:p-8 border border-emerald-200/60 shadow-lg animate-in fade-in duration-200">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-emerald-900/10">
+              <div>
+                <h3 className="font-heading italic text-3xl text-emerald-950">
+                  Government Support & MSP for {profile.crop}
+                </h3>
+                <p className="text-emerald-700/80 text-xs sm:text-sm font-semibold mt-1">
+                  Official government welfare schemes, minimum support prices, and direct benefit transfers
+                </p>
+              </div>
+
+              <div className="bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-md">
+                <span className="text-[10px] font-bold uppercase tracking-wider block text-emerald-200">Government MSP (2025–26)</span>
+                <span className="text-base sm:text-lg font-black">{meta.msp}</span>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              {meta.schemes.map((scheme, idx) => (
+                <div key={idx} className="bg-white/90 p-6 rounded-3xl border border-emerald-200 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full mb-3 inline-block">
+                      Official Scheme
+                    </span>
+                    <h4 className="font-heading italic text-xl text-emerald-950 mb-2">{scheme.name}</h4>
+                    <p className="text-xs text-emerald-800/80 leading-relaxed mb-4">{scheme.desc}</p>
+                  </div>
+                  <a
+                    href={scheme.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:text-emerald-950 transition-colors"
+                  >
+                    Visit Official Portal ↗
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </main>
     </div>
   );
