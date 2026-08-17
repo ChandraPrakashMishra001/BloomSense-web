@@ -131,12 +131,12 @@ const MixedFlora = React.memo(() => {
 });
 
 const FLORA_CATEGORIES = [
-  { id: 'all', label: '🌿 All Plants', count: 12 },
-  { id: 'Pest & Bio-Shield', label: '🛡️ Pest & Bio-Shield', count: 3 },
-  { id: 'Ayurveda & Immunity', label: '🍵 Ayurveda & Immunity', count: 4 },
-  { id: 'Brain & Stress', label: '🧠 Brain & Stress', count: 4 },
-  { id: 'Skin & Wounds', label: '🩹 Skin & Wounds', count: 3 },
-  { id: 'Digestion & Pain', label: '🫚 Digestion & Pain', count: 3 }
+  { id: 'all', label: '🌿 All Plants' },
+  { id: 'Pest & Bio-Shield', label: '🛡️ Pest & Bio-Shield' },
+  { id: 'Ayurveda & Immunity', label: '🍵 Ayurveda & Immunity' },
+  { id: 'Brain & Stress', label: '🧠 Brain & Stress' },
+  { id: 'Skin & Wounds', label: '🩹 Skin & Wounds' },
+  { id: 'Digestion & Pain', label: '🫚 Digestion & Pain' }
 ];
 
 const FloraArchive = React.memo(({ onCameraClick }) => {

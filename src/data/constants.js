@@ -158,48 +158,6 @@ export const floraDatabase = [
     cures: "Inhibits serotonin receptors in the gut lining to block nausea signals. Crushed rhizome juice with honey relieves sore throat and improves gastric motility.",
     preparation: "Fresh rhizome decoction boiled for 10 minutes. For farming, ginger-garlic extract (GGE 2%) serves as a potent organic pest deterrent.",
     dosage: "1–3 grams fresh ginger or 20ml ginger-garlic bio-extract/L"
-  },
-  {
-    id: 10,
-    name: "Ginseng",
-    hindiName: "जिनसेंग",
-    scientificName: "Panax ginseng",
-    category: "Ayurveda & Immunity",
-    image: "https://images.unsplash.com/photo-1528659556209-66c10ff5fb82?auto=format&fit=crop&q=80&w=800",
-    properties: ["Cellular Energy", "Immune Stimulant", "Cognitive Vitality"],
-    activeCompound: "Ginsenosides (Rb1, Rg1)",
-    diseasesTargeted: ["Chronic Fatigue", "Immune Weakness", "Physical Exhaustion"],
-    cures: "Enhances ATP mitochondrial production and elevates natural killer (NK) cell activity. Highly prized for stamina and resilience under physical stress.",
-    preparation: "Slow-simmered root slices or standardized extract capsule with breakfast.",
-    dosage: "200–400mg standardized extract daily"
-  },
-  {
-    id: 11,
-    name: "Echinacea (Purple Coneflower)",
-    hindiName: "इकिनेशिया",
-    scientificName: "Echinacea purpurea",
-    category: "Ayurveda & Immunity",
-    image: "/echinacea.webp",
-    properties: ["Phagocytosis Activator", "Antiviral", "Anti-inflammatory"],
-    activeCompound: "Alkamides & Cichoric Acid",
-    diseasesTargeted: ["Upper Respiratory Infections", "Sore Throat", "Flu"],
-    cures: "Triggers phagocytic white blood cell activity to clear viral pathogens during early onset of flu. Shortens common cold duration by up to 35%.",
-    preparation: "Ethanolic tincture (1:5) or hot whole-herb infusion taken at first sign of tickle in throat.",
-    dosage: "20–30 drops tincture in water 3 times daily during early infection"
-  },
-  {
-    id: 12,
-    name: "Chamomile",
-    hindiName: "कैमोमाइल",
-    scientificName: "Matricaria chamomilla",
-    category: "Brain & Stress",
-    image: "https://images.unsplash.com/photo-1621217631317-a169b50ceba7?auto=format&fit=crop&q=80&w=800",
-    properties: ["GABA Agonist", "Spasmolytic", "Gentle Anti-inflammatory"],
-    activeCompound: "Apigenin & Bisabolol",
-    diseasesTargeted: ["Sleeplessness", "Infant Colic", "Gastric Irritation"],
-    cures: "Apigenin binds directly to benzodiazepine GABA receptors in the brain, gently easing tension without dependency. Soothes irritated stomach lining.",
-    preparation: "Steep 1 tablespoon of whole dried flower heads in covered boiling water for 8 minutes.",
-    dosage: "1–2 cups brewed tea 30 minutes before sleep"
   }
 ];
 
