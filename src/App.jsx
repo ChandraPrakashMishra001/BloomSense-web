@@ -1242,7 +1242,8 @@ function Home() {
 
 
   return (
-    <div className="bg-pink-50 min-h-screen text-emerald-950 selection:bg-emerald-200 selection:text-emerald-950 overflow-x-hidden font-body leaf-pattern-bg">
+    <div className="bg-pink-50 min-h-screen text-emerald-950 selection:bg-emerald-200 selection:text-emerald-950 overflow-x-hidden font-body leaf-pattern-bg relative">
+      <div className="grain-overlay" aria-hidden="true" />
 
 
       <nav className="absolute top-4 left-4 right-4 lg:left-12 lg:right-12 z-50 px-6 lg:px-8 py-3 flex justify-between items-center bg-white/20 backdrop-blur-xl border border-white/50 rounded-[2.5rem] shadow-[0_8px_32px_rgba(0,0,0,0.1)] transition-all duration-300">
