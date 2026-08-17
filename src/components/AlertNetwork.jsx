@@ -56,9 +56,15 @@ const AlertNetwork = ({ alerts }) => {
                                 </span>
                             </div>
                             <h4 className="font-heading italic text-xl text-emerald-950 mb-1">{alert.disease} Detected</h4>
-                            <div className="flex items-center gap-1 text-emerald-800/80 text-sm font-medium">
-                                <MapPin size={14} className="text-emerald-600" />
-                                {alert.distance}km away across {alert.farmCount} farms
+                            {alert.location && (
+                                <p className="text-xs font-bold text-emerald-900/80 mb-1.5 flex items-center gap-1">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                    {alert.location}
+                                </p>
+                            )}
+                            <div className="flex items-center gap-1 text-emerald-800/80 text-xs font-semibold">
+                                <MapPin size={13} className="text-emerald-600 flex-shrink-0" />
+                                {alert.distance}km away • {alert.farmCount} {alert.farmCount === 1 ? 'farm affected' : 'farms affected'}
                             </div>
                         </motion.div>
                     ))}

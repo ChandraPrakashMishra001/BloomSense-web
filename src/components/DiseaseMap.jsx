@@ -3,10 +3,10 @@ import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { 
   Layers, Crosshair, Filter, AlertTriangle, 
-  ZoomIn, ZoomOut, Maximize2, Minimize2, Compass, Box, Square
+  ZoomIn, ZoomOut, Maximize2, Minimize2, Compass, Box, Square, MapPin
 } from 'lucide-react';
 
-// High-performance direct tile layer styles for MapLibre GL
+// High-performance direct tile layer styles for MapLibre GL with overscaling protection
 const MAP_STYLES = {
   cartoVoyager: {
     name: '3D Clean Street',
@@ -23,6 +23,7 @@ const MAP_STYLES = {
             'https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png'
           ],
           tileSize: 256,
+          maxzoom: 18,
           attribution: '&copy; CARTO &copy; OpenStreetMap'
         }
       },
@@ -32,36 +33,36 @@ const MAP_STYLES = {
           type: 'raster',
           source: 'voyager-tiles',
           minzoom: 0,
-          maxzoom: 20
+          maxzoom: 24
         }
       ]
     }
   },
-  cartoDark: {
-    name: '3D Tactical Dark',
-    dark: true,
+  osm: {
+    name: '3D OpenStreetMap',
+    dark: false,
     style: {
       version: 8,
       sources: {
-        'dark-tiles': {
+        'osm-tiles': {
           type: 'raster',
           tiles: [
-            'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
-            'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
-            'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
-            'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png'
+            'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
           ],
           tileSize: 256,
-          attribution: '&copy; CARTO &copy; OpenStreetMap'
+          maxzoom: 19,
+          attribution: '&copy; OpenStreetMap contributors'
         }
       },
       layers: [
         {
-          id: 'dark-layer',
+          id: 'osm-layer',
           type: 'raster',
-          source: 'dark-tiles',
+          source: 'osm-tiles',
           minzoom: 0,
-          maxzoom: 20
+          maxzoom: 24
         }
       ]
     }
@@ -78,6 +79,7 @@ const MAP_STYLES = {
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
           ],
           tileSize: 256,
+          maxzoom: 18,
           attribution: '&copy; Esri &copy; Maxar'
         },
         'carto-labels': {
@@ -88,7 +90,8 @@ const MAP_STYLES = {
             'https://c.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png',
             'https://d.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png'
           ],
-          tileSize: 256
+          tileSize: 256,
+          maxzoom: 18
         }
       },
       layers: [
@@ -97,42 +100,44 @@ const MAP_STYLES = {
           type: 'raster',
           source: 'esri-satellite',
           minzoom: 0,
-          maxzoom: 19
+          maxzoom: 24
         },
         {
           id: 'labels-layer',
           type: 'raster',
           source: 'carto-labels',
           minzoom: 0,
-          maxzoom: 19
+          maxzoom: 24
         }
       ]
     }
   },
-  osm: {
-    name: '3D Standard OSM',
+  positron: {
+    name: '3D Minimal Light',
     dark: false,
     style: {
       version: 8,
       sources: {
-        'osm-tiles': {
+        'positron-tiles': {
           type: 'raster',
           tiles: [
-            'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
+            'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
+            'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
+            'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
+            'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png'
           ],
           tileSize: 256,
-          attribution: '&copy; OpenStreetMap contributors'
+          maxzoom: 18,
+          attribution: '&copy; CARTO &copy; OpenStreetMap'
         }
       },
       layers: [
         {
-          id: 'osm-layer',
+          id: 'positron-layer',
           type: 'raster',
-          source: 'osm-tiles',
+          source: 'positron-tiles',
           minzoom: 0,
-          maxzoom: 19
+          maxzoom: 24
         }
       ]
     }
@@ -232,7 +237,7 @@ const DiseaseMap = ({ diseasePoints = [], userLocation = null }) => {
   const mapRef = useRef(null);
   const markersRef = useRef([]);
 
-  const [activeStyleKey, setActiveStyleKey] = useState('cartoDark');
+  const [activeStyleKey, setActiveStyleKey] = useState('cartoVoyager');
   const [is3DMode, setIs3DMode] = useState(true);
   const [selectedSeverity, setSelectedSeverity] = useState('all');
   const [selectedDiseaseFilter, setSelectedDiseaseFilter] = useState('all');
@@ -280,11 +285,15 @@ const DiseaseMap = ({ diseasePoints = [], userLocation = null }) => {
       ? [userLocation.lng, userLocation.lat] 
       : [85.8245, 20.2961];
 
+    const currentStyle = MAP_STYLES[activeStyleKey]?.style || MAP_STYLES.cartoVoyager.style;
+
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
-      style: MAP_STYLES[activeStyleKey].style,
+      style: currentStyle,
       center: initialCenter,
       zoom: 9.5,
+      minZoom: 3,
+      maxZoom: 18.5,
       pitch: is3DMode ? 48 : 0,
       bearing: is3DMode ? -15 : 0,
       maxPitch: 85,
@@ -395,15 +404,24 @@ const DiseaseMap = ({ diseasePoints = [], userLocation = null }) => {
       const isMedium = pt.severity === 'medium';
       const color = isHigh ? '#e11d48' : isMedium ? '#f59e0b' : '#22c55e';
       const size = isHigh ? 38 : isMedium ? 32 : 26;
+      const placeLabel = pt.location || `Lat ${pt.lat.toFixed(3)}, Lng ${pt.lng.toFixed(3)}`;
 
       const el = document.createElement('div');
-      el.className = 'disease-pulse-marker group cursor-pointer';
+      el.className = 'disease-pulse-marker group cursor-pointer relative';
       el.innerHTML = `
         <div class="relative flex items-center justify-center" style="width:${size}px; height:${size}px;">
           <div class="absolute inset-0 rounded-full animate-ping opacity-30" style="background-color:${color};"></div>
           <div class="relative rounded-full border-2 border-white shadow-2xl flex items-center justify-center text-white font-extrabold text-[10px]"
                style="width:${size}px; height:${size}px; background-color:${color}; box-shadow: 0 0 20px ${color}80;">
             ${isHigh ? '⚠️' : '●'}
+          </div>
+          <!-- Hover Place Name Tooltip -->
+          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex flex-col items-center pointer-events-none z-50 whitespace-nowrap">
+            <div class="bg-emerald-950/95 backdrop-blur-md text-white px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-xl border border-white/20">
+              <span class="text-rose-300 font-extrabold block">${pt.disease}</span>
+              <span class="text-emerald-200 text-[9px] font-medium">${placeLabel}</span>
+            </div>
+            <div class="w-1.5 h-1.5 bg-emerald-950/95 rotate-45 -mt-0.5"></div>
           </div>
         </div>
       `;
@@ -507,7 +525,7 @@ const DiseaseMap = ({ diseasePoints = [], userLocation = null }) => {
                 ? 'bg-rose-50 text-rose-600 border-rose-200 animate-pulse' 
                 : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
               <AlertTriangle className="w-3 h-3" />
-              Nearest: {nearestOutbreak.disease} ({nearestOutbreak.distance} km)
+              Nearest: {nearestOutbreak.disease} ({nearestOutbreak.distance} km{nearestOutbreak.location ? ` • ${nearestOutbreak.location.split('(')[0].trim()}` : ''})
             </span>
           )}
 
@@ -528,11 +546,11 @@ const DiseaseMap = ({ diseasePoints = [], userLocation = null }) => {
             className="bg-white/95 backdrop-blur-md px-3.5 py-2.5 rounded-full shadow-lg border border-emerald-100 text-emerald-900 hover:scale-105 hover:bg-white transition-all flex items-center gap-2 text-xs font-bold uppercase tracking-wider"
           >
             <Layers className="w-4 h-4 text-emerald-700" />
-            <span>{MAP_STYLES[activeStyleKey].name}</span>
+            <span>{MAP_STYLES[activeStyleKey]?.name || 'Map Layer'}</span>
           </button>
 
           {styleOpen && (
-            <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-emerald-100 overflow-hidden w-48">
+            <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-emerald-100 overflow-hidden w-52">
               {Object.keys(MAP_STYLES).map((key) => (
                 <button
                   key={key}
@@ -623,8 +641,14 @@ const DiseaseMap = ({ diseasePoints = [], userLocation = null }) => {
                   <span className="font-heading italic font-bold text-emerald-950 block text-2xl leading-none">
                     {selectedPoint.disease}
                   </span>
-                  <span className="text-[10px] text-emerald-800/60 font-semibold">
-                    Detected: {new Date(selectedPoint.timestamp).toLocaleDateString()}
+                  {selectedPoint.location && (
+                    <span className="text-xs font-bold text-emerald-900/90 flex items-center gap-1 mt-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-rose-500 flex-shrink-0" />
+                      {selectedPoint.location}
+                    </span>
+                  )}
+                  <span className="text-[10px] text-emerald-800/60 font-semibold block mt-0.5">
+                    Detected: {new Date(selectedPoint.timestamp).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
