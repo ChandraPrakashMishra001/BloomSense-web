@@ -1442,33 +1442,6 @@ function Home() {
 
 export default function App() {
   const location = useLocation();
-  const [showSplash, setShowSplash] = useState(() => {
-    // Only show splash screen once per session to prevent repeated blank/loading states
-    return !sessionStorage.getItem('bloomsense_splash_seen');
-  });
-
-  const handleSplashComplete = () => {
-    setShowSplash(false);
-    sessionStorage.setItem('bloomsense_splash_seen', 'true');
-    document.body.style.overflow = '';
-  };
-
-  // Prevent background scrolling only while initial splash is active
-  useEffect(() => {
-    if (showSplash) {
-      document.body.style.overflow = 'hidden';
-      // Safety auto-dismiss in case of any animation stall
-      const safetyTimer = setTimeout(() => {
-        handleSplashComplete();
-      }, 2400);
-      return () => {
-        clearTimeout(safetyTimer);
-        document.body.style.overflow = '';
-      };
-    } else {
-      document.body.style.overflow = '';
-    }
-  }, [showSplash]);
 
   // Global Language Localization using Google Translate API
   useEffect(() => {
@@ -1512,27 +1485,18 @@ export default function App() {
   }, [location]);
 
   return (
-    <>
-      <AnimatePresence>
-        {showSplash && (
-          <SplashScreen key="splash-screen" onComplete={handleSplashComplete} />
-        )}
-      </AnimatePresence>
-
-      {/* Main App Content — Always Rendered & Visible to Prevent Any Blank Screen */}
-      <div className="w-full min-h-screen bg-pink-50 text-emerald-950">
-        <Suspense fallback={<div className="h-screen w-full bg-pink-50 flex flex-col items-center justify-center animate-pulse"><Leaf className="w-12 h-12 text-emerald-600 mb-4" /><p className="text-emerald-800 font-bold uppercase tracking-[0.2em] text-sm">Loading Environment...</p></div>}>
-          <RobotGuide />
-          <KisanEmergencyBar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/technology/hardware" element={<Hardware />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/calendar" element={<CropCalendar />} />
-            <Route path="/about" element={<About />} />
-          </Routes>
-        </Suspense>
-      </div>
-    </>
+    <div className="w-full min-h-screen bg-pink-50 text-emerald-950">
+      <Suspense fallback={<div className="h-screen w-full bg-pink-50 flex flex-col items-center justify-center animate-pulse"><Leaf className="w-12 h-12 text-emerald-600 mb-4" /><p className="text-emerald-800 font-bold uppercase tracking-[0.2em] text-sm">Loading BloomSense...</p></div>}>
+        <RobotGuide />
+        <KisanEmergencyBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/technology/hardware" element={<Hardware />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/calendar" element={<CropCalendar />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+      </Suspense>
+    </div>
   );
 }
