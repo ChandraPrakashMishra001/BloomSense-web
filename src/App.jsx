@@ -52,7 +52,7 @@ const AmaniaBadge = React.memo(({ onClick }) => (
 
 
 
-const customEase = [0.16, 1, 0.3, 1];
+const customEase = [0.22, 1, 0.36, 1];
 
 const BlurText = ({ text, className = "" }) => {
   const words = text.split(" ");
@@ -60,16 +60,16 @@ const BlurText = ({ text, className = "" }) => {
     <motion.span
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
-      variants={{ visible: { transition: { staggerChildren: 0.05 } }, hidden: {} }}
+      viewport={{ once: true, margin: "-20px" }}
+      variants={{ visible: { transition: { staggerChildren: 0.04 } }, hidden: {} }}
       className={`inline-block ${className}`}
     >
       {words.map((word, index) => (
         <span key={index} className="inline-block overflow-hidden whitespace-nowrap">
           <motion.span
             variants={{
-              hidden: { filter: 'blur(4px)', opacity: 0, y: 40 },
-              visible: { filter: 'blur(0px)', opacity: 1, y: 0, transition: { duration: 0.8, ease: customEase } }
+              hidden: { filter: 'blur(3px)', opacity: 0, y: 16 },
+              visible: { filter: 'blur(0px)', opacity: 1, y: 0, transition: { duration: 0.5, ease: customEase } }
             }}
             className="inline-block mr-[0.25em]"
           >
@@ -83,12 +83,11 @@ const BlurText = ({ text, className = "" }) => {
 
 const ScrollReveal = ({ children, className = "", delay = 0 }) => (
   <motion.div
-    initial={{ opacity: 0, y: 40 }}
+    initial={{ opacity: 0, y: 18 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-50px" }}
-    transition={{ duration: 0.8, delay, ease: customEase }}
+    viewport={{ once: true, margin: "-20px" }}
+    transition={{ duration: 0.5, delay, ease: customEase }}
     className={className}
-    style={{ willChange: "transform, opacity" }}
   >
     {children}
   </motion.div>

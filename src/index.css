@@ -20,8 +20,9 @@ body {
 }
 
 html {
-  scroll-behavior: smooth;
   scrollbar-gutter: stable;
+  scroll-behavior: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 h1, h2, h3, h4, h5, h6, .font-heading {
@@ -43,13 +44,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     radial-gradient(circle at 100% 0%, rgba(251, 146, 60, 0.15) 0%, transparent 40%),
     radial-gradient(circle at 0% 100%, rgba(52, 211, 153, 0.15) 0%, transparent 40%),
     url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 30c0-16.5-13.5-30-30-30v3c14.9 0 27 12.1 27 27s-12.1 27-27 27v3c16.5 0 30-13.5 30-30zm0 0c0 16.5 13.5 30 30 30v-3c-14.9 0-27-12.1-27-27s12.1-27 27-27V0c-16.5 0-30 13.5-30 30z' fill='%2310b981' fill-opacity='0.04' fill-rule='evenodd'/%3E%3C/svg%3E");
-  background-attachment: fixed;
-  animation: modern-drift 40s linear infinite;
-}
-
-@keyframes modern-drift {
-  0% { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
-  100% { background-position: 0 0, 0 0, 0 0, 0 0, 80px 80px; }
+  background-repeat: repeat;
 }
 
 @layer components {
