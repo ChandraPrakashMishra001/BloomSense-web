@@ -264,24 +264,137 @@ const CROP_METADATA = {
     schemes: [
       { name: "NFSM Coarse Cereals", desc: "Seed minikit and bio-fertilizer incentives", link: "https://nfsm.gov.in" }
     ]
+  },
+  Sugarcane: {
+    durationDays: 340,
+    msp: "₹340 / quintal (FRP)",
+    waterReq: "1500 - 2500 mm",
+    soilType: "Deep, well-drained loamy soil with high fertility",
+    optimalPh: "6.5 - 7.5",
+    fertilizerDose: { basalDAP: 60, basalMOP: 40, basalZinc: 15, topDress1Urea: 65, topDress2Urea: 65, topDress2MOP: 35, organicCompostTons: 10 },
+    keyThreats: [
+      { name: "Red Rot (Colletotrichum falcatum)", stage: "Caning & Maturation", chemical: "Carbendazim 50% WP @ 1g/L sett treatment", organic: "Trichoderma harzianum soil application @ 10kg/acre", severity: "high" },
+      { name: "Early Shoot Borer", stage: "Formative Phase", chemical: "Fipronil 5% SC @ 2ml/L", organic: "Granulosis Virus (Chilo-GV) + light traps", severity: "high" }
+    ],
+    schemes: [
+      { name: "Sugar Cane Development Scheme", desc: "Tissue culture sett subsidy and drip irrigation grants", link: "https://dfpd.gov.in" }
+    ]
+  },
+  Potato: {
+    durationDays: 95,
+    msp: "Market Price Driven (Cold Storage & Transport Subsidy)",
+    waterReq: "500 - 600 mm",
+    soilType: "Loose, friable sandy loam rich in organic matter",
+    optimalPh: "5.2 - 6.4",
+    fertilizerDose: { basalDAP: 60, basalMOP: 40, basalZinc: 8, topDress1Urea: 45, topDress2Urea: 35, topDress2MOP: 25, organicCompostTons: 6 },
+    keyThreats: [
+      { name: "Late Blight (Phytophthora infestans)", stage: "Tuber Formation", chemical: "Cymoxanil 8% + Mancozeb 64% @ 2g/L", organic: "Prophylactic spray of Trichoderma + copper sulfate", severity: "high" }
+    ],
+    schemes: [
+      { name: "Operation Greens TOP Scheme", desc: "50% subsidy on transportation and cold storage evacuation", link: "https://mofpi.gov.in" }
+    ]
+  },
+  Soybean: {
+    durationDays: 95,
+    msp: "₹4,892 / quintal",
+    waterReq: "450 - 600 mm",
+    soilType: "Well drained fertile black soils or clay loams",
+    optimalPh: "6.0 - 7.5",
+    fertilizerDose: { basalDAP: 40, basalMOP: 20, basalZinc: 8, topDress1Urea: 20, topDress2Urea: 20, topDress2MOP: 10, organicCompostTons: 3 },
+    keyThreats: [
+      { name: "Girdle Beetle (Oberia brevis)", stage: "Vegetative Phase", chemical: "Thiamethoxam + Lambdacyhalothrin @ 0.5ml/L", organic: "Neem Seed Kernel Extract (NSKE 5%) foliar spray", severity: "high" }
+    ],
+    schemes: [
+      { name: "National Mission on Edible Oils (NMEO-OS)", desc: "Certified seed minikits and cluster demonstrations", link: "https://nmeo.gov.in" }
+    ]
+  },
+  Banana: {
+    durationDays: 330,
+    msp: "Market Price Driven (Export promotion subsidy ₹15,000/ha)",
+    waterReq: "1800 - 2200 mm (Drip fertigation)",
+    soilType: "Deep, rich, well-drained loamy soil",
+    optimalPh: "6.5 - 7.5",
+    fertilizerDose: { basalDAP: 50, basalMOP: 40, basalZinc: 10, topDress1Urea: 60, topDress2Urea: 60, topDress2MOP: 40, organicCompostTons: 8 },
+    keyThreats: [
+      { name: "Sigatoka Leaf Spot", stage: "Shooting & Fruiting", chemical: "Propiconazole 25% EC @ 1ml/L + mineral oil", organic: "Pseudomonas fluorescens @ 10g/L foliar spray", severity: "high" }
+    ],
+    schemes: [
+      { name: "MIDH Banana Tissue Culture Grants", desc: "40% capital subsidy on Grand Naine tissue culture plantlets", link: "https://midh.gov.in" }
+    ]
+  },
+  Mango: {
+    durationDays: 365,
+    msp: "Commercial Orcharding (APEDA Export Certification)",
+    waterReq: "700 - 1000 mm",
+    soilType: "Deep alluvial well drained loamy soil",
+    optimalPh: "5.5 - 7.5",
+    fertilizerDose: { basalDAP: 60, basalMOP: 50, basalZinc: 15, topDress1Urea: 50, topDress2Urea: 50, topDress2MOP: 35, organicCompostTons: 8 },
+    keyThreats: [
+      { name: "Mango Hopper & Powdery Mildew", stage: "Flowering & Panicle Emergence", chemical: "Hexaconazole 5% SC @ 1ml/L + Imidacloprid", organic: "Wettable Sulfur 80% WP @ 2g/L", severity: "high" }
+    ],
+    schemes: [
+      { name: "National Horticulture Board (NHB) Grants", desc: "Back-ended capital subsidy on commercial mango orchards", link: "https://nhb.gov.in" }
+    ]
+  },
+  Onion: {
+    durationDays: 120,
+    msp: "Price Stabilization Fund (PSF) Procurement",
+    waterReq: "500 - 700 mm",
+    soilType: "Sandy loam to clay loam with rich humus",
+    optimalPh: "6.0 - 7.0",
+    fertilizerDose: { basalDAP: 45, basalMOP: 30, basalZinc: 8, topDress1Urea: 40, topDress2Urea: 35, topDress2MOP: 15, organicCompostTons: 5 },
+    keyThreats: [
+      { name: "Purple Blotch (Alternaria porri)", stage: "Bulb Development", chemical: "Tebuconazole 25.9% EC @ 1ml/L", organic: "Neem oil + Cow urine fermented extract 10%", severity: "high" }
+    ],
+    schemes: [
+      { name: "Mission for Integrated Development of Horticulture", desc: "Low-cost onion storage structure (50MT) subsidy up to ₹87,500", link: "https://midh.gov.in" }
+    ]
+  },
+  Chilli: {
+    durationDays: 150,
+    msp: "Market Price Driven (Spices Board Incentive)",
+    waterReq: "600 - 800 mm",
+    soilType: "Well-drained black soil or sandy loam",
+    optimalPh: "6.5 - 7.8",
+    fertilizerDose: { basalDAP: 45, basalMOP: 30, basalZinc: 8, topDress1Urea: 40, topDress2Urea: 40, topDress2MOP: 25, organicCompostTons: 5 },
+    keyThreats: [
+      { name: "Chilli Murda / Leaf Curl Complex (Thrips & Mites)", stage: "Vegetative to Fruiting", chemical: "Fipronil 5% SC @ 1.5ml/L or Diafenthiuron", organic: "Dashaparni Kashayam + Blue Sticky Traps", severity: "high" }
+    ],
+    schemes: [
+      { name: "Spices Board Export Promotion Scheme", desc: "Subsidy on solar tunnel dryers and cleaning machinery", link: "https://indianspices.com" }
+    ]
   }
 };
 
 export default function CropCalendar() {
   const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(null); // { crop, sowingMonth }
-  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState(() => {
+    // Immediate synchronous load from localStorage for instant 0ms rendering
+    const local = localStorage.getItem('bloomsense_crop_profile');
+    if (local) {
+      try { return JSON.parse(local); } catch {}
+    }
+    // Default to Rice if no profile exists yet so the calendar is ALWAYS working and never blank!
+    return { crop: 'Rice', sowingMonth: 6 };
+  });
   const [notifStatus, setNotifStatus] = useState('default');
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [activeTab, setActiveTab] = useState('tasks'); // 'tasks' | 'fertilizer' | 'pests' | 'water' | 'schemes'
+  const [activeTab, setActiveTab] = useState('tasks');
   const [acreage, setAcreage] = useState(2);
-  const [completedTasks, setCompletedTasks] = useState({});
+  const [completedTasks, setCompletedTasks] = useState(() => {
+    const localTasks = localStorage.getItem('bloomsense_completed_tasks');
+    if (localTasks) {
+      try { return JSON.parse(localTasks); } catch {}
+    }
+    return {};
+  });
   const [voiceLang, setVoiceLang] = useState('en-IN');
   const [isSpeaking, setIsSpeaking] = useState(false);
 
-  const currentActualMonth = new Date().getMonth() + 1; // 1-indexed
-  const meta = (profile && CROP_METADATA[profile.crop]) || CROP_METADATA['Rice'];
-  const monthData = profile ? (advisories[profile.crop]?.[String(selectedMonth)] || advisories['Rice']?.[String(selectedMonth)] || null) : null;
+  const currentActualMonth = new Date().getMonth() + 1;
+  const currentCropKey = profile?.crop || 'Rice';
+  const meta = CROP_METADATA[currentCropKey] || CROP_METADATA['Rice'];
+  const monthData = (advisories[currentCropKey]?.[String(selectedMonth)]) || (advisories['Rice']?.[String(selectedMonth)]) || null;
 
   // Auth listener
   useEffect(() => {
@@ -289,45 +402,27 @@ export default function CropCalendar() {
     return unsub;
   }, []);
 
-  // Load saved profile & completed checklist from localStorage / Firestore
+  // Background sync with Firestore (non-blocking)
   useEffect(() => {
     let isMounted = true;
-    const loadData = async () => {
-      const localProfile = localStorage.getItem('bloomsense_crop_profile');
-      const localTasks = localStorage.getItem('bloomsense_completed_tasks');
-      if (localTasks) {
-        try { setCompletedTasks(JSON.parse(localTasks)); } catch {}
-      }
-
-      let hasLocal = false;
-      if (localProfile) {
-        try {
-          const parsed = JSON.parse(localProfile);
-          setProfile(parsed);
-          setSelectedMonth(new Date().getMonth() + 1);
-          hasLocal = true;
-          if (isMounted) setLoading(false);
-        } catch {}
-      }
-
-      if (user) {
+    if (user) {
+      const syncProfile = async () => {
         try {
           const snap = await getDoc(doc(db, 'users', user.uid, 'cropProfile', 'main'));
           if (snap.exists() && isMounted) {
             const data = snap.data();
-            setProfile({ crop: data.crop, sowingMonth: data.sowingMonth });
-            localStorage.setItem('bloomsense_crop_profile', JSON.stringify({ crop: data.crop, sowingMonth: data.sowingMonth }));
+            if (data?.crop && data?.sowingMonth) {
+              setProfile({ crop: data.crop, sowingMonth: data.sowingMonth });
+              localStorage.setItem('bloomsense_crop_profile', JSON.stringify({ crop: data.crop, sowingMonth: data.sowingMonth }));
+            }
           }
         } catch (e) {
-          console.warn("Sync error:", e.message);
+          console.warn("Background calendar sync:", e.message);
         }
-      }
-
-      if (isMounted && !hasLocal) setLoading(false);
-      if ('Notification' in window && isMounted) setNotifStatus(Notification.permission);
-    };
-
-    loadData();
+      };
+      syncProfile();
+    }
+    if ('Notification' in window) setNotifStatus(Notification.permission);
     return () => { isMounted = false; };
   }, [user]);
 
@@ -393,17 +488,6 @@ export default function CropCalendar() {
     localStorage.removeItem('bloomsense_crop_profile');
     setProfile(null);
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-pink-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <Leaf className="w-10 h-10 text-emerald-600 animate-bounce" />
-          <p className="text-emerald-800 font-bold text-sm uppercase tracking-widest">Loading Crop Intelligence...</p>
-        </div>
-      </div>
-    );
-  }
 
   if (!profile) {
     return <SetupWizard onComplete={handleSetupComplete} />;
