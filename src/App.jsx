@@ -429,23 +429,31 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
     return () => { document.body.style.overflow = 'unset'; };
   }, [selectedImage]);
 
-  const filteredPlants = useMemo(() => floraDatabase.filter(plant => {
-    const matchesCategory = activeCategory === 'all' || plant.category === activeCategory;
-    if (!matchesCategory) return false;
+  const filteredPlants = useMemo(() => {
+    const matched = floraDatabase.filter(plant => {
+      const matchesCategory = activeCategory === 'all' || plant.category === activeCategory;
+      if (!matchesCategory) return false;
 
-    if (searchTerm.trim() === "") return true;
+      if (searchTerm.trim() === "") return true;
 
-    const term = searchTerm.toLowerCase();
-    return (
-      plant.name.toLowerCase().includes(term) ||
-      (plant.hindiName && plant.hindiName.includes(searchTerm)) ||
-      (plant.scientificName && plant.scientificName.toLowerCase().includes(term)) ||
-      (plant.activeCompound && plant.activeCompound.toLowerCase().includes(term)) ||
-      (plant.cures && plant.cures.toLowerCase().includes(term)) ||
-      plant.properties.some(prop => prop.toLowerCase().includes(term)) ||
-      plant.diseasesTargeted.some(disease => disease.toLowerCase().includes(term))
-    );
-  }), [searchTerm, activeCategory]);
+      const term = searchTerm.toLowerCase();
+      return (
+        plant.name.toLowerCase().includes(term) ||
+        (plant.hindiName && plant.hindiName.includes(searchTerm)) ||
+        (plant.scientificName && plant.scientificName.toLowerCase().includes(term)) ||
+        (plant.activeCompound && plant.activeCompound.toLowerCase().includes(term)) ||
+        (plant.cures && plant.cures.toLowerCase().includes(term)) ||
+        plant.properties.some(prop => prop.toLowerCase().includes(term)) ||
+        plant.diseasesTargeted.some(disease => disease.toLowerCase().includes(term))
+      );
+    });
+
+    // In default catalog view (no search term and all categories), show top 6 flagship plants
+    if (searchTerm.trim() === "" && activeCategory === 'all') {
+      return matched.slice(0, 6);
+    }
+    return matched;
+  }, [searchTerm, activeCategory]);
 
   const displayPlants = useMemo(() => {
     return webResult ? [...filteredPlants, webResult] : filteredPlants;
