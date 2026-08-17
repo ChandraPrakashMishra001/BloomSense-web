@@ -1637,7 +1637,7 @@ function Home() {
           </div>
         </section>
 
-        <GovernmentSchemesHub />
+        <GovernmentSchemesHub onAskAmania={() => setShowVoiceModal(true)} />
 
 
 
