@@ -139,6 +139,192 @@ const FLORA_CATEGORIES = [
   { id: 'Digestion & Pain', label: '🫚 Digestion & Pain' }
 ];
 
+// Curated High-Accuracy Botanical Taxon Dictionary for Instant Guaranteed Floral & Plant Queries
+const BOTANICAL_TAXON_MAP = {
+  'lotus': {
+    title: 'Nelumbo nucifera',
+    commonName: 'Sacred Lotus (Kamal)',
+    hindiName: 'कमल',
+    scientificName: 'Nelumbo nucifera',
+    category: 'Ayurveda & Immunity',
+    image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80',
+    properties: ['Cardiotonic', 'Astringent', 'Refrigerant', 'Calming Alkaloid'],
+    activeCompound: 'Nuciferine & Nelumboside',
+    diseasesTargeted: ['Cardiac Arrhythmia', 'Internal Bleeding', 'Heat Stress', 'Restlessness'],
+    cures: 'Sacred Lotus (Nelumbo nucifera) petals and rhizomes are widely used in Ayurveda and traditional herbal medicine. Contains the alkaloid Nuciferine which exerts calming antispasmodic effects and promotes cardiovascular stability.',
+    preparation: 'Dried petal infusion (Lotus tea) or rhizome powder decoction. For agriculture, lotus pond silt provides nutrient-dense bio-fertilizer.',
+    dosage: '1–2 cups brewed petal tea or 3g rhizome powder'
+  },
+  'kamal': {
+    title: 'Nelumbo nucifera',
+    commonName: 'Sacred Lotus (Kamal)',
+    hindiName: 'कमल',
+    scientificName: 'Nelumbo nucifera',
+    category: 'Ayurveda & Immunity',
+    image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80',
+    properties: ['Cardiotonic', 'Astringent', 'Refrigerant', 'Calming Alkaloid'],
+    activeCompound: 'Nuciferine & Nelumboside',
+    diseasesTargeted: ['Cardiac Arrhythmia', 'Internal Bleeding', 'Heat Stress', 'Restlessness'],
+    cures: 'Sacred Lotus (Nelumbo nucifera) petals and rhizomes are widely used in Ayurveda and traditional herbal medicine. Contains the alkaloid Nuciferine which exerts calming antispasmodic effects and promotes cardiovascular stability.',
+    preparation: 'Dried petal infusion (Lotus tea) or rhizome powder decoction. For agriculture, lotus pond silt provides nutrient-dense bio-fertilizer.',
+    dosage: '1–2 cups brewed petal tea or 3g rhizome powder'
+  },
+  'rose': {
+    title: 'Rosa (plant)',
+    commonName: 'Rose (Gulab)',
+    hindiName: 'गुलाब',
+    scientificName: 'Rosa damascena',
+    category: 'Skin & Wounds',
+    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
+    properties: ['Cooling', 'Anti-inflammatory', 'Skin Toner', 'Antidepressant'],
+    activeCompound: 'Geraniol, Citronellol & Kaempferol',
+    diseasesTargeted: ['Skin Inflammation', 'Digestive Heat (Pitta)', 'Eye Fatigue'],
+    cures: 'Rose petals are steam-distilled into pure Rose Water (Gulab Jal) or preserved in Gulkand. Regulates skin pH, alleviates acid reflux, and soothes ocular strain.',
+    preparation: 'Steam-distilled hydrosol or Gulkand (sun-cured rose petal jam).',
+    dosage: '1 tsp Gulkand twice daily or 2 drops rose water in eyes'
+  },
+  'gulab': {
+    title: 'Rosa (plant)',
+    commonName: 'Rose (Gulab)',
+    hindiName: 'गुलाब',
+    scientificName: 'Rosa damascena',
+    category: 'Skin & Wounds',
+    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
+    properties: ['Cooling', 'Anti-inflammatory', 'Skin Toner', 'Antidepressant'],
+    activeCompound: 'Geraniol, Citronellol & Kaempferol',
+    diseasesTargeted: ['Skin Inflammation', 'Digestive Heat (Pitta)', 'Eye Fatigue'],
+    cures: 'Rose petals are steam-distilled into pure Rose Water (Gulab Jal) or preserved in Gulkand. Regulates skin pH, alleviates acid reflux, and soothes ocular strain.',
+    preparation: 'Steam-distilled hydrosol or Gulkand (sun-cured rose petal jam).',
+    dosage: '1 tsp Gulkand twice daily or 2 drops rose water in eyes'
+  },
+  'hibiscus': {
+    title: 'Hibiscus rosa-sinensis',
+    commonName: 'Hibiscus (Gudhal)',
+    hindiName: 'गुड़हल',
+    scientificName: 'Hibiscus rosa-sinensis',
+    category: 'Ayurveda & Immunity',
+    image: 'https://images.unsplash.com/photo-1550950158-d0d960dff51b?auto=format&fit=crop&w=800&q=80',
+    properties: ['Hair Follicle Stimulant', 'Cardiovascular', 'Antioxidant'],
+    activeCompound: 'Anthocyanins & Hibiscus Acid',
+    diseasesTargeted: ['Hair Thinning', 'Hypertension', 'Kidney Health'],
+    cures: 'Rich in polyphenols and vitamin C. Lowers systolic blood pressure naturally and stimulates dormant hair follicles when infused in virgin coconut oil.',
+    preparation: 'Fresh flower cold infusion or crushed flower hair oil mask.',
+    dosage: '1–2 cups tart hibiscus tea or topical oil weekly'
+  },
+  'gudhal': {
+    title: 'Hibiscus rosa-sinensis',
+    commonName: 'Hibiscus (Gudhal)',
+    hindiName: 'गुड़हल',
+    scientificName: 'Hibiscus rosa-sinensis',
+    category: 'Ayurveda & Immunity',
+    image: 'https://images.unsplash.com/photo-1550950158-d0d960dff51b?auto=format&fit=crop&w=800&q=80',
+    properties: ['Hair Follicle Stimulant', 'Cardiovascular', 'Antioxidant'],
+    activeCompound: 'Anthocyanins & Hibiscus Acid',
+    diseasesTargeted: ['Hair Thinning', 'Hypertension', 'Kidney Health'],
+    cures: 'Rich in polyphenols and vitamin C. Lowers systolic blood pressure naturally and stimulates dormant hair follicles when infused in virgin coconut oil.',
+    preparation: 'Fresh flower cold infusion or crushed flower hair oil mask.',
+    dosage: '1–2 cups tart hibiscus tea or topical oil weekly'
+  },
+  'jasmine': {
+    title: 'Jasminum sambac',
+    commonName: 'Jasmine (Mogra)',
+    hindiName: 'मोगरा / चमेली',
+    scientificName: 'Jasminum sambac',
+    category: 'Brain & Stress',
+    image: 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=800&q=80',
+    properties: ['Sedative', 'Cooling Antipyretic', 'Skin Soothing'],
+    activeCompound: 'Linalool, Benzyl Acetate & Jasmone',
+    diseasesTargeted: ['Anxiety', 'Headaches', 'Skin Dermatitis'],
+    cures: 'Revered for its soothing, relaxing aroma. Relieves nervous tension, cools skin erythema, and reduces fever temperature when applied as a floral compress.',
+    preparation: 'Floral water infusion or essential oil diluted in jojoba oil.',
+    dosage: '2–3 drops essential oil diffused or fresh floral tea'
+  },
+  'mogra': {
+    title: 'Jasminum sambac',
+    commonName: 'Jasmine (Mogra)',
+    hindiName: 'मोगरा / चमेली',
+    scientificName: 'Jasminum sambac',
+    category: 'Brain & Stress',
+    image: 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=800&q=80',
+    properties: ['Sedative', 'Cooling Antipyretic', 'Skin Soothing'],
+    activeCompound: 'Linalool, Benzyl Acetate & Jasmone',
+    diseasesTargeted: ['Anxiety', 'Headaches', 'Skin Dermatitis'],
+    cures: 'Revered for its soothing, relaxing aroma. Relieves nervous tension, cools skin erythema, and reduces fever temperature when applied as a floral compress.',
+    preparation: 'Floral water infusion or essential oil diluted in jojoba oil.',
+    dosage: '2–3 drops essential oil diffused or fresh floral tea'
+  },
+  'marigold': {
+    title: 'Tagetes',
+    commonName: 'Marigold (Genda)',
+    hindiName: 'गेंदा',
+    scientificName: 'Tagetes erecta',
+    category: 'Pest & Bio-Shield',
+    image: 'https://images.unsplash.com/photo-1508746829417-e6f548d8d6ed?auto=format&fit=crop&w=800&q=80',
+    properties: ['Nematocide', 'Lutein Rich', 'Wound Healing'],
+    activeCompound: 'Alpha-terthienyl & Lutein',
+    diseasesTargeted: ['Root-knot Nematodes', 'Macular Degeneration', 'Skin Ulcers'],
+    cures: 'Root exudates produce alpha-terthienyl, eliminating subterranean nematodes in agricultural soils by 90%. Petal lutein protects retinal health.',
+    preparation: 'Intercropped along crop rows for nematode bio-shield, or petal balm.',
+    dosage: 'Intercrop 1 marigold per 5 crop plants; external balm for ulcers'
+  },
+  'genda': {
+    title: 'Tagetes',
+    commonName: 'Marigold (Genda)',
+    hindiName: 'गेंदा',
+    scientificName: 'Tagetes erecta',
+    category: 'Pest & Bio-Shield',
+    image: 'https://images.unsplash.com/photo-1508746829417-e6f548d8d6ed?auto=format&fit=crop&w=800&q=80',
+    properties: ['Nematocide', 'Lutein Rich', 'Wound Healing'],
+    activeCompound: 'Alpha-terthienyl & Lutein',
+    diseasesTargeted: ['Root-knot Nematodes', 'Macular Degeneration', 'Skin Ulcers'],
+    cures: 'Root exudates produce alpha-terthienyl, eliminating subterranean nematodes in agricultural soils by 90%. Petal lutein protects retinal health.',
+    preparation: 'Intercropped along crop rows for nematode bio-shield, or petal balm.',
+    dosage: 'Intercrop 1 marigold per 5 crop plants; external balm for ulcers'
+  },
+  'moringa': {
+    title: 'Moringa oleifera',
+    commonName: 'Moringa (Sahjan / Drumstick)',
+    hindiName: 'सहजन',
+    scientificName: 'Moringa oleifera',
+    category: 'Ayurveda & Immunity',
+    image: 'https://images.unsplash.com/photo-1589927986089-35812388d1f4?auto=format&fit=crop&w=800&q=80',
+    properties: ['Nutritional Superfood', 'Antidiabetic', 'Anti-inflammatory'],
+    activeCompound: 'Isothiocyanates & Pterygospermin',
+    diseasesTargeted: ['Malnutrition', 'Blood Glucose Spikes', 'Joint Pain'],
+    cures: 'Leaves contain 7x vitamin C of oranges and 4x calcium of milk. Isothiocyanates help stabilize insulin sensitivity and reduce cellular inflammation.',
+    preparation: 'Shade-dried leaf powder mixed into warm water or curries.',
+    dosage: '1–2 teaspoons (5g) leaf powder daily'
+  },
+  'sahjan': {
+    title: 'Moringa oleifera',
+    commonName: 'Moringa (Sahjan / Drumstick)',
+    hindiName: 'सहजन',
+    scientificName: 'Moringa oleifera',
+    category: 'Ayurveda & Immunity',
+    image: 'https://images.unsplash.com/photo-1589927986089-35812388d1f4?auto=format&fit=crop&w=800&q=80',
+    properties: ['Nutritional Superfood', 'Antidiabetic', 'Anti-inflammatory'],
+    activeCompound: 'Isothiocyanates & Pterygospermin',
+    diseasesTargeted: ['Malnutrition', 'Blood Glucose Spikes', 'Joint Pain'],
+    cures: 'Leaves contain 7x vitamin C of oranges and 4x calcium of milk. Isothiocyanates help stabilize insulin sensitivity and reduce cellular inflammation.',
+    preparation: 'Shade-dried leaf powder mixed into warm water or curries.',
+    dosage: '1–2 teaspoons (5g) leaf powder daily'
+  },
+  'amla': {
+    title: 'Phyllanthus emblica',
+    commonName: 'Indian Gooseberry (Amla)',
+    hindiName: 'आंवला',
+    scientificName: 'Phyllanthus emblica',
+    category: 'Ayurveda & Immunity',
+    image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80',
+    properties: ['Super Antioxidant', 'Immunomodulator', 'Digestive Tonic'],
+    activeCompound: 'Emblicanin A & B (Ascorbic Acid complex)',
+    diseasesTargeted: ['Immune Deficiency', 'Hyperacidity', 'Hair Graying'],
+    cures: 'King of Rasayanas in Ayurveda. The heat-stable bioavailable vitamin C complex boosts white blood cell response and strengthens hepatic detoxification.',
+    preparation: 'Fresh fruit juice or Chyawanprash formulation.',
+    dosage: '15–20 ml fresh juice with water on empty stomach'
+  }
+};
+
 const FloraArchive = React.memo(({ onCameraClick }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
@@ -229,7 +415,7 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
     ).length === 0) {
       const timer = setTimeout(() => {
         searchWeb(searchTerm);
-      }, 800);
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [searchTerm]);
@@ -265,18 +451,51 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
     return webResult ? [...filteredPlants, webResult] : filteredPlants;
   }, [filteredPlants, webResult]);
 
+  // Intelligent Multi-Tier Botanical & Floral Web Search Engine
   const searchWeb = async (query) => {
     if (!query.trim()) return;
     setIsSearchingWeb(true);
     setWebResult(null);
     setWebSearchError(null);
+
+    const cleanQuery = query.trim().toLowerCase();
+
+    // 1. Direct Instant Hit from Curated Botanical Taxon Dictionary
+    const directMatchKey = Object.keys(BOTANICAL_TAXON_MAP).find(k => 
+      cleanQuery === k || cleanQuery.includes(k) || k.includes(cleanQuery)
+    );
+
+    if (directMatchKey) {
+      const taxon = BOTANICAL_TAXON_MAP[directMatchKey];
+      setWebResult({
+        id: `taxon-${directMatchKey}-${Date.now()}`,
+        name: taxon.commonName,
+        hindiName: taxon.hindiName,
+        scientificName: taxon.scientificName,
+        category: taxon.category,
+        image: taxon.image,
+        properties: taxon.properties,
+        activeCompound: taxon.activeCompound,
+        diseasesTargeted: taxon.diseasesTargeted,
+        cures: taxon.cures,
+        description: taxon.cures,
+        preparation: taxon.preparation,
+        dosage: taxon.dosage,
+        isWeb: true,
+        hasFullDetails: true,
+        wikiTitle: taxon.title
+      });
+      setIsSearchingWeb(false);
+      return;
+    }
     
+    // 2. Botanical Keyword Classifier & Wikipedia Search
     const botanicalKeywords = [
       'plant', 'flower', 'herb', 'tree', 'shrub', 'fern', 'moss', 'succulent',
       'vine', 'grass', 'weed', 'flora', 'botanical', 'botany', 'horticulture',
       'species', 'genus', 'family', 'cultivar', 'hybrid', 'variety',
       'leaf', 'leaves', 'petal', 'seed', 'root', 'stem', 'bark', 'rhizome',
-      'medicinal plant', 'herbal', 'ayurved', 'phytotherapy'
+      'medicinal plant', 'herbal', 'ayurved', 'phytotherapy', 'nelumbo', 'blossom', 'bloom'
     ];
 
     const isBotanicalResult = (description = '', extract = '') => {
@@ -285,25 +504,29 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
     };
 
     const fetchSummary = async (title) => {
-      const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
-      if (!res.ok) return null;
-      const data = await res.json();
-      if (data.type === 'disambiguation' || !data.title) return null;
-      return data;
+      try {
+        const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (data.type === 'disambiguation' || !data.title) return null;
+        return data;
+      } catch {
+        return null;
+      }
     };
 
     const buildResult = (data) => ({
       id: `web-${Date.now()}`,
       name: data.title,
-      scientificName: data.description || 'Global Botanical Species',
-      category: 'Web Knowledge',
-      image: data.thumbnail?.source || 'https://images.unsplash.com/photo-1466692476877-361ad33333cc?auto=format&fit=crop&w=800&q=80',
-      properties: ['Botanical Record', 'Phytochemical Intelligence'],
+      scientificName: data.description || 'Botanical Species',
+      category: 'Botanical Record',
+      image: data.thumbnail?.source || 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80',
+      properties: ['Phytochemical Record', 'Botanical Taxonomy'],
       activeCompound: 'Natural Phyto-Extracts',
-      diseasesTargeted: ['General Health', 'Herbal Efficacy'],
+      diseasesTargeted: ['Traditional Herbal Efficacy', 'General Wellness'],
       cures: data.extract,
       description: data.extract,
-      preparation: 'Sourced from live global botanical taxonomies.',
+      preparation: 'Sourced from live global botanical taxonomy.',
       dosage: 'Consult certified herbalist or agronomist',
       isWeb: true,
       hasFullDetails: false,
@@ -311,23 +534,17 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
     });
 
     try {
-      const directResult = await fetchSummary(query.trim());
-      if (directResult && isBotanicalResult(directResult.description, directResult.extract)) {
-        setWebResult(buildResult(directResult));
-        setIsSearchingWeb(false);
-        return;
-      }
-
+      // Try direct summary with botanical query suffixes first
       const searchQueries = [
+        `${query.trim()} flower`,
         `${query.trim()} plant`,
-        `${query.trim()} herb`,
-        `${query.trim()} medicinal`,
-        query.trim(),
+        `${query.trim()} species`,
+        query.trim()
       ];
 
       for (const searchQuery of searchQueries) {
         const searchRes = await fetch(
-          `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&srlimit=5&format=json&origin=*`
+          `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&srlimit=6&format=json&origin=*`
         );
         
         if (searchRes.ok) {
@@ -335,6 +552,12 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
           const results = searchData.query?.search || [];
           
           for (const result of results) {
+            // Reject non-botanical results (cars, computing, software, movies)
+            const titleLower = result.title.toLowerCase();
+            if (titleLower.includes('car') || titleLower.includes('software') || titleLower.includes('album') || titleLower.includes('film')) {
+              continue;
+            }
+
             const summaryData = await fetchSummary(result.title);
             if (summaryData && isBotanicalResult(summaryData.description, summaryData.extract)) {
               setWebResult(buildResult(summaryData));
@@ -345,9 +568,9 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
         }
       }
       
-      setWebSearchError(`No botanical records found for "${query}". Try searching for plants like Moringa, Basil, Turmeric, or Neem.`);
-    } catch (err) {
-      setWebSearchError("Failed to search global botanical database. Please check your internet connection.");
+      setWebSearchError(`No verified botanical records found for "${query}". Try searching for flowers like Lotus, Rose, Hibiscus, Marigold, or Jasmine.`);
+    } catch {
+      setWebSearchError("Failed to connect to botanical database. Please check your internet connection.");
     }
     setIsSearchingWeb(false);
   };
@@ -373,6 +596,7 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
     }
     setIsLoadingMore(false);
   };
+
 
   return (
     <section id="flora" className="py-20 px-4 sm:px-6 lg:px-12 max-w-[1400px] mx-auto z-10 relative">
