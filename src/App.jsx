@@ -828,12 +828,13 @@ function Home() {
     }
   };
 
+
   const handleScanClick = () => {
     if (!user && !isGuestMode) {
       setShowAuthModal(true);
       return;
     }
-    setShowAmaniaCamera(true);
+    setShowVoiceModal(true);
   };
 
 

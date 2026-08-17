@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Mic, MicOff, Volume2, VolumeX, X, Sparkles, Send, 
-  RefreshCw, Bot, User, Radio, MessageSquare, AlertCircle, Camera, Trash2
+  RefreshCw, Bot, User, Radio, MessageSquare, AlertCircle
 } from 'lucide-react';
 
 // Domain knowledge responses for Amania AI Agronomic Voice Assistant
@@ -66,7 +66,7 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
     {
       id: 1,
       sender: 'amania',
-      text: "Namaste! I'm Amania, your voice agronomist. Tap the microphone to speak, type a question, or use the camera to snap a leaf photo for instant diagnosis!",
+      text: "Namaste! I'm Amania, your voice agronomist. Tap the microphone and talk to me about your crops, leaf diseases, weather, or natural cures.",
       timestamp: new Date()
     }
   ]);
@@ -75,181 +75,86 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
   const [inputText, setInputText] = useState('');
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [selectedLanguage, setSelectedLanguage] = useState('en-IN');
-  const [availableVoices, setAvailableVoices] = useState([]);
-  const [isCameraActive, setIsCameraActive] = useState(false);
-  const [isAnalyzingImage, setIsAnalyzingImage] = useState(false);
-
-  const chatContainerRef = useRef(null);
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
-  const videoRef = useRef(null);
-  const streamRef = useRef(null);
-  const canvasRef = useRef(null);
-  const fileInputRef = useRef(null);
 
-  // Lock background page scroll when modal is open
   useEffect(() => {
-    if (isOpen) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = prev || ''; };
-    }
-  }, [isOpen]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isSpeaking, isListening]);
 
-  // Scroll only the chat container — never the page
+  // Clean up speech synthesis on unmount
   useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
-  }, [messages, isSpeaking, isListening, isAnalyzingImage]);
-
-  // Load speech synthesis voices properly
-  useEffect(() => {
-    const loadVoices = () => {
-      if ('speechSynthesis' in window) {
-        setAvailableVoices(window.speechSynthesis.getVoices());
-      }
-    };
-    loadVoices();
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
-    }
     return () => {
       if ('speechSynthesis' in window) {
-        window.speechSynthesis.removeEventListener('voiceschanged', loadVoices);
         window.speechSynthesis.cancel();
       }
-      if (recognitionRef.current) recognitionRef.current.abort();
-      stopCameraStream();
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
     };
   }, []);
 
-  const stopCameraStream = useCallback(() => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(t => t.stop());
-      streamRef.current = null;
-    }
-    setIsCameraActive(false);
-  }, []);
-
-  // Text to Speech — uses preloaded voices from state
-  const speakReply = useCallback((text) => {
+  // Text to Speech Function
+  const speakReply = (text) => {
     if (!voiceEnabled || !('speechSynthesis' in window)) return;
+
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.95;
-    utterance.pitch = 1.1;
+    utterance.pitch = 1.05;
 
-    const voices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
-    const preferred = voices.find(v =>
-      (v.lang.startsWith('en') || v.lang.startsWith('hi')) &&
-      (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('natural'))
-    ) || voices.find(v => v.lang.startsWith('en'));
+    // Try to pick a natural, clear voice if available
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoice = voices.find(v => 
+      (v.lang.includes('en-IN') || v.lang.includes('en-GB') || v.lang.includes('hi-IN')) && 
+      (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('google'))
+    ) || voices.find(v => v.lang.includes('en'));
 
-    if (preferred) utterance.voice = preferred;
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
+
     window.speechSynthesis.speak(utterance);
-  }, [voiceEnabled, availableVoices]);
-
-  const stopAllAudio = useCallback(() => {
-    window.speechSynthesis?.cancel();
-    setIsSpeaking(false);
-  }, []);
-
-  // Camera functions
-  const startCameraStream = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-      streamRef.current = stream;
-      setIsCameraActive(true);
-      setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.play().catch(() => {});
-        }
-      }, 100);
-    } catch (err) {
-      console.warn('Camera denied, falling back to file:', err);
-      fileInputRef.current?.click();
-    }
-  }, []);
-
-  const capturePhoto = useCallback(() => {
-    if (!videoRef.current || !canvasRef.current) return;
-    const c = canvasRef.current;
-    c.width = videoRef.current.videoWidth || 640;
-    c.height = videoRef.current.videoHeight || 480;
-    c.getContext('2d').drawImage(videoRef.current, 0, 0);
-    const dataUrl = c.toDataURL('image/jpeg', 0.85);
-    stopCameraStream();
-    processLeafImage(dataUrl);
-  }, [stopCameraStream]);
-
-  const handleFileUpload = useCallback((e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => processLeafImage(ev.target.result);
-    reader.readAsDataURL(file);
-  }, []);
-
-  const CAMERA_DIAGNOSES = [
-    { disease: 'Rice Blast (Magnaporthe oryzae)', confidence: 94, chemical: 'Tricyclazole 75% WP at 0.6 g/L', organic: '5% Neem Seed Kernel Extract at 5 g/L', contagious: true },
-    { disease: 'Bacterial Leaf Blight (Xanthomonas oryzae)', confidence: 91, chemical: 'Streptocycline 0.1 g/L + Copper Oxychloride 2.5 g/L', organic: 'Drain field water, reduce nitrogen', contagious: true },
-    { disease: 'Brown Spot (Helminthosporium oryzae)', confidence: 88, chemical: 'Mancozeb 75% WP at 2 g/L', organic: 'Apply Potash + Neem oil spray', contagious: false },
-    { disease: 'Healthy Leaf — No Pathogen Detected', confidence: 99, chemical: 'No chemical treatment needed', organic: 'Maintain current organic practices', contagious: false }
-  ];
-
-  const processLeafImage = useCallback((imageData) => {
-    const userMsg = { id: Date.now(), sender: 'user', image: imageData, text: '📸 Leaf photo submitted for diagnosis', timestamp: new Date() };
-    setMessages(prev => [...prev, userMsg]);
-    setIsAnalyzingImage(true);
-    stopAllAudio();
-    setTimeout(() => {
-      const diag = CAMERA_DIAGNOSES[Math.floor(Math.random() * CAMERA_DIAGNOSES.length)];
-      const replyText = `Diagnosis complete. Detected ${diag.disease} with ${diag.confidence}% confidence. Chemical: ${diag.chemical}. Organic option: ${diag.organic}.`;
-      setMessages(prev => [...prev, {
-        id: Date.now() + 1, sender: 'amania', isDiagnosis: true,
-        disease: diag.disease, confidence: diag.confidence, chemical: diag.chemical, organic: diag.organic,
-        text: replyText, timestamp: new Date()
-      }]);
-      setIsAnalyzingImage(false);
-      speakReply(replyText);
-      if (diag.contagious) onContagiousOutbreakDetected?.(diag.disease);
-    }, 2500);
-  }, [speakReply, stopAllAudio, onContagiousOutbreakDetected]);
+  };
 
   // Handle incoming message & response
   const handleSendMessage = (textToSend) => {
     const text = textToSend || inputText;
     if (!text.trim()) return;
 
-    const userMsg = { id: Date.now(), sender: 'user', text: text.trim(), timestamp: new Date() };
+    const userMsg = {
+      id: Date.now(),
+      sender: 'user',
+      text: text.trim(),
+      timestamp: new Date()
+    };
+
     setMessages(prev => [...prev, userMsg]);
     setInputText('');
-    stopAllAudio();
 
+    // Generate intelligent response
     setTimeout(() => {
       const replyText = generateAmaniaReply(text);
-      const amaniaMsg = { id: Date.now() + 1, sender: 'amania', text: replyText, timestamp: new Date() };
+      const amaniaMsg = {
+        id: Date.now() + 1,
+        sender: 'amania',
+        text: replyText,
+        timestamp: new Date()
+      };
       setMessages(prev => [...prev, amaniaMsg]);
       speakReply(replyText);
+
+      // If user mentions a contagious outbreak, optionally notify parent
       if (text.toLowerCase().includes('blast') || text.toLowerCase().includes('blight')) {
-        onContagiousOutbreakDetected?.(text);
+        if (onContagiousOutbreakDetected) {
+          onContagiousOutbreakDetected(text);
+        }
       }
     }, 600);
-  };
-
-  const handleClearChat = () => {
-    stopAllAudio();
-    stopCameraStream();
-    setMessages([{ id: Date.now(), sender: 'amania', text: "Chat cleared. How can I help your farm today?", timestamp: new Date() }]);
-  };
-
-  const handleDeleteMessage = (id) => {
-    setMessages(prev => prev.filter(m => m.id !== id));
   };
 
   // Voice Recognition Speech-to-Text
@@ -309,8 +214,7 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
     }
   };
 
-
-  const stopAllAudioLegacy = () => {
+  const stopAllAudio = () => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
@@ -325,68 +229,62 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6 bg-emerald-950/60 backdrop-blur-md"
-        onClick={() => { stopAllAudio(); onClose(); }}
+        className="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-6 bg-emerald-950/60 backdrop-blur-md"
+        onClick={() => {
+          stopAllAudio();
+          onClose();
+        }}
       >
         <motion.div
           initial={{ scale: 0.9, y: 30, opacity: 0 }}
           animate={{ scale: 1, y: 0, opacity: 1 }}
           exit={{ scale: 0.95, y: 20, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="w-full max-w-2xl flex flex-col rounded-[2.5rem] overflow-hidden shadow-2xl border border-pink-200/60 bg-white"
-          style={{ height: 'min(88vh, 750px)' }}
+          className="liquid-glass-strong w-full max-w-2xl h-[85vh] max-h-[750px] rounded-[2.5rem] overflow-hidden shadow-2xl border border-pink-200/60 bg-white/95 flex flex-col relative"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Hidden file input & canvas */}
-          <input ref={fileInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileUpload} />
-          <canvas ref={canvasRef} className="hidden" />
-
           {/* Header Bar */}
-          <div className="flex-shrink-0 px-5 py-3 border-b border-emerald-900/10 flex items-center justify-between bg-gradient-to-r from-pink-50/80 via-white to-emerald-50/80">
+          <div className="px-6 py-4 border-b border-emerald-900/10 flex items-center justify-between bg-gradient-to-r from-pink-50/80 via-white to-emerald-50/80 backdrop-blur-md relative z-10">
             <div className="flex items-center gap-3">
-              <div className={`w-11 h-11 rounded-full bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center shadow-md ${isSpeaking ? 'animate-pulse ring-4 ring-pink-300/50' : ''}`}>
-                <Sparkles className="w-5 h-5 text-white" />
+              <div className="relative">
+                <div className={`w-11 h-11 rounded-full bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center shadow-md ${isSpeaking ? 'animate-pulse ring-4 ring-pink-300/50' : ''}`}>
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                {isSpeaking && (
+                  <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-pink-500"></span>
+                  </span>
+                )}
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="font-heading italic text-2xl text-emerald-950 leading-none">Amania Voice AI</h3>
-                  <span className="text-[10px] font-black uppercase tracking-wider bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full">Live</span>
+                  <span className="text-[10px] font-black uppercase tracking-wider bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full">Live Voice</span>
                 </div>
                 <p className="text-[11px] text-emerald-800/70 font-semibold mt-0.5">
-                  {isAnalyzingImage ? "Analyzing leaf with AI Vision..." : isSpeaking ? "Speaking voice response..." : isListening ? "Listening to your voice..." : "Voice Agronomist & Crop Doctor"}
+                  {isSpeaking ? "Speaking voice response..." : isListening ? "Listening to your voice..." : "Voice Agronomist & Crop Doctor"}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Camera button in header */}
               <button
-                onClick={startCameraStream}
-                className="p-2 rounded-full border bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 transition-all"
-                title="Snap leaf photo for AI diagnosis"
-              >
-                <Camera className="w-4 h-4" />
-              </button>
-
-              {/* Clear chat */}
-              <button
-                onClick={handleClearChat}
-                className="p-2 rounded-full border bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100 transition-all"
-                title="Clear conversation"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={() => { setVoiceEnabled(!voiceEnabled); if (isSpeaking) stopAllAudio(); }}
+                onClick={() => {
+                  setVoiceEnabled(!voiceEnabled);
+                  if (isSpeaking) stopAllAudio();
+                }}
                 className={`p-2 rounded-full border transition-all ${voiceEnabled ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'}`}
-                title={voiceEnabled ? "Voice Active" : "Voice Muted"}
+                title={voiceEnabled ? "Voice Output Active" : "Voice Output Muted"}
               >
                 {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
               </button>
 
               <button
-                onClick={() => { stopAllAudio(); onClose(); }}
+                onClick={() => {
+                  stopAllAudio();
+                  onClose();
+                }}
                 className="w-9 h-9 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-900 flex items-center justify-center border border-emerald-200 transition-colors"
               >
                 <X className="w-5 h-5" />
@@ -394,24 +292,8 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
             </div>
           </div>
 
-          {/* Camera Viewfinder */}
-          {isCameraActive && (
-            <div className="flex-shrink-0 relative w-full bg-black" style={{ height: 260 }}>
-              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
-              <div className="absolute inset-6 border-2 border-dashed border-emerald-400/80 rounded-2xl pointer-events-none flex items-center justify-center">
-                <span className="text-[11px] font-bold uppercase tracking-wider bg-black/60 text-white px-3 py-1 rounded-full">Align infected leaf here</span>
-              </div>
-              <div className="absolute bottom-3 inset-x-0 flex items-center justify-center gap-4 z-10">
-                <button onClick={stopCameraStream} className="px-4 py-2 bg-black/70 text-white text-xs font-bold rounded-full">Cancel</button>
-                <button onClick={capturePhoto} className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-2xl border-4 border-pink-500 hover:scale-105 active:scale-95 transition-transform">
-                  <Camera className="w-6 h-6 text-pink-600" />
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* Conversation Chat History */}
-          <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 bg-gradient-to-b from-emerald-50/20 via-pink-50/10 to-white">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-gradient-to-b from-emerald-50/20 via-pink-50/10 to-white">
             {messages.map((msg) => {
               const isAmania = msg.sender === 'amania';
               return (
@@ -419,7 +301,7 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
                   key={msg.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`flex gap-3 group ${isAmania ? 'justify-start' : 'justify-end'}`}
+                  className={`flex gap-3 ${isAmania ? 'justify-start' : 'justify-end'}`}
                 >
                   {isAmania && (
                     <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0 text-white shadow-sm mt-1">
@@ -432,35 +314,13 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
                       ? 'bg-white shadow-md border border-emerald-100 text-emerald-950 rounded-tl-sm' 
                       : 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md rounded-tr-sm font-medium'
                   }`}>
-                    {/* Leaf image thumbnail */}
-                    {msg.image && (
-                      <div className="mb-2 rounded-xl overflow-hidden border border-emerald-100 shadow-sm">
-                        <img src={msg.image} alt="Leaf sample" className="w-full max-h-48 object-cover" />
-                      </div>
-                    )}
-                    {/* Diagnosis card */}
-                    {msg.isDiagnosis ? (
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between gap-2 border-b border-rose-100 pb-2">
-                          <span className="font-extrabold text-rose-600 text-xs uppercase tracking-wide flex items-center gap-1">
-                            <AlertCircle className="w-3.5 h-3.5" /> {msg.disease}
-                          </span>
-                          <span className="bg-rose-50 text-rose-700 font-black text-[10px] px-2 py-0.5 rounded-full border border-rose-200">{msg.confidence}% Match</span>
-                        </div>
-                        <div className="text-xs space-y-1">
-                          <p><strong className="text-emerald-900">Chemical:</strong> {msg.chemical}</p>
-                          <p><strong className="text-emerald-800">Organic:</strong> {msg.organic}</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="whitespace-pre-wrap">{msg.text}</p>
-                    )}
+                    <p className="whitespace-pre-wrap">{msg.text}</p>
                     {isAmania && voiceEnabled && (
                       <button
                         onClick={() => speakReply(msg.text)}
                         className="mt-2.5 inline-flex items-center gap-1.5 text-[11px] font-bold text-pink-600 hover:text-pink-700 bg-pink-50 px-2.5 py-1 rounded-full border border-pink-100"
                       >
-                        <Volume2 className="w-3.5 h-3.5" /> Replay
+                        <Volume2 className="w-3.5 h-3.5" /> Replay Audio
                       </button>
                     )}
                   </div>
@@ -474,22 +334,7 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
               );
             })}
 
-            {/* AI Vision Analyzing Indicator */}
-            {isAnalyzingImage && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-900 text-xs font-bold"
-              >
-                <RefreshCw className="w-4 h-4 text-pink-500 animate-spin flex-shrink-0" />
-                <div>
-                  <p className="font-extrabold">Analyzing leaf with AI Vision...</p>
-                  <p className="text-[10px] text-emerald-700 font-medium">Identifying pathogen & preparing advisory</p>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Listening Indicator */}
+            {/* Neural Listening / Speaking Visualizer */}
             {isListening && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -497,11 +342,10 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
                 className="flex items-center justify-center gap-2 p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-600 text-xs font-bold animate-pulse"
               >
                 <Radio className="w-4 h-4 animate-spin" />
-                <span>Listening... Speak your crop problem now</span>
+                <span>Listening... Speak your crop problem or question now</span>
               </motion.div>
             )}
 
-            {/* Speaking Indicator */}
             {isSpeaking && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -522,10 +366,12 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
                 </button>
               </motion.div>
             )}
+
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Quick Voice Prompt Suggestions */}
-          <div className="flex-shrink-0 px-4 py-1.5 bg-white/70 border-t border-emerald-900/5 flex items-center gap-2 overflow-x-auto text-[11px] no-scrollbar">
+          <div className="px-4 py-2 bg-white/70 border-t border-emerald-900/5 flex items-center gap-2 overflow-x-auto text-[11px] no-scrollbar">
             <span className="font-bold text-emerald-900/50 flex-shrink-0">Ask:</span>
             {[
               "Rice Blast treatment?",
@@ -545,31 +391,20 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
           </div>
 
           {/* Voice Input & Text Control Footer */}
-          <div className="flex-shrink-0 p-3 bg-white border-t border-emerald-900/10 flex items-center gap-2">
-            {/* Camera button in footer */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={startCameraStream}
-              className="w-11 h-11 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-700 flex items-center justify-center flex-shrink-0 border border-emerald-200 shadow-sm"
-              title="Snap leaf photo for diagnosis"
-            >
-              <Camera className="w-5 h-5" />
-            </motion.button>
-
-            {/* Mic Button */}
+          <div className="p-4 bg-white border-t border-emerald-900/10 flex items-center gap-3">
+            {/* Big Mic Button */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={toggleVoiceRecording}
-              className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 transition-all shadow-lg ${
+              className={`w-13 h-13 rounded-full flex items-center justify-center flex-shrink-0 transition-all shadow-lg ${
                 isListening 
                   ? 'bg-rose-500 text-white shadow-rose-500/40 ring-4 ring-rose-300 animate-pulse' 
                   : 'bg-gradient-to-tr from-pink-500 to-purple-600 text-white shadow-pink-500/30 hover:shadow-pink-500/50'
               }`}
-              title={isListening ? "Listening... Click to stop" : "Tap to Speak"}
+              title={isListening ? "Listening... Click to send" : "Tap to Speak (Voice Input)"}
             >
-              {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              {isListening ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
             </motion.button>
 
             {/* Text Input Fallback */}
@@ -582,7 +417,7 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
                   if (e.key === 'Enter') handleSendMessage();
                 }}
                 placeholder={isListening ? "Listening to your voice..." : "Or type your agricultural question..."}
-                className="w-full bg-emerald-50/60 border border-emerald-200/80 rounded-full px-5 py-2.5 text-sm text-emerald-950 placeholder:text-emerald-800/40 outline-none focus:bg-white focus:border-pink-400 focus:shadow-md transition-all font-medium pr-11"
+                className="w-full bg-emerald-50/60 border border-emerald-200/80 rounded-full px-5 py-3 text-sm text-emerald-950 placeholder:text-emerald-800/40 outline-none focus:bg-white focus:border-pink-400 focus:shadow-md transition-all font-medium pr-11"
               />
               <button
                 onClick={() => handleSendMessage()}
