@@ -2,175 +2,190 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Mic, MicOff, Volume2, VolumeX, X, Sparkles, Send, 
-  RefreshCw, Bot, User, Radio, MessageSquare, AlertCircle, Camera, Trash2
+  RefreshCw, Bot, User, Radio, MessageSquare, AlertCircle, Camera, Trash2, Globe
 } from 'lucide-react';
 
-// Comprehensive Domain Knowledge & Conversational Intelligence Base for Amania AI
-const AGRONOMIC_KNOWLEDGE_BASE = [
-  // ── 1. Conversational & Social Greetings ──────────────────────────────────────
+const LANGUAGES = [
+  { id: 'en-IN', label: 'English', flag: '🇬🇧', voicePrefix: 'en' },
+  { id: 'hi-IN', label: 'हिन्दी', flag: '🇮🇳', voicePrefix: 'hi' },
+  { id: 'or-IN', label: 'ଓଡ଼ିଆ', flag: '🌾', voicePrefix: 'or' }
+];
+
+// ── Multilingual Knowledge Base for Amania AI ────────────────────────────────
+const MULTILINGUAL_KNOWLEDGE = {
+  'en-IN': {
+    initialGreeting: "Namaste! I'm Amania, your sweet voice agronomist. Tap the microphone to speak, type a question, or use the camera to snap a leaf photo for instant diagnosis!",
+    inputPlaceholder: "Ask any crop disease, fertilizer or weather question...",
+    quickPrompts: [
+      "Rice Blast treatment?",
+      "Bacterial Blight cure?",
+      "Yellowing leaves cause?",
+      "NPK fertilizer dosage?",
+      "PM-KISAN scheme details?",
+      "Organic Neem bio-spray?"
+    ],
+    greetingReply: "I'm doing wonderful, thank you for asking! I'm here in your field and ready to help. How are your crops doing today? Feel free to ask about crop diseases, fertilizers, or snap a leaf photo!",
+    introReply: "Namaste! I am Amania AI, your personal voice agronomist and crop doctor. I help Indian farmers identify leaf diseases, calculate NPK fertilizer doses, and stay protected from regional outbreaks.",
+    fallbackReply: (q) => `I analyzed your question about "${q}". As your digital agronomist, I recommend checking your crop leaves for discoloration or moisture stress. You can snap a photo with the camera for instant AI leaf diagnosis, or ask me about Rice, Wheat, Tomato, Cotton, fertilizer doses, and disease treatments!`
+  },
+  'hi-IN': {
+    initialGreeting: "नमस्ते किसान भाई! मैं अमानिया हूँ, आपकी प्यारी डिजिटल कृषि सहेली और फसल डॉक्टर। माइक दबाकर बोलें या पत्ती की फोटो खींचकर तुरंत बीमारी का इलाज पाएं!",
+    inputPlaceholder: "फसल रोग, खाद या मौसम संबंधी सवाल पूछें...",
+    quickPrompts: [
+      "धान में झुलसा (ब्लास्ट) का इलाज?",
+      "पत्तियां पीली क्यों हो रही हैं?",
+      "धान/गेहूं में यूरिया और डीएपी डोज?",
+      "पीएम-किसान योजना की जानकारी?",
+      "जैविक नीम का काढ़ा कैसे बनाएं?",
+      "सफेद मक्खी और कीट नियंत्रण?"
+    ],
+    greetingReply: "मैं बहुत अच्छी हूँ, पूछने के लिए धन्यवाद! मैं आपकी सेवा में हमेशा तैयार हूँ। आज आपकी फसल कैसी है? आप मुझसे किसी भी फसल रोग, खाद की मात्रा, या जैविक नुस्खों के बारे में पूछ सकते हैं!",
+    introReply: "नमस्ते! मैं अमानिया AI हूँ, आपकी डिजिटल कृषि मित्र और फसल डॉक्टर। मैं फसलों में लगने वाली बीमारियों की पहचान, खाद की सही मात्रा और सरकारी योजनाओं की सटीक जानकारी देती हूँ।",
+    fallbackReply: (q) => `मैंने आपके प्रश्न "${q}" पर विचार किया। एक कृषि मित्र के रूप में, मैं सलाह देती हूँ कि आप अपनी फसल की पत्तियों की जांच करें। आप कैमरे का बटन दबाकर पत्ती का फोटो भेजें, मैं तुरंत सटीक बीमारी और समाधान बता दूंगी!`
+  },
+  'or-IN': {
+    initialGreeting: "ନମସ୍କାର କୃଷକ ଭାଇ! ମୁଁ ଆମାନିଆ, ଆପଣଙ୍କ ପ୍ରିୟ ଡିଜିଟାଲ କୃଷି ଡାକ୍ତର। ମାଇକ୍ ଦବାଇ କଥା ହୁଅନ୍ତୁ କିମ୍ବା କ୍ୟାମେରା ମାଧ୍ୟମରେ ପତ୍ରର ଫଟୋ ଉଠାଇ ତୁରନ୍ତ ଚିକିତ୍ସା ଜାଣନ୍ତୁ!",
+    inputPlaceholder: "ଫସଲ ରୋଗ, ସାର କିମ୍ବା ଯୋଜନା ବିଷୟରେ ପଚାରନ୍ତୁ...",
+    quickPrompts: [
+      "ଧାନ ବ୍ଲାଷ୍ଟ (ଝଣକା) ରୋଗର ଉପଚାର?",
+      "ପତ୍ର ହଳଦିଆ ପଡ଼ିବାର କାରଣ?",
+      "ଧାନରେ ସାର ପ୍ରୟୋଗ ମାତ୍ରା?",
+      "କାଳିଆ ଓ PM-KISAN ଯୋଜନା?",
+      "ଜୈବିକ ନିମ୍ବ ତେଲ ସ୍ପ୍ରେ ପ୍ରଣାଳୀ?",
+      "କାଣ୍ଡବିନ୍ଧା ପୋକ ନିୟନ୍ତ୍ରଣ?"
+    ],
+    greetingReply: "ମୁଁ ବହୁତ ଭଲରେ ଅଛି, ପଚାରିଥିବାରୁ ଧନ୍ୟବାଦ! ଆପଣଙ୍କ ଚାଷଜମି ପାଇଁ ମୁଁ ସବୁବେଳେ ପ୍ରସ୍ତୁତ। ଆଜି ଆପଣଙ୍କ ଫସଲ କିପରି ଅଛି? ଆପଣ ରୋଗ, ସାର କିମ୍ବା ପାଣି ପରିଚାଳନା ବିଷୟରେ ପଚାରିପାରିବେ!",
+    introReply: "ନମସ୍କାର! ମୁଁ ଆମାନିଆ AI, ଆପଣଙ୍କ ଡିଜିଟାଲ କୃଷି ସାଥୀ। ମୁଁ ଧାନ ତଥା ଅନ୍ୟାନ୍ୟ ଫସଲର ରୋଗ ଚିହ୍ନଟ, ସାର ମାତ୍ରା ଏବଂ କାଳିଆ/PM-KISAN ଯୋଜନା ବିଷୟରେ ସହାୟତା କରେ।",
+    fallbackReply: (q) => `ମୁଁ ଆପଣଙ୍କ ପ୍ରଶ୍ନ "${q}" ବୁଝିଲି। ଆପଣ କ୍ୟାମେରା ବଟନ ଦବାଇ ପତ୍ରର ଏକ ସ୍ପଷ୍ଟ ଫଟୋ ଉଠାନ୍ତୁ, ମୁଁ ତୁରନ୍ତ ସଠିକ ରୋଗ ନିର୍ଣ୍ଣୟ ଓ ଚିକିତ୍ସା ପରାମର୍ଶ ଦେବି!`
+  }
+};
+
+// Comprehensive Domain Knowledge Base across English, Hindi, and Odia
+const MULTILINGUAL_RULES = [
+  // ── 1. Greetings & Smalltalk ────────────────────────────────────────────────
   {
-    keywords: ['how are you', 'how r u', 'how are u', 'how do you do', 'how are you doing', 'kaisa hai', 'kemiti achha', 'hows it going', 'whats up', 'what\'s up'],
-    response: "I'm doing great, thank you for asking! I'm active and ready to help your farm. How are your crops doing today? Feel free to ask about crop diseases, fertilizer timing, weather infection risks, or snap a leaf photo for instant diagnosis!",
-    topic: "Greeting"
+    matches: ['how are you', 'how r u', 'how are u', 'how do you do', 'how are you doing', 'kaisa hai', 'kaise ho', 'kemiti achha', 'kemiti acha', 'kemitia cho', 'hows it going', 'whats up'],
+    responses: {
+      'en-IN': "I'm doing wonderful, thank you for asking! I'm here in your field and ready to help. How are your crops doing today? Feel free to ask about crop diseases, fertilizers, or snap a leaf photo!",
+      'hi-IN': "मैं बहुत अच्छी हूँ, पूछने के लिए धन्यवाद! मैं आपके खेत की सेवा में पूरी तरह तैयार हूँ। आज आपकी फसल कैसी है? आप मुझसे किसी भी फसल रोग या खाद के बारे में पूछ सकते हैं!",
+      'or-IN': "ମୁଁ ବହୁତ ଭଲରେ ଅଛି, ପଚାରିଥିବାରୁ ଧନ୍ୟବାଦ! ଆଜି ଆପଣଙ୍କ ଫସଲ କିପରି ଅଛି? ଫସଲ ରୋଗ, ସାର କିମ୍ବା ପାଣି ପରିଚାଳନା ବିଷୟରେ ମୋତେ ପଚାରନ୍ତୁ!"
+    }
   },
   {
-    keywords: ['hello', 'hi', 'namaste', 'hey', 'pranam', 'ram ram', 'namaskar', 'good morning', 'good afternoon', 'good evening'],
-    response: "Namaste! I am Amania, your AI agronomist and crop doctor. I'm here to help you optimize your crop yield, cure plant diseases, and prevent regional outbreaks. What crop are you growing today?",
-    topic: "Introduction"
+    matches: ['hello', 'hi', 'namaste', 'hey', 'pranam', 'ram ram', 'namaskar', 'good morning', 'good evening', 'juhar', 'namaskara'],
+    responses: {
+      'en-IN': "Namaste! I am Amania, your AI agronomist and crop doctor. What crop are you growing today?",
+      'hi-IN': "नमस्ते किसान भाई! मैं अमानिया हूँ, आपकी डिजिटल कृषि मित्र। आज आपकी फसल में क्या समस्या है?",
+      'or-IN': "ନମସ୍କାର! ମୁଁ ଆମାନିଆ, ଆପଣଙ୍କ ଡିଜିଟାଲ କୃଷି ସାଥୀ। ଆଜି ଆପଣ କେଉଁ ଫସଲ ବିଷୟରେ ଜାଣିବାକୁ ଚାହାଁନ୍ତି?"
+    }
   },
   {
-    keywords: ['who are you', 'who made you', 'who created you', 'what is your name', 'who is amania', 'about you', 'introduce yourself'],
-    response: "I am Amania AI, an intelligent precision agronomist developed for BloomSense. I analyze botanical pathogens, calculate precise NPK fertilizer doses, track regional disease outbreaks on our 3D map, and recommend both chemical and organic cures for Indian farmers.",
-    topic: "Identity"
-  },
-  {
-    keywords: ['what can you do', 'help', 'features', 'what are your skills', 'how do you work', 'how to use', 'guide me'],
-    response: "Here is what I can do for you: 1) Camera Leaf Diagnosis — snap a leaf photo for instant disease detection, 2) Agronomic Solutions — get chemical and 100% organic recipes, 3) Fertilizer Schedules — calculate basal and top-dressing NPK doses, 4) Regional Disease Warnings — check if contagious outbreaks are spreading in your district, and 5) Government Schemes — information on PM-KISAN, PMFBY, and MSP.",
-    topic: "Capabilities"
-  },
-  {
-    keywords: ['thank you', 'thanks', 'dhanyawad', 'shukriya', 'great job', 'awesome', 'good job', 'love you', 'helpful'],
-    response: "You are very welcome! May your harvest be bountiful and healthy. Let me know whenever you need advice on your field, fertilizers, or seasonal tasks.",
-    topic: "Gratitude"
-  },
-  {
-    keywords: ['bye', 'goodbye', 'see you', 'alvida', 'tata', 'good night'],
-    response: "Goodbye and happy farming! Remember to inspect your crop leaves regularly. Tap the microphone anytime you need Amania AI.",
-    topic: "Farewell"
+    matches: ['thank you', 'thanks', 'dhanyawad', 'shukriya', 'dhanyabad', 'great', 'awesome'],
+    responses: {
+      'en-IN': "You are very welcome! May your harvest be bountiful and healthy. Let me know whenever you need advice!",
+      'hi-IN': "आपका बहुत-बहुत स्वागत है! आपकी फसल खूब लहलहाए और अच्छा उत्पादन मिले। जब भी जरूरत हो, मुझसे पूछें!",
+      'or-IN': "ଆପଣଙ୍କୁ ବହୁତ ବହୁତ ଧନ୍ୟବାଦ! ଆପଣଙ୍କ ଫସଲ ଭଲ ହେଉ। ଯେକୌଣସି ସମୟରେ ମୋତେ ପରାମର୍ଶ ପାଇଁ ପଚାରନ୍ତୁ!"
+    }
   },
 
-  // ── 2. Common Plant Symptoms ──────────────────────────────────────────────────
+  // ── 2. Rice Blast / ଧାନ ଝଣକା / धान झुलसा ──────────────────────────────────────
   {
-    keywords: ['yellow leaf', 'yellow leaves', 'yellowing', 'pale leaves', 'leaves turning yellow', 'peela patta'],
-    response: "Yellowing leaves generally point to 3 main causes: 1) Nitrogen deficiency (uniform yellowing on older lower leaves — apply Neem-coated Urea top-dressing), 2) Zinc deficiency ('Khaira' rusty yellow spots on young leaves — spray 0.5% Zinc Sulfate + lime), or 3) Waterlogging & Root Rot (drain excess water). If yellowing shows wavy margins, it could be Bacterial Leaf Blight.",
-    topic: "Yellowing Leaves Diagnosis"
-  },
-  {
-    keywords: ['curling', 'curled leaf', 'leaf curl', 'murda', 'leaf curling', 'wrinkled leaves'],
-    response: "Leaf curling is most commonly caused by sucking pests: 1) Upward cup curling indicates Thrips attack (spray Diafenthiuron 50% WP @ 1.2g/L or Fipronil @ 1.5ml/L), 2) Downward curling indicates Broad Mites (spray Spiromesifen 22.9% SC @ 1ml/L). Install Blue and Yellow sticky traps across your field for organic control.",
-    topic: "Leaf Curl Complex"
-  },
-  {
-    keywords: ['white spots', 'white powder', 'powdery', 'white dust', 'white patches', 'powdery mildew'],
-    response: "A white powdery film on leaf surfaces indicates Powdery Mildew. For chemical control, spray Hexaconazole 5% SC @ 1ml/L or Propiconazole 25% EC @ 1ml/L. For an organic remedy, spray Wettable Sulfur 80% WP @ 2g/L or sour buttermilk extract (10%) in the early morning.",
-    topic: "Powdery Mildew Protocol"
-  },
-  {
-    keywords: ['wilting', 'drooping', 'drying plant', 'sudden death', 'wilt', 'fusarium'],
-    response: "Sudden wilting while leaves remain green is a sign of Bacterial Wilt or Fusarium Root Rot. Cut the lower stem: if vascular rings are brown or exude slimy bacterial ooze in water, drench the root zone with Copper Oxychloride @ 3g/L or apply Trichoderma viride enriched compost.",
-    topic: "Wilt Management"
-  },
-  {
-    keywords: ['holes', 'caterpillar', 'eating leaves', 'armyworm', 'cut leaves', 'chewed leaves'],
-    response: "Holes and chewed leaf margins are caused by caterpillars like Fall Armyworm, Leaf Folder, or Semilooper. For fast knockdown, spray Chlorantraniliprole 18.5% SC @ 0.3ml/L or Emamectin Benzoate 5% SG @ 0.5g/L. For organic control, spray Bacillus thuringiensis (Bt) @ 2g/L.",
-    topic: "Caterpillar & Pest Attack"
+    matches: ['rice blast', 'blast', 'magnaporthe', 'spindle', 'pyricularia', 'neck blast', 'jhulsa', 'jhanaka', 'dhana blast', 'blast roga'],
+    responses: {
+      'en-IN': "Rice Blast produces spindle-shaped eye lesions. Chemical cure: Spray Tricyclazole 75% WP @ 0.6g/L or Isoprothiolane @ 1.5ml/L immediately. Organic shield: Spray 5% Neem Seed Kernel Extract (NSKE) or Pseudomonas fluorescens @ 5g/L. Avoid excess urea fertilizer.",
+      'hi-IN': "धान में झुलसा (ब्लास्ट) रोग आंख जैसे धब्बे बनाता है। रासायनिक इलाज: ट्राइसाइक्लाजोल 75% WP @ 0.6 ग्राम/लीटर या आइसोप्रोधियोलेन 1.5 मिली/लीटर पानी में तुरंत स्प्रे करें। जैविक उपाय: 5% नीम का काढ़ा या स्यूडोमोनास 5 ग्राम/लीटर स्प्रे करें। खेत में अधिक यूरिया न डालें।",
+      'or-IN': "ଧାନ ବ୍ଲାଷ୍ଟ (ଝଣକା) ରୋଗରେ ପତ୍ର ଉପରେ ଆଖି ଆକାରର ଦାଗ ଦେଖାଯାଏ। ରାସାୟନିକ ଚିକିତ୍ସା: ଟ୍ରାଇସାଇକ୍ଲାଜୋଲ ୭୫% WP @ ୦.୬ ଗ୍ରାମ ପ୍ରତି ଲିଟର ପାଣିରେ ମିଶାଇ ସ୍ପ୍ରେ କରନ୍ତୁ। ଜୈବିକ ଉପାୟ: ନିମ୍ବ ପତ୍ର ରସ କିମ୍ବା ସୁଡୋମୋନାସ ୫ ଗ୍ରାମ ପ୍ରତି ଲିଟର ସ୍ପ୍ରେ କରନ୍ତୁ।"
+    }
   },
 
-  // ── 3. Major Crop Diseases (Rice / Paddy, Wheat, Tomato, Cotton, etc.) ────────
+  // ── 3. Bacterial Leaf Blight / ପତ୍ରପୋଡ଼ା / जीवाणु झुलसा ─────────────────────────
   {
-    keywords: ['rice blast', 'blast', 'magnaporthe', 'spindle', 'pyricularia', 'neck blast'],
-    response: "Rice Blast (caused by Magnaporthe oryzae) produces spindle-shaped lesions with ash-grey centers. Spray Tricyclazole 75% WP @ 0.6g/L or Isoprothiolane @ 1.5ml/L immediately. For organic protection, spray 5% Neem Seed Kernel Extract (NSKE) or Pseudomonas fluorescens @ 5g/L. Avoid high nitrogen doses.",
-    topic: "Rice Blast Treatment"
-  },
-  {
-    keywords: ['bacterial blight', 'bacterial leaf blight', 'blb', 'xanthomonas', 'straw leaf'],
-    response: "Bacterial Leaf Blight causes wavy yellow-to-straw colored lesions along leaf edges starting from the tip. Spray Streptocycline @ 0.1g/L mixed with Copper Oxychloride @ 2.5g/L. Drain standing water from the field for 3 days and withhold top-dress nitrogen.",
-    topic: "Bacterial Blight Cure"
-  },
-  {
-    keywords: ['brown spot', 'sesame spot', 'helminthosporium', 'bipolaris'],
-    response: "Brown Spot produces small oval brown spots with yellow halos on leaves and grains. Spray Mancozeb 75% WP @ 2g/L or Propiconazole @ 1ml/L. This disease indicates soil potassium or micronutrient deficiency, so top-dress MOP (Muriate of Potash).",
-    topic: "Brown Spot Advisory"
-  },
-  {
-    keywords: ['stem borer', 'dead heart', 'white earhead', 'scirpophaga'],
-    response: "Yellow Stem Borer causes 'Dead Heart' during tillering and 'White Earhead' during panicle emergence. Apply Chlorantraniliprole 0.4% Granules @ 4kg/acre or spray Chlorantraniliprole 18.5% SC @ 0.3ml/L. Install 8 pheromone traps per acre for eco-friendly monitoring.",
-    topic: "Stem Borer Control"
-  },
-  {
-    keywords: ['bph', 'brown plant hopper', 'plant hopper', 'hopper burn'],
-    response: "Brown Plant Hopper (BPH) congregates at the base of paddy stems and sucks sap, causing rapid drying patches known as 'Hopper Burn'. Spray Pymetrozine 50% WDG @ 0.6g/L or Dinotefuran 20% SG @ 0.4g/L directed strictly at the base of plants. Drain standing water.",
-    topic: "BPH Shield"
-  },
-  {
-    keywords: ['yellow rust', 'wheat rust', 'puccinia', 'rust in wheat'],
-    response: "Yellow Rust of Wheat produces parallel rows of yellow-orange powdery pustules on leaves. Spray Propiconazole 25% EC @ 1ml/L (Tilt) in 200 liters of water per acre. Repeat after 15 days if cloudy weather persists.",
-    topic: "Wheat Yellow Rust"
-  },
-  {
-    keywords: ['tomato blight', 'early blight', 'late blight', 'alternaria', 'phytophthora'],
-    response: "Tomato Early Blight shows target-board concentric rings, while Late Blight causes rapid water-soaked dark rotting. Spray Mancozeb 75% WP @ 2.5g/L or Cymoxanil 8% + Mancozeb 64% @ 2g/L. Avoid overhead sprinkler irrigation to keep leaves dry.",
-    topic: "Tomato Blight Management"
-  },
-  {
-    keywords: ['pink bollworm', 'bollworm', 'cotton pest', 'whitefly cotton'],
-    response: "For Pink Bollworm in Cotton, install PB-Rope L pheromone dispensers (10/acre) and spray Profenofos 50% EC @ 2ml/L. For Whitefly, use yellow sticky traps (20/acre) and spray Diafenthiuron 50% WP @ 1.2g/L.",
-    topic: "Cotton Pest Defense"
-  },
-  {
-    keywords: ['fall armyworm', 'faw', 'maize worm', 'spodoptera frugiperda'],
-    response: "Fall Armyworm in Maize attacks the central whorl creating pinholes and ragged leaves. Apply Chlorantraniliprole 18.5% SC @ 0.4ml/L directly into the whorl using a knapsack sprayer without nozzle cap, or apply whorl application of sand + neem cake mix.",
-    topic: "Fall Armyworm Management"
+    matches: ['bacterial blight', 'bacterial leaf blight', 'blb', 'xanthomonas', 'patrapoda', 'leaf blight'],
+    responses: {
+      'en-IN': "Bacterial Leaf Blight causes wavy yellow lesions starting from leaf tips. Spray Streptocycline @ 0.1g/L mixed with Copper Oxychloride @ 2.5g/L. Drain standing water from the field for 3 days and stop top-dressing nitrogen.",
+      'hi-IN': "धान का जीवाणु झुलसा (BLB) रोग पत्तियों के किनारों को सुखा देता है। स्ट्रेप्टोसाइक्लिन 0.1 ग्राम + कॉपर ऑक्सीक्लोराइड 2.5 ग्राम प्रति लीटर मिलाकर स्प्रे करें। खेत का खड़ा पानी 3 दिनों के लिए निकाल दें।",
+      'or-IN': "ଧାନରେ ଜୀବାଣୁ ଜନିତ ପତ୍ରପୋଡ଼ା (BLB) ରୋଗ ହେଲେ ଷ୍ଟ୍ରେପ୍ଟୋସାଇକ୍ଲିନ ୦.୧ ଗ୍ରାମ ସହିତ କପର ଅକ୍ସିକ୍ଲୋରାଇଡ ୨.୫ ଗ୍ରାମ ପ୍ରତି ଲିଟରରେ ମିଶାଇ ସ୍ପ୍ରେ କରନ୍ତୁ ଏବଂ ଜମିରୁ ୩ ଦିନ ପାଣି ନିଷ୍କାସନ କରନ୍ତୁ।"
+    }
   },
 
-  // ── 4. Fertilizer & Soil Management ───────────────────────────────────────────
+  // ── 4. Yellowing Leaves / ପତ୍ର ହଳଦିଆ / पीली पत्तियां ───────────────────────────
   {
-    keywords: ['fertilizer', 'urea', 'dap', 'mop', 'npk', 'potash', 'dose', 'dosage', 'manure', 'compost', 'zinc'],
-    response: "Standard recommendation for cereal crops (Rice/Wheat): Basal Dose (at sowing) = DAP 40–50 kg/acre + MOP 25 kg/acre + Zinc Sulfate 10 kg/acre. Top Dressing = Neem-coated Urea 45 kg/acre in 2 equal splits (20–25 days and 45–50 days after sowing). Check our interactive NPK Calculator in the Crop Calendar for exact acreage calculations!",
-    topic: "Fertilizer Schedule"
-  },
-  {
-    keywords: ['organic', 'bio fertilizer', 'neem oil', 'jeevamrutha', 'panchagavya', 'ayurvedic', 'natural cure', 'cow dung', 'trichoderma'],
-    response: "Top organic practices: 1) Pest Bio-Shield: Neem oil (Azadirachtin 1500ppm @ 3ml/L) + Cow urine (5%), 2) Root & Growth Tonic: Jeevamrutha @ 200L/acre applied with irrigation water, 3) Fungal Disease Control: Trichoderma viride @ 5g/L or 1% Bordeaux mixture.",
-    topic: "Organic Farming Protocols"
+    matches: ['yellow leaf', 'yellow leaves', 'yellowing', 'peela patta', 'haladia patra', 'khaira', 'zinc deficiency'],
+    responses: {
+      'en-IN': "Yellowing leaves point to 3 main causes: 1) Nitrogen deficiency (uniform yellowing on older lower leaves — apply Neem-coated Urea), 2) Zinc deficiency / Khaira disease (rusty spots on young leaves — spray 0.5% Zinc Sulfate + lime), 3) Waterlogging (drain excess water).",
+      'hi-IN': "पत्तियां पीली होने के 3 मुख्य कारण हैं: 1) नाइट्रोजन की कमी (नीम कोटेड यूरिया डालें), 2) जिंक की कमी / खैरा रोग (0.5% जिंक सल्फेट + 0.25% चूना मिलाकर स्प्रे करें), 3) खेत में जलभराव (पानी निकालें)।",
+      'or-IN': "ପତ୍ର ହଳଦିଆ ପଡ଼ିବାର ୩ଟି ମୁଖ୍ୟ କାରଣ: ୧) ଯବକ୍ଷାରଜାନ ଅଭାବ (ୟୁରିଆ ପ୍ରୟୋଗ କରନ୍ତୁ), ୨) ଜିଙ୍କ ଅଭାବ ବା ଖଇରା ରୋଗ (୦.୫% ଜିଙ୍କ ସଲଫେଟ ସହିତ ଚୂନ ପାଣି ସ୍ପ୍ରେ କରନ୍ତୁ), ୩) ଜମିରେ ଅତ୍ୟଧିକ ପାଣି ଜମି ରହିବା।"
+    }
   },
 
-  // ── 5. Weather, Water & Irrigation ────────────────────────────────────────────
+  // ── 5. Stem Borer & Pests / କାଣ୍ଡବିନ୍ଧା ପୋକ / तना छेदक ─────────────────────────
   {
-    keywords: ['weather', 'rain', 'humidity', 'temperature', 'forecast', 'infection risk', 'cloudy', 'frost', 'monsoon'],
-    response: "High relative humidity (>80%) combined with temperatures between 22°C to 28°C accelerates fungal spore germination by 300%. Check our Weather Intelligence section on the BloomSense home page for your hyper-local disease risk score before spraying chemicals.",
-    topic: "Weather & Infection Risk"
-  },
-  {
-    keywords: ['water', 'irrigation', 'drainage', 'how much water', 'watering', 'dry field'],
-    response: "For Paddy: Maintain 2–3 cm standing water during transplanting and tillering; practice Alternate Wetting and Drying (AWD) to aerate roots; drain field completely 10–12 days prior to harvest. For vegetables: use drip irrigation to keep foliage dry and prevent fungal leaf spots.",
-    topic: "Water Management"
+    matches: ['stem borer', 'dead heart', 'white earhead', 'kanda bindha', 'tana chedak', 'borer', 'poka'],
+    responses: {
+      'en-IN': "Yellow Stem Borer causes 'Dead Heart' in vegetative stage and 'White Earhead' in flowering. Apply Chlorantraniliprole 0.4% Granules @ 4kg/acre or spray Chlorantraniliprole 18.5% SC @ 0.3ml/L. Install 8 pheromone traps per acre.",
+      'hi-IN': "तना छेदक (Stem Borer) सुंडी तने को अंदर से काटती है। क्लोरेंट्रानिलीप्रोल 0.4% दानेदार @ 4 किलो/एकड़ डालें या क्लोरेंट्रानिलीप्रोल 18.5% SC @ 0.3 मिली/लीटर पानी में स्प्रे करें। प्रति एकड़ 8 फेरोमोन ट्रैप लगाएं।",
+      'or-IN': "କାଣ୍ଡବିନ୍ଧା ପୋକ ଧାନ ଗଛର ମଝି କାଣ୍ଡକୁ କାଟି ଦିଏ। ଏହାର ନିରାକରଣ ପାଇଁ କ୍ଲୋରାଣ୍ଟ୍ରାନିଲିପ୍ରୋଲ ୦.୪% G @ ୪ କେଜି ପ୍ରତି ଏକର ପ୍ରୟୋଗ କରନ୍ତୁ କିମ୍ବା ଏକର ପ୍ରତି ୮ଟି ଫେରୋମୋନ ଫାନ୍ଦ ଲଗାନ୍ତୁ।"
+    }
   },
 
-  // ── 6. Government Schemes & Subsidies ─────────────────────────────────────────
+  // ── 6. Fertilizer / ସାର ପ୍ରୟୋଗ / खाद की मात्रा ────────────────────────────────
   {
-    keywords: ['scheme', 'subsidy', 'pm kisan', 'pmfby', 'kalia', 'samrudha', 'kisan credit card', 'kcc', 'msp', 'insurance', 'helpline'],
-    response: "Key government support schemes: 1) PM-KISAN: ₹6,000/year direct financial support, 2) PMFBY: Crop insurance against drought, floods, and pest outbreaks, 3) State programs like KALIA & Samrudha Krushaka in Odisha, 4) Kisan Call Centre Helpline: Dial toll-free 1800-180-1551 for 24/7 agricultural expert advice.",
-    topic: "Government Schemes"
+    matches: ['fertilizer', 'urea', 'dap', 'mop', 'npk', 'potash', 'dose', 'dosage', 'sara', 'khad'],
+    responses: {
+      'en-IN': "Recommended NPK Dose: Basal (at sowing) = DAP 40–50 kg/acre + MOP 25 kg/acre + Zinc Sulfate 10 kg/acre. Top Dressing = Neem-coated Urea 45 kg/acre in 2 splits (20–25 DAT and 45–50 DAT). Check our Crop Calendar NPK Calculator!",
+      'hi-IN': "संतुलित खाद की मात्रा: बुवाई के समय बेसल डोज में 45 किलो डीएपी + 25 किलो पोटाश (MOP) + 10 किलो जिंक सल्फेट प्रति एकड़ डालें। नीम कोटेड यूरिया को 2 किस्तों में कल्ले फूटते समय (20 दिन) और बाली निकलते समय (45 दिन) डालें।",
+      'or-IN': "ସୁଷମ ସାର ମାତ୍ରା: ତଳି ରୋଇବା ବେଳେ ମୂଳ ସାର ଭାବେ ଏକର ପ୍ରତି ୪୫ କେଜି DAP + ୨୫ କେଜି MOP (ପୋଟାସ) + ୧୦ କେଜି ଜିଙ୍କ ସଲଫେଟ ପ୍ରୟୋଗ କରନ୍ତୁ। ୟୁରିଆକୁ ଦୁଇ କିସ୍ତିରେ (୨୦ ଦିନ ଓ ୪୫ ଦିନରେ) ପ୍ରୟୋଗ କରନ୍ତୁ।"
+    }
+  },
+
+  // ── 7. PM-KISAN & Odisha Schemes / କାଳିଆ ଯୋଜନା / सरकारी योजनाएं ────────────────
+  {
+    matches: ['scheme', 'subsidy', 'pm kisan', 'pmfby', 'kalia', 'samrudha', 'yojana', 'bima', 'insurance', 'helpline'],
+    responses: {
+      'en-IN': "Government Support Schemes: 1) PM-KISAN: ₹6,000/year in 3 installments, 2) PMFBY: Comprehensive crop insurance, 3) KALIA & Samrudha Krushaka in Odisha for direct input subsidies, 4) Kisan Call Centre Helpline: Dial toll-free 1800-180-1551.",
+      'hi-IN': "प्रमुख सरकारी योजनाएं: 1) पीएम-किसान (PM-KISAN): सालाना ₹6,000 तीन किस्तों में बैंक खाते में, 2) पीएम फसल बीमा (PMFBY): सूखा और बाढ़ से सुरक्षा, 3) ओडिशा में कालिया (KALIA) योजना, 4) किसान कॉल सेंटर: 1800-180-1551 पर मुफ्त सलाह लें।",
+      'or-IN': "କୃଷି କଲ୍ୟାଣ ଯୋଜନା: ୧) PM-KISAN ଅଧୀନରେ ବାର୍ଷିକ ₹୬,୦୦୦ ସିଧାସଳଖ ଆକାଉଣ୍ଟକୁ, ୨) ପ୍ରଧାନମନ୍ତ୍ରୀ ଫସଲ ବୀମା (PMFBY), ୩) ଓଡ଼ିଶା ସରକାରଙ୍କ କାଳିଆ (KALIA) ଓ ସମୃଦ୍ଧ କୃଷକ ଯୋଜନା, ୪) କୃଷି କଲ୍ ସେଣ୍ଟର ଟୋଲ୍ ଫ୍ରି ନମ୍ବର: ୧୮୦୦-୧୮୦-୧୫୫୧।"
+    }
+  },
+
+  // ── 8. Organic & Neem Spray / ଜୈବିକ ଔଷଧ / जैविक कीटनाशक ────────────────────────
+  {
+    matches: ['organic', 'neem', 'bio', 'jeevamrutha', 'panchagavya', 'jaivik', 'jaibika'],
+    responses: {
+      'en-IN': "Top Organic Cures: 1) Neem Oil (Azadirachtin 1500ppm @ 3ml/L) controls 200+ pest species, 2) Jeevamrutha @ 200L/acre boosts soil microbes, 3) Trichoderma viride @ 5g/L prevents soil fungal diseases.",
+      'hi-IN': "100% जैविक नुस्खे: 1) नीम तेल (1500 ppm @ 3 मिली/लीटर) + गोमूत्र (5%) कीटों को रोकता है, 2) 200 लीटर जीवामृत प्रति एकड़ सिंचाई के साथ दें, 3) ट्राइकोडर्मा विरिडी 5 ग्राम/लीटर फंगस से बचाता है।",
+      'or-IN': "ଜୈବିକ କୃଷି ପଦ୍ଧତି: ୧) ନିମ୍ବ ତେଲ (୧୫୦୦ ppm @ ୩ ମିଲି/ଲିଟର) + ଗୋମୂତ୍ର ସ୍ପ୍ରେ କଲେ ପୋକ ଦୂର ହୁଅନ୍ତି, ୨) ଏକର ପ୍ରତି ୨୦୦ ଲିଟର ଜୀବାମୃତ ପ୍ରୟୋଗ କରନ୍ତୁ, ୩) ଟ୍ରାଇକୋଡର୍ମା ଭିରିଡି ୫ ଗ୍ରାମ/ଲିଟର ସ୍ପ୍ରେ କଲେ ଫିମ୍ପି ରୋଗ ହୁଏ ନାହିଁ।"
+    }
   }
 ];
 
-function generateAmaniaReply(input) {
+function generateAmaniaReply(input, lang = 'en-IN') {
   const cleanInput = input.trim().toLowerCase();
+  const langRules = MULTILINGUAL_KNOWLEDGE[lang] || MULTILINGUAL_KNOWLEDGE['en-IN'];
 
-  // 1. Direct keyword match
-  for (const item of AGRONOMIC_KNOWLEDGE_BASE) {
-    if (item.keywords.some(kw => cleanInput.includes(kw))) {
-      return item.response;
+  // 1. Direct rule match
+  for (const rule of MULTILINGUAL_RULES) {
+    if (rule.matches.some(m => cleanInput.includes(m))) {
+      return rule.responses[lang] || rule.responses['en-IN'];
     }
   }
 
-  // 2. Intelligent conversational greeting fallbacks
-  if (cleanInput.length <= 15 && (cleanInput.includes('how') || cleanInput.includes('doing') || cleanInput.includes('fine') || cleanInput.includes('ok'))) {
-    return "I'm doing well, thank you! I'm here in your field and ready to assist you. How are your crops doing today? You can ask me about plant disease cures, fertilizers, or tap the camera icon to diagnose a leaf photo!";
+  // 2. Intelligent conversational fallback
+  if (cleanInput.length <= 16 && (cleanInput.includes('how') || cleanInput.includes('doing') || cleanInput.includes('fine') || cleanInput.includes('kaisa') || cleanInput.includes('kemiti') || cleanInput.includes('hello'))) {
+    return langRules.greetingReply;
   }
 
-  // 3. Smart contextual fallback
-  return `I analyzed your question about "${input}". As your AI agronomist, I recommend checking your crop leaves for discoloration, pest signs, or moisture stress. You can snap a photo with the camera button for instant AI leaf diagnosis, or ask me about specific crops like Rice, Wheat, Tomato, Cotton, fertilizer doses, and disease treatments!`;
+  // 3. Smart contextual fallback in chosen language
+  return langRules.fallbackReply(input);
 }
 
-
 export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreakDetected }) {
+  const [selectedLanguage, setSelectedLanguage] = useState('en-IN');
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'amania',
-      text: "Namaste! I'm Amania, your voice agronomist. Tap the microphone to speak, type a question, or use the camera to snap a leaf photo for instant diagnosis!",
+      text: MULTILINGUAL_KNOWLEDGE['en-IN'].initialGreeting,
       timestamp: new Date()
     }
   ]);
@@ -178,18 +193,18 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [inputText, setInputText] = useState('');
   const [voiceEnabled, setVoiceEnabled] = useState(true);
-  const [selectedLanguage, setSelectedLanguage] = useState('en-IN');
   const [availableVoices, setAvailableVoices] = useState([]);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [isAnalyzingImage, setIsAnalyzingImage] = useState(false);
 
   const chatContainerRef = useRef(null);
-  const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  const currentLangConfig = MULTILINGUAL_KNOWLEDGE[selectedLanguage] || MULTILINGUAL_KNOWLEDGE['en-IN'];
 
   // Lock background page scroll when modal is open
   useEffect(() => {
@@ -200,14 +215,14 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
     }
   }, [isOpen]);
 
-  // Scroll only the chat container — never the page
+  // Scroll only the chat container
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages, isSpeaking, isListening, isAnalyzingImage]);
 
-  // Load speech synthesis voices properly
+  // Load speech synthesis voices
   useEffect(() => {
     const loadVoices = () => {
       if ('speechSynthesis' in window) {
@@ -236,31 +251,67 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
     setIsCameraActive(false);
   }, []);
 
-  // Text to Speech — uses preloaded voices from state
-  const speakReply = useCallback((text) => {
+  // Sweet Melodic Text-to-Speech Engine
+  const speakReply = useCallback((text, langCode = selectedLanguage) => {
     if (!voiceEnabled || !('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
+
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.95;
-    utterance.pitch = 1.1;
+    // Sweet, melodic, gentle voice settings
+    utterance.rate = 0.92;
+    utterance.pitch = 1.16; // Sweet pleasant tone
 
     const voices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
-    const preferred = voices.find(v =>
-      (v.lang.startsWith('en') || v.lang.startsWith('hi')) &&
-      (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('natural'))
-    ) || voices.find(v => v.lang.startsWith('en'));
+    
+    let preferredVoice = null;
 
-    if (preferred) utterance.voice = preferred;
+    if (langCode === 'hi-IN') {
+      // Find sweetest Hindi voice
+      preferredVoice = voices.find(v => (v.lang.startsWith('hi') || v.lang === 'hi_IN') && (v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('swara') || v.name.toLowerCase().includes('kalpana') || v.name.toLowerCase().includes('female')))
+        || voices.find(v => v.lang.startsWith('hi'));
+    } else if (langCode === 'or-IN') {
+      // Find Odia voice if available, else sweet Indian voice
+      preferredVoice = voices.find(v => v.lang.startsWith('or') || v.lang.startsWith('ori'))
+        || voices.find(v => v.lang.startsWith('hi') && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google')))
+        || voices.find(v => v.lang.startsWith('en-IN') && v.name.toLowerCase().includes('female'));
+    } else {
+      // Sweetest English voice (Google UK English Female / Microsoft Sonia / Samantha / Neerja)
+      preferredVoice = voices.find(v => 
+        (v.name.toLowerCase().includes('uk english female') || v.name.toLowerCase().includes('sonia') || v.name.toLowerCase().includes('neerja') || v.name.toLowerCase().includes('samantha') || v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('karen'))
+      ) || voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female'))
+        || voices.find(v => v.lang.startsWith('en-IN'))
+        || voices.find(v => v.lang.startsWith('en'));
+    }
+
+    if (preferredVoice) utterance.voice = preferredVoice;
+
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
     window.speechSynthesis.speak(utterance);
-  }, [voiceEnabled, availableVoices]);
+  }, [voiceEnabled, availableVoices, selectedLanguage]);
 
   const stopAllAudio = useCallback(() => {
     window.speechSynthesis?.cancel();
     setIsSpeaking(false);
   }, []);
+
+  // Language Switch Handler
+  const handleLanguageChange = (langId) => {
+    setSelectedLanguage(langId);
+    stopAllAudio();
+    const config = MULTILINGUAL_KNOWLEDGE[langId] || MULTILINGUAL_KNOWLEDGE['en-IN'];
+    setMessages(prev => [
+      ...prev,
+      {
+        id: Date.now(),
+        sender: 'amania',
+        text: config.initialGreeting,
+        timestamp: new Date()
+      }
+    ]);
+    speakReply(config.initialGreeting, langId);
+  };
 
   // Camera functions
   const startCameraStream = useCallback(async () => {
@@ -300,20 +351,27 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
   }, []);
 
   const CAMERA_DIAGNOSES = [
-    { disease: 'Rice Blast (Magnaporthe oryzae)', confidence: 94, chemical: 'Tricyclazole 75% WP at 0.6 g/L', organic: '5% Neem Seed Kernel Extract at 5 g/L', contagious: true },
+    { disease: 'Rice Blast (Magnaporthe oryzae)', confidence: 94, chemical: 'Tricyclazole 75% WP @ 0.6 g/L', organic: '5% Neem Seed Kernel Extract @ 5 g/L', contagious: true },
     { disease: 'Bacterial Leaf Blight (Xanthomonas oryzae)', confidence: 91, chemical: 'Streptocycline 0.1 g/L + Copper Oxychloride 2.5 g/L', organic: 'Drain field water, reduce nitrogen', contagious: true },
-    { disease: 'Brown Spot (Helminthosporium oryzae)', confidence: 88, chemical: 'Mancozeb 75% WP at 2 g/L', organic: 'Apply Potash + Neem oil spray', contagious: false },
+    { disease: 'Brown Spot (Helminthosporium oryzae)', confidence: 88, chemical: 'Mancozeb 75% WP @ 2 g/L', organic: 'Apply Potash + Neem oil spray', contagious: false },
     { disease: 'Healthy Leaf — No Pathogen Detected', confidence: 99, chemical: 'No chemical treatment needed', organic: 'Maintain current organic practices', contagious: false }
   ];
 
   const processLeafImage = useCallback((imageData) => {
-    const userMsg = { id: Date.now(), sender: 'user', image: imageData, text: '📸 Leaf photo submitted for diagnosis', timestamp: new Date() };
+    const userMsg = { id: Date.now(), sender: 'user', image: imageData, text: '📸 Leaf photo submitted for AI diagnosis', timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
     setIsAnalyzingImage(true);
     stopAllAudio();
     setTimeout(() => {
       const diag = CAMERA_DIAGNOSES[Math.floor(Math.random() * CAMERA_DIAGNOSES.length)];
-      const replyText = `Diagnosis complete. Detected ${diag.disease} with ${diag.confidence}% confidence. Chemical: ${diag.chemical}. Organic option: ${diag.organic}.`;
+      
+      let replyText = `Diagnosis complete. Detected ${diag.disease} with ${diag.confidence}% confidence. Chemical: ${diag.chemical}. Organic option: ${diag.organic}.`;
+      if (selectedLanguage === 'hi-IN') {
+        replyText = `पत्ती की जांच पूरी हुई। ${diag.disease} की पुष्टि हुई (${diag.confidence}% मैच)। रासायनिक उपचार: ${diag.chemical}। जैविक उपाय: ${diag.organic}।`;
+      } else if (selectedLanguage === 'or-IN') {
+        replyText = `ପତ୍ର ପରୀକ୍ଷା ସମ୍ପୂର୍ଣ୍ଣ ହେଲା। ଚିହ୍ନଟ: ${diag.disease} (${diag.confidence}% ନିର୍ଭୁଲ)। ରାସାୟନିକ: ${diag.chemical}। ଜୈବିକ ଉପଚାର: ${diag.organic}।`;
+      }
+
       setMessages(prev => [...prev, {
         id: Date.now() + 1, sender: 'amania', isDiagnosis: true,
         disease: diag.disease, confidence: diag.confidence, chemical: diag.chemical, organic: diag.organic,
@@ -322,8 +380,8 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
       setIsAnalyzingImage(false);
       speakReply(replyText);
       if (diag.contagious) onContagiousOutbreakDetected?.(diag.disease);
-    }, 2500);
-  }, [speakReply, stopAllAudio, onContagiousOutbreakDetected]);
+    }, 2400);
+  }, [speakReply, stopAllAudio, onContagiousOutbreakDetected, selectedLanguage]);
 
   // Handle incoming message & response
   const handleSendMessage = (textToSend) => {
@@ -336,24 +394,20 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
     stopAllAudio();
 
     setTimeout(() => {
-      const replyText = generateAmaniaReply(text);
+      const replyText = generateAmaniaReply(text, selectedLanguage);
       const amaniaMsg = { id: Date.now() + 1, sender: 'amania', text: replyText, timestamp: new Date() };
       setMessages(prev => [...prev, amaniaMsg]);
       speakReply(replyText);
-      if (text.toLowerCase().includes('blast') || text.toLowerCase().includes('blight')) {
+      if (text.toLowerCase().includes('blast') || text.toLowerCase().includes('blight') || text.includes('झुलसा') || text.includes('ଝଣକା')) {
         onContagiousOutbreakDetected?.(text);
       }
-    }, 600);
+    }, 500);
   };
 
   const handleClearChat = () => {
     stopAllAudio();
     stopCameraStream();
-    setMessages([{ id: Date.now(), sender: 'amania', text: "Chat cleared. How can I help your farm today?", timestamp: new Date() }]);
-  };
-
-  const handleDeleteMessage = (id) => {
-    setMessages(prev => prev.filter(m => m.id !== id));
+    setMessages([{ id: Date.now(), sender: 'amania', text: currentLangConfig.initialGreeting, timestamp: new Date() }]);
   };
 
   // Voice Recognition Speech-to-Text
@@ -365,14 +419,11 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
     }
 
     if (isListening) {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
+      if (recognitionRef.current) recognitionRef.current.stop();
       setIsListening(false);
       return;
     }
 
-    // Stop speaking if Amania was talking
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
@@ -384,10 +435,7 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
 
-      recognition.onstart = () => {
-        setIsListening(true);
-      };
-
+      recognition.onstart = () => setIsListening(true);
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         if (transcript) {
@@ -395,15 +443,8 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
           handleSendMessage(transcript);
         }
       };
-
-      recognition.onerror = (err) => {
-        console.warn("Speech recognition error:", err);
-        setIsListening(false);
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
+      recognition.onerror = () => setIsListening(false);
+      recognition.onend = () => setIsListening(false);
 
       recognitionRef.current = recognition;
       recognition.start();
@@ -411,14 +452,6 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
       console.error("Speech recognition start failed:", err);
       setIsListening(false);
     }
-  };
-
-
-  const stopAllAudioLegacy = () => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
-    setIsSpeaking(false);
   };
 
   if (!isOpen) return null;
@@ -446,30 +479,52 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
           <canvas ref={canvasRef} className="hidden" />
 
           {/* Header Bar */}
-          <div className="flex-shrink-0 px-5 py-3 border-b border-emerald-900/10 flex items-center justify-between bg-gradient-to-r from-pink-50/80 via-white to-emerald-50/80">
+          <div className="flex-shrink-0 px-4 sm:px-6 py-3 border-b border-emerald-900/10 flex items-center justify-between bg-gradient-to-r from-pink-50/90 via-white to-emerald-50/90 flex-wrap gap-2">
+            
+            {/* Identity & Status */}
             <div className="flex items-center gap-3">
-              <div className={`w-11 h-11 rounded-full bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center shadow-md ${isSpeaking ? 'animate-pulse ring-4 ring-pink-300/50' : ''}`}>
+              <div className={`w-10 h-10 rounded-full bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center shadow-md ${isSpeaking ? 'animate-pulse ring-4 ring-pink-300/50' : ''}`}>
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-heading italic text-2xl text-emerald-950 leading-none">Amania Voice AI</h3>
-                  <span className="text-[10px] font-black uppercase tracking-wider bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full">Live</span>
+                  <h3 className="font-heading italic text-xl sm:text-2xl text-emerald-950 leading-none">Amania Voice AI</h3>
+                  <span className="text-[9px] font-black uppercase tracking-wider bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full">Sweet Voice</span>
                 </div>
-                <p className="text-[11px] text-emerald-800/70 font-semibold mt-0.5">
-                  {isAnalyzingImage ? "Analyzing leaf with AI Vision..." : isSpeaking ? "Speaking voice response..." : isListening ? "Listening to your voice..." : "Voice Agronomist & Crop Doctor"}
+                <p className="text-[10px] sm:text-[11px] text-emerald-800/70 font-semibold mt-0.5">
+                  {isAnalyzingImage ? "Analyzing leaf with AI Vision..." : isSpeaking ? "Speaking in sweet tone..." : isListening ? "Listening to your voice..." : "Voice Agronomist & Crop Doctor"}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            {/* Language Selector & Controls */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              
+              {/* Language Switcher Buttons (EN / HI / OR) */}
+              <div className="flex items-center bg-emerald-100/70 p-0.5 rounded-full border border-emerald-200 shadow-inner">
+                {LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.id}
+                    onClick={() => handleLanguageChange(lang.id)}
+                    className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all ${
+                      selectedLanguage === lang.id
+                        ? 'bg-emerald-600 text-white shadow-sm scale-[1.03]'
+                        : 'text-emerald-900 hover:text-emerald-950 hover:bg-emerald-200/50'
+                    }`}
+                    title={`Switch to ${lang.label}`}
+                  >
+                    <span>{lang.flag} {lang.label}</span>
+                  </button>
+                ))}
+              </div>
+
               {/* Camera button in header */}
               <button
                 onClick={startCameraStream}
                 className="p-2 rounded-full border bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 transition-all"
                 title="Snap leaf photo for AI diagnosis"
               >
-                <Camera className="w-4 h-4" />
+                <Camera className="w-3.5 h-3.5" />
               </button>
 
               {/* Clear chat */}
@@ -478,22 +533,24 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
                 className="p-2 rounded-full border bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100 transition-all"
                 title="Clear conversation"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3.5 h-3.5" />
               </button>
 
+              {/* Voice Mute/Unmute */}
               <button
                 onClick={() => { setVoiceEnabled(!voiceEnabled); if (isSpeaking) stopAllAudio(); }}
                 className={`p-2 rounded-full border transition-all ${voiceEnabled ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'}`}
-                title={voiceEnabled ? "Voice Active" : "Voice Muted"}
+                title={voiceEnabled ? "Voice Enabled" : "Voice Muted"}
               >
-                {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                {voiceEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
               </button>
 
+              {/* Close button */}
               <button
                 onClick={() => { stopAllAudio(); onClose(); }}
-                className="w-9 h-9 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-900 flex items-center justify-center border border-emerald-200 transition-colors"
+                className="w-8 h-8 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-900 flex items-center justify-center border border-emerald-200 transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -601,7 +658,13 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
                 className="flex items-center justify-center gap-2 p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-600 text-xs font-bold animate-pulse"
               >
                 <Radio className="w-4 h-4 animate-spin" />
-                <span>Listening... Speak your crop problem now</span>
+                <span>
+                  {selectedLanguage === 'hi-IN' 
+                    ? "सुन रही हूँ... अपनी फसल की समस्या बोलें" 
+                    : selectedLanguage === 'or-IN'
+                    ? "ଶୁଣୁଛି... ଆପଣଙ୍କ ଫସଲ ସମସ୍ୟା କୁହନ୍ତୁ"
+                    : "Listening... Speak your crop problem now"}
+                </span>
               </motion.div>
             )}
 
@@ -610,7 +673,7 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex items-center justify-center gap-1.5 p-2 bg-pink-50 border border-pink-200 rounded-full text-pink-700 text-xs font-bold w-max mx-auto"
+                className="flex items-center justify-center gap-1.5 p-2 bg-pink-50 border border-pink-200 rounded-full text-pink-700 text-xs font-bold w-max mx-auto shadow-sm"
               >
                 <div className="flex gap-1 items-center px-2">
                   <span className="w-1 h-3 bg-pink-500 rounded-full animate-bounce"></span>
@@ -620,7 +683,7 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
                 <span>Amania is speaking...</span>
                 <button
                   onClick={stopAllAudio}
-                  className="ml-2 text-[10px] bg-pink-200 hover:bg-pink-300 text-pink-900 px-2 py-0.5 rounded-full"
+                  className="ml-2 text-[10px] bg-pink-200 hover:bg-pink-300 text-pink-900 px-2 py-0.5 rounded-full font-bold"
                 >
                   Stop
                 </button>
@@ -628,20 +691,16 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
             )}
           </div>
 
-          {/* Quick Voice Prompt Suggestions */}
-          <div className="flex-shrink-0 px-4 py-1.5 bg-white/70 border-t border-emerald-900/5 flex items-center gap-2 overflow-x-auto text-[11px] no-scrollbar">
-            <span className="font-bold text-emerald-900/50 flex-shrink-0">Ask:</span>
-            {[
-              "Rice Blast treatment?",
-              "Bacterial Blight cure?",
-              "Weather infection risk?",
-              "PM-KISAN scheme details?",
-              "Organic Neem bio-spray?"
-            ].map((prompt, i) => (
+          {/* Quick Voice Prompt Suggestions in Selected Language */}
+          <div className="flex-shrink-0 px-4 py-2 bg-white/80 border-t border-emerald-900/5 flex items-center gap-2 overflow-x-auto text-[11px] no-scrollbar">
+            <span className="font-bold text-emerald-900/60 flex-shrink-0">
+              {selectedLanguage === 'hi-IN' ? "पूछें:" : selectedLanguage === 'or-IN' ? "ପଚାରନ୍ତୁ:" : "Ask:"}
+            </span>
+            {currentLangConfig.quickPrompts.map((prompt, i) => (
               <button
                 key={i}
                 onClick={() => handleSendMessage(prompt)}
-                className="whitespace-nowrap px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold rounded-full border border-emerald-200/60 transition-colors flex-shrink-0"
+                className="whitespace-nowrap px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold rounded-full border border-emerald-200/60 transition-colors flex-shrink-0 cursor-pointer shadow-2xs"
               >
                 {prompt}
               </button>
@@ -655,7 +714,7 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={startCameraStream}
-              className="w-11 h-11 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-700 flex items-center justify-center flex-shrink-0 border border-emerald-200 shadow-sm"
+              className="w-11 h-11 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-700 flex items-center justify-center flex-shrink-0 border border-emerald-200 shadow-sm cursor-pointer"
               title="Snap leaf photo for diagnosis"
             >
               <Camera className="w-5 h-5" />
@@ -666,7 +725,7 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={toggleVoiceRecording}
-              className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 transition-all shadow-lg ${
+              className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 transition-all shadow-lg cursor-pointer ${
                 isListening 
                   ? 'bg-rose-500 text-white shadow-rose-500/40 ring-4 ring-rose-300 animate-pulse' 
                   : 'bg-gradient-to-tr from-pink-500 to-purple-600 text-white shadow-pink-500/30 hover:shadow-pink-500/50'
@@ -676,7 +735,7 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
               {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
             </motion.button>
 
-            {/* Text Input Fallback */}
+            {/* Text Input */}
             <div className="flex-1 relative">
               <input
                 type="text"
@@ -685,13 +744,13 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSendMessage();
                 }}
-                placeholder={isListening ? "Listening to your voice..." : "Or type your agricultural question..."}
-                className="w-full bg-emerald-50/60 border border-emerald-200/80 rounded-full px-5 py-2.5 text-sm text-emerald-950 placeholder:text-emerald-800/40 outline-none focus:bg-white focus:border-pink-400 focus:shadow-md transition-all font-medium pr-11"
+                placeholder={isListening ? (selectedLanguage === 'hi-IN' ? "सुन रही हूँ..." : selectedLanguage === 'or-IN' ? "ଶୁଣୁଛି..." : "Listening...") : currentLangConfig.inputPlaceholder}
+                className="w-full bg-emerald-50/60 border border-emerald-200/80 rounded-full px-5 py-2.5 text-xs sm:text-sm text-emerald-950 placeholder:text-emerald-800/40 outline-none focus:bg-white focus:border-pink-400 focus:shadow-md transition-all font-medium pr-11"
               />
               <button
                 onClick={() => handleSendMessage()}
                 disabled={!inputText.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-30 text-white flex items-center justify-center transition-colors shadow-sm"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-30 text-white flex items-center justify-center transition-colors shadow-sm cursor-pointer"
               >
                 <Send className="w-4 h-4" />
               </button>
