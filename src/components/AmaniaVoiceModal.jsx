@@ -5,61 +5,165 @@ import {
   RefreshCw, Bot, User, Radio, MessageSquare, AlertCircle, Camera, Trash2
 } from 'lucide-react';
 
-// Domain knowledge responses for Amania AI Agronomic Voice Assistant
+// Comprehensive Domain Knowledge & Conversational Intelligence Base for Amania AI
 const AGRONOMIC_KNOWLEDGE_BASE = [
+  // ── 1. Conversational & Social Greetings ──────────────────────────────────────
   {
-    keywords: ['rice blast', 'blast', 'paddy disease', 'magnaporthe', 'spindle'],
-    response: "Rice Blast is caused by the fungus Magnaporthe oryzae. For immediate chemical control, spray Tricyclazole 75% WP at 0.6 grams per liter or Isoprothiolane at 1.5 ml per liter. For an organic remedy, spray 5% Neem Seed Kernel Extract or Pseudomonas fluorescens at 5 grams per liter. Apply within 48 hours to prevent panicle blast.",
+    keywords: ['how are you', 'how r u', 'how are u', 'how do you do', 'how are you doing', 'kaisa hai', 'kemiti achha', 'hows it going', 'whats up', 'what\'s up'],
+    response: "I'm doing great, thank you for asking! I'm active and ready to help your farm. How are your crops doing today? Feel free to ask about crop diseases, fertilizer timing, weather infection risks, or snap a leaf photo for instant diagnosis!",
+    topic: "Greeting"
+  },
+  {
+    keywords: ['hello', 'hi', 'namaste', 'hey', 'pranam', 'ram ram', 'namaskar', 'good morning', 'good afternoon', 'good evening'],
+    response: "Namaste! I am Amania, your AI agronomist and crop doctor. I'm here to help you optimize your crop yield, cure plant diseases, and prevent regional outbreaks. What crop are you growing today?",
+    topic: "Introduction"
+  },
+  {
+    keywords: ['who are you', 'who made you', 'who created you', 'what is your name', 'who is amania', 'about you', 'introduce yourself'],
+    response: "I am Amania AI, an intelligent precision agronomist developed for BloomSense. I analyze botanical pathogens, calculate precise NPK fertilizer doses, track regional disease outbreaks on our 3D map, and recommend both chemical and organic cures for Indian farmers.",
+    topic: "Identity"
+  },
+  {
+    keywords: ['what can you do', 'help', 'features', 'what are your skills', 'how do you work', 'how to use', 'guide me'],
+    response: "Here is what I can do for you: 1) Camera Leaf Diagnosis — snap a leaf photo for instant disease detection, 2) Agronomic Solutions — get chemical and 100% organic recipes, 3) Fertilizer Schedules — calculate basal and top-dressing NPK doses, 4) Regional Disease Warnings — check if contagious outbreaks are spreading in your district, and 5) Government Schemes — information on PM-KISAN, PMFBY, and MSP.",
+    topic: "Capabilities"
+  },
+  {
+    keywords: ['thank you', 'thanks', 'dhanyawad', 'shukriya', 'great job', 'awesome', 'good job', 'love you', 'helpful'],
+    response: "You are very welcome! May your harvest be bountiful and healthy. Let me know whenever you need advice on your field, fertilizers, or seasonal tasks.",
+    topic: "Gratitude"
+  },
+  {
+    keywords: ['bye', 'goodbye', 'see you', 'alvida', 'tata', 'good night'],
+    response: "Goodbye and happy farming! Remember to inspect your crop leaves regularly. Tap the microphone anytime you need Amania AI.",
+    topic: "Farewell"
+  },
+
+  // ── 2. Common Plant Symptoms ──────────────────────────────────────────────────
+  {
+    keywords: ['yellow leaf', 'yellow leaves', 'yellowing', 'pale leaves', 'leaves turning yellow', 'peela patta'],
+    response: "Yellowing leaves generally point to 3 main causes: 1) Nitrogen deficiency (uniform yellowing on older lower leaves — apply Neem-coated Urea top-dressing), 2) Zinc deficiency ('Khaira' rusty yellow spots on young leaves — spray 0.5% Zinc Sulfate + lime), or 3) Waterlogging & Root Rot (drain excess water). If yellowing shows wavy margins, it could be Bacterial Leaf Blight.",
+    topic: "Yellowing Leaves Diagnosis"
+  },
+  {
+    keywords: ['curling', 'curled leaf', 'leaf curl', 'murda', 'leaf curling', 'wrinkled leaves'],
+    response: "Leaf curling is most commonly caused by sucking pests: 1) Upward cup curling indicates Thrips attack (spray Diafenthiuron 50% WP @ 1.2g/L or Fipronil @ 1.5ml/L), 2) Downward curling indicates Broad Mites (spray Spiromesifen 22.9% SC @ 1ml/L). Install Blue and Yellow sticky traps across your field for organic control.",
+    topic: "Leaf Curl Complex"
+  },
+  {
+    keywords: ['white spots', 'white powder', 'powdery', 'white dust', 'white patches', 'powdery mildew'],
+    response: "A white powdery film on leaf surfaces indicates Powdery Mildew. For chemical control, spray Hexaconazole 5% SC @ 1ml/L or Propiconazole 25% EC @ 1ml/L. For an organic remedy, spray Wettable Sulfur 80% WP @ 2g/L or sour buttermilk extract (10%) in the early morning.",
+    topic: "Powdery Mildew Protocol"
+  },
+  {
+    keywords: ['wilting', 'drooping', 'drying plant', 'sudden death', 'wilt', 'fusarium'],
+    response: "Sudden wilting while leaves remain green is a sign of Bacterial Wilt or Fusarium Root Rot. Cut the lower stem: if vascular rings are brown or exude slimy bacterial ooze in water, drench the root zone with Copper Oxychloride @ 3g/L or apply Trichoderma viride enriched compost.",
+    topic: "Wilt Management"
+  },
+  {
+    keywords: ['holes', 'caterpillar', 'eating leaves', 'armyworm', 'cut leaves', 'chewed leaves'],
+    response: "Holes and chewed leaf margins are caused by caterpillars like Fall Armyworm, Leaf Folder, or Semilooper. For fast knockdown, spray Chlorantraniliprole 18.5% SC @ 0.3ml/L or Emamectin Benzoate 5% SG @ 0.5g/L. For organic control, spray Bacillus thuringiensis (Bt) @ 2g/L.",
+    topic: "Caterpillar & Pest Attack"
+  },
+
+  // ── 3. Major Crop Diseases (Rice / Paddy, Wheat, Tomato, Cotton, etc.) ────────
+  {
+    keywords: ['rice blast', 'blast', 'magnaporthe', 'spindle', 'pyricularia', 'neck blast'],
+    response: "Rice Blast (caused by Magnaporthe oryzae) produces spindle-shaped lesions with ash-grey centers. Spray Tricyclazole 75% WP @ 0.6g/L or Isoprothiolane @ 1.5ml/L immediately. For organic protection, spray 5% Neem Seed Kernel Extract (NSKE) or Pseudomonas fluorescens @ 5g/L. Avoid high nitrogen doses.",
     topic: "Rice Blast Treatment"
   },
   {
-    keywords: ['bacterial blight', 'bacterial leaf blight', 'yellowing leaf', 'blight'],
-    response: "Bacterial Leaf Blight causes yellow to straw-colored lesions along leaf margins. Spray Streptocycline at 0.1 grams per liter mixed with Copper Oxychloride at 2.5 grams per liter. Ensure you drain standing water from the paddy field and avoid excess nitrogen fertilizer.",
-    topic: "Bacterial Blight Protocol"
+    keywords: ['bacterial blight', 'bacterial leaf blight', 'blb', 'xanthomonas', 'straw leaf'],
+    response: "Bacterial Leaf Blight causes wavy yellow-to-straw colored lesions along leaf edges starting from the tip. Spray Streptocycline @ 0.1g/L mixed with Copper Oxychloride @ 2.5g/L. Drain standing water from the field for 3 days and withhold top-dress nitrogen.",
+    topic: "Bacterial Blight Cure"
   },
   {
-    keywords: ['brown spot', 'sesame spot', 'potassium'],
-    response: "Brown Spot appears as oval brown spots on leaves and grains. Spray Mancozeb 75% WP at 2 grams per liter or Propiconazole at 1 ml per liter. It often indicates potassium deficiency, so apply muriate of potash alongside balanced fertilization.",
+    keywords: ['brown spot', 'sesame spot', 'helminthosporium', 'bipolaris'],
+    response: "Brown Spot produces small oval brown spots with yellow halos on leaves and grains. Spray Mancozeb 75% WP @ 2g/L or Propiconazole @ 1ml/L. This disease indicates soil potassium or micronutrient deficiency, so top-dress MOP (Muriate of Potash).",
     topic: "Brown Spot Advisory"
   },
   {
-    keywords: ['weather', 'rain', 'temperature', 'humidity', 'forecast'],
-    response: "High relative humidity above 80% combined with temperatures between 20 to 28 degrees Celsius significantly accelerates fungal spore germination. Check our Weather Intelligence section to monitor your hyper-local infection risk score.",
-    topic: "Weather & Infection Risk"
+    keywords: ['stem borer', 'dead heart', 'white earhead', 'scirpophaga'],
+    response: "Yellow Stem Borer causes 'Dead Heart' during tillering and 'White Earhead' during panicle emergence. Apply Chlorantraniliprole 0.4% Granules @ 4kg/acre or spray Chlorantraniliprole 18.5% SC @ 0.3ml/L. Install 8 pheromone traps per acre for eco-friendly monitoring.",
+    topic: "Stem Borer Control"
   },
   {
-    keywords: ['scheme', 'subsidy', 'pm kisan', 'financial', 'samrudha', 'kalia', 'insurance', 'pmfby'],
-    response: "Under PM-KISAN, eligible landholding farmers receive ₹6,000 annually in three installments. For crop loss, register with PMFBY (Pradhan Mantri Fasal Bima Yojana). In Odisha, check out the Samrudha Krushaka Yojana and CM-KISAN programs in our Government Schemes Hub.",
-    topic: "Government Schemes"
+    keywords: ['bph', 'brown plant hopper', 'plant hopper', 'hopper burn'],
+    response: "Brown Plant Hopper (BPH) congregates at the base of paddy stems and sucks sap, causing rapid drying patches known as 'Hopper Burn'. Spray Pymetrozine 50% WDG @ 0.6g/L or Dinotefuran 20% SG @ 0.4g/L directed strictly at the base of plants. Drain standing water.",
+    topic: "BPH Shield"
   },
   {
-    keywords: ['neem', 'organic', 'bio', 'ayurvedic', 'natural cure', 'tulsi', 'ashwagandha'],
-    response: "Organic botanical treatments are highly effective! Neem oil spray with Azadirachtin 1500 ppm controls over 200 species of chewing and sucking pests. For fungal issues, fresh cow dung extract with asafoetida or Trichoderma viride creates a natural bio-shield.",
-    topic: "Organic Bio-Pesticides"
+    keywords: ['yellow rust', 'wheat rust', 'puccinia', 'rust in wheat'],
+    response: "Yellow Rust of Wheat produces parallel rows of yellow-orange powdery pustules on leaves. Spray Propiconazole 25% EC @ 1ml/L (Tilt) in 200 liters of water per acre. Repeat after 15 days if cloudy weather persists.",
+    topic: "Wheat Yellow Rust"
   },
   {
-    keywords: ['fertilizer', 'urea', 'npk', 'soil', 'dose'],
-    response: "For optimal paddy growth, use balanced NPK ratio of 4:2:1. Apply 50% Nitrogen and full Phosphorus and Potassium as basal dose, then top-dress the remaining Nitrogen during active tillering and panicle initiation stages.",
+    keywords: ['tomato blight', 'early blight', 'late blight', 'alternaria', 'phytophthora'],
+    response: "Tomato Early Blight shows target-board concentric rings, while Late Blight causes rapid water-soaked dark rotting. Spray Mancozeb 75% WP @ 2.5g/L or Cymoxanil 8% + Mancozeb 64% @ 2g/L. Avoid overhead sprinkler irrigation to keep leaves dry.",
+    topic: "Tomato Blight Management"
+  },
+  {
+    keywords: ['pink bollworm', 'bollworm', 'cotton pest', 'whitefly cotton'],
+    response: "For Pink Bollworm in Cotton, install PB-Rope L pheromone dispensers (10/acre) and spray Profenofos 50% EC @ 2ml/L. For Whitefly, use yellow sticky traps (20/acre) and spray Diafenthiuron 50% WP @ 1.2g/L.",
+    topic: "Cotton Pest Defense"
+  },
+  {
+    keywords: ['fall armyworm', 'faw', 'maize worm', 'spodoptera frugiperda'],
+    response: "Fall Armyworm in Maize attacks the central whorl creating pinholes and ragged leaves. Apply Chlorantraniliprole 18.5% SC @ 0.4ml/L directly into the whorl using a knapsack sprayer without nozzle cap, or apply whorl application of sand + neem cake mix.",
+    topic: "Fall Armyworm Management"
+  },
+
+  // ── 4. Fertilizer & Soil Management ───────────────────────────────────────────
+  {
+    keywords: ['fertilizer', 'urea', 'dap', 'mop', 'npk', 'potash', 'dose', 'dosage', 'manure', 'compost', 'zinc'],
+    response: "Standard recommendation for cereal crops (Rice/Wheat): Basal Dose (at sowing) = DAP 40–50 kg/acre + MOP 25 kg/acre + Zinc Sulfate 10 kg/acre. Top Dressing = Neem-coated Urea 45 kg/acre in 2 equal splits (20–25 days and 45–50 days after sowing). Check our interactive NPK Calculator in the Crop Calendar for exact acreage calculations!",
     topic: "Fertilizer Schedule"
   },
   {
-    keywords: ['hello', 'hi', 'namaste', 'hey', 'amania', 'who are you'],
-    response: "Namaste! I am Amania, your AI agronomist and crop doctor. You can speak to me about any plant disease, leaf symptoms, fertilizer timing, organic bio-remedies, or weather risk alerts. How can I help your farm today?",
-    topic: "Introduction"
+    keywords: ['organic', 'bio fertilizer', 'neem oil', 'jeevamrutha', 'panchagavya', 'ayurvedic', 'natural cure', 'cow dung', 'trichoderma'],
+    response: "Top organic practices: 1) Pest Bio-Shield: Neem oil (Azadirachtin 1500ppm @ 3ml/L) + Cow urine (5%), 2) Root & Growth Tonic: Jeevamrutha @ 200L/acre applied with irrigation water, 3) Fungal Disease Control: Trichoderma viride @ 5g/L or 1% Bordeaux mixture.",
+    topic: "Organic Farming Protocols"
+  },
+
+  // ── 5. Weather, Water & Irrigation ────────────────────────────────────────────
+  {
+    keywords: ['weather', 'rain', 'humidity', 'temperature', 'forecast', 'infection risk', 'cloudy', 'frost', 'monsoon'],
+    response: "High relative humidity (>80%) combined with temperatures between 22°C to 28°C accelerates fungal spore germination by 300%. Check our Weather Intelligence section on the BloomSense home page for your hyper-local disease risk score before spraying chemicals.",
+    topic: "Weather & Infection Risk"
+  },
+  {
+    keywords: ['water', 'irrigation', 'drainage', 'how much water', 'watering', 'dry field'],
+    response: "For Paddy: Maintain 2–3 cm standing water during transplanting and tillering; practice Alternate Wetting and Drying (AWD) to aerate roots; drain field completely 10–12 days prior to harvest. For vegetables: use drip irrigation to keep foliage dry and prevent fungal leaf spots.",
+    topic: "Water Management"
+  },
+
+  // ── 6. Government Schemes & Subsidies ─────────────────────────────────────────
+  {
+    keywords: ['scheme', 'subsidy', 'pm kisan', 'pmfby', 'kalia', 'samrudha', 'kisan credit card', 'kcc', 'msp', 'insurance', 'helpline'],
+    response: "Key government support schemes: 1) PM-KISAN: ₹6,000/year direct financial support, 2) PMFBY: Crop insurance against drought, floods, and pest outbreaks, 3) State programs like KALIA & Samrudha Krushaka in Odisha, 4) Kisan Call Centre Helpline: Dial toll-free 1800-180-1551 for 24/7 agricultural expert advice.",
+    topic: "Government Schemes"
   }
 ];
 
 function generateAmaniaReply(input) {
-  const cleanInput = input.toLowerCase();
+  const cleanInput = input.trim().toLowerCase();
 
+  // 1. Direct keyword match
   for (const item of AGRONOMIC_KNOWLEDGE_BASE) {
     if (item.keywords.some(kw => cleanInput.includes(kw))) {
       return item.response;
     }
   }
 
-  return `I analyzed your query regarding "${input}". To protect your field, ensure proper field drainage, inspect the lower stem and leaf undersides for fungal mycelium or pest eggs, and upload a clear photo using our Amania Vision Scanner for clinical-grade disease stage identification.`;
+  // 2. Intelligent conversational greeting fallbacks
+  if (cleanInput.length <= 15 && (cleanInput.includes('how') || cleanInput.includes('doing') || cleanInput.includes('fine') || cleanInput.includes('ok'))) {
+    return "I'm doing well, thank you! I'm here in your field and ready to assist you. How are your crops doing today? You can ask me about plant disease cures, fertilizers, or tap the camera icon to diagnose a leaf photo!";
+  }
+
+  // 3. Smart contextual fallback
+  return `I analyzed your question about "${input}". As your AI agronomist, I recommend checking your crop leaves for discoloration, pest signs, or moisture stress. You can snap a photo with the camera button for instant AI leaf diagnosis, or ask me about specific crops like Rice, Wheat, Tomato, Cotton, fertilizer doses, and disease treatments!`;
 }
+
 
 export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreakDetected }) {
   const [messages, setMessages] = useState([
