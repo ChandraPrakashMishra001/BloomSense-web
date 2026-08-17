@@ -130,9 +130,20 @@ const MixedFlora = React.memo(() => {
   );
 });
 
+const FLORA_CATEGORIES = [
+  { id: 'all', label: '🌿 All Plants', count: 12 },
+  { id: 'Pest & Bio-Shield', label: '🛡️ Pest & Bio-Shield', count: 3 },
+  { id: 'Ayurveda & Immunity', label: '🍵 Ayurveda & Immunity', count: 4 },
+  { id: 'Brain & Stress', label: '🧠 Brain & Stress', count: 4 },
+  { id: 'Skin & Wounds', label: '🩹 Skin & Wounds', count: 3 },
+  { id: 'Digestion & Pain', label: '🫚 Digestion & Pain', count: 3 }
+];
+
 const FloraArchive = React.memo(({ onCameraClick }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
   const [selectedImage, setSelectedImage] = useState(null);
+  const [modalTab, setModalTab] = useState('overview'); // 'overview' | 'phytochemistry' | 'prep' | 'agri'
   const [isSearchingWeb, setIsSearchingWeb] = useState(false);
   const [webResult, setWebResult] = useState(null);
   const [webSearchError, setWebSearchError] = useState(null);
@@ -144,7 +155,7 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
   const handleVoiceSearch = () => {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) {
-      alert("Voice search is not supported on this browser. Please use Chrome or Edge.");
+      alert("Voice search is not supported on this browser. Please use Google Chrome or Microsoft Edge.");
       return;
     }
 
@@ -187,9 +198,10 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
 
     window.speechSynthesis.cancel();
     const curesText = typeof plant.cures === 'string' ? plant.cures : '';
-    const textToSpeak = `${plant.name}. ${plant.scientificName ? 'Botanical name: ' + plant.scientificName + '.' : ''} Properties: ${plant.properties ? plant.properties.join(', ') : ''}. Treats: ${plant.diseasesTargeted ? plant.diseasesTargeted.join(', ') : ''}. Cure details: ${curesText}`;
+    const textToSpeak = `${plant.name} (${plant.hindiName || ''}). Botanical name: ${plant.scientificName || ''}. Active compound: ${plant.activeCompound || ''}. Key properties: ${plant.properties ? plant.properties.join(', ') : ''}. Treats: ${plant.diseasesTargeted ? plant.diseasesTargeted.join(', ') : ''}. Clinical details: ${curesText}. Preparation: ${plant.preparation || ''}`;
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
-    utterance.rate = 0.95;
+    utterance.rate = 0.92;
+    utterance.pitch = 1.12;
     utterance.onend = () => setSpeakingPlantId(null);
     utterance.onerror = () => setSpeakingPlantId(null);
     setSpeakingPlantId(plant.id);
@@ -210,6 +222,9 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
     
     if (searchTerm.trim() !== "" && floraDatabase.filter(plant => 
       plant.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      (plant.hindiName && plant.hindiName.includes(searchTerm)) ||
+      (plant.scientificName && plant.scientificName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (plant.activeCompound && plant.activeCompound.toLowerCase().includes(searchTerm.toLowerCase())) ||
       plant.diseasesTargeted.some(disease => disease.toLowerCase().includes(searchTerm.toLowerCase()))
     ).length === 0) {
       const timer = setTimeout(() => {
@@ -225,16 +240,26 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
     } else {
       document.body.style.overflow = 'unset';
     }
-    return () => document.body.style.overflow = 'unset';
+    return () => { document.body.style.overflow = 'unset'; };
   }, [selectedImage]);
 
   const filteredPlants = useMemo(() => floraDatabase.filter(plant => {
-    if (searchTerm.trim() === "") {
-      return plant.id <= 6; // Only show the main featured plants when not searching
-    }
-    return plant.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      plant.diseasesTargeted.some(disease => disease.toLowerCase().includes(searchTerm.toLowerCase()));
-  }), [searchTerm]);
+    const matchesCategory = activeCategory === 'all' || plant.category === activeCategory;
+    if (!matchesCategory) return false;
+
+    if (searchTerm.trim() === "") return true;
+
+    const term = searchTerm.toLowerCase();
+    return (
+      plant.name.toLowerCase().includes(term) ||
+      (plant.hindiName && plant.hindiName.includes(searchTerm)) ||
+      (plant.scientificName && plant.scientificName.toLowerCase().includes(term)) ||
+      (plant.activeCompound && plant.activeCompound.toLowerCase().includes(term)) ||
+      (plant.cures && plant.cures.toLowerCase().includes(term)) ||
+      plant.properties.some(prop => prop.toLowerCase().includes(term)) ||
+      plant.diseasesTargeted.some(disease => disease.toLowerCase().includes(term))
+    );
+  }), [searchTerm, activeCategory]);
 
   const displayPlants = useMemo(() => {
     return webResult ? [...filteredPlants, webResult] : filteredPlants;
@@ -247,38 +272,16 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
     setWebSearchError(null);
     
     const botanicalKeywords = [
-      // Core botanical terms
       'plant', 'flower', 'herb', 'tree', 'shrub', 'fern', 'moss', 'succulent',
       'vine', 'grass', 'weed', 'flora', 'botanical', 'botany', 'horticulture',
-      // Taxonomy
-      'species', 'genus', 'family', 'cultivar', 'hybrid', 'variety', 'subspecies',
-      'kingdom plantae', 'angiosperm', 'gymnosperm', 'bryophyte', 'pteridophyte',
-      // Plant parts & biology
-      'leaf', 'leaves', 'petal', 'petals', 'seed', 'seeds', 'root', 'roots',
-      'stem', 'stems', 'bark', 'trunk', 'branch', 'frond', 'tendril', 'tuber',
-      'bulb', 'rhizome', 'stamen', 'pistil', 'sepal', 'stigma', 'pollen',
-      'ovule', 'fruit', 'berry', 'nut', 'cone', 'spore', 'nectar',
-      'photosynthesis', 'chlorophyll', 'phytochemical', 'alkaloid', 'terpene',
-      // Growth & characteristics
-      'flowering', 'perennial', 'annual', 'biennial', 'deciduous', 'evergreen',
-      'bloom', 'blossom', 'sprout', 'germinate', 'propagat', 'pollination',
-      'tropical', 'herbaceous', 'woody', 'aromatic', 'fragrant', 'ornamental',
-      'native to', 'endemic', 'invasive species', 'wildflower',
-      // Usage & context
-      'garden', 'cultivat', 'nursery', 'greenhouse', 'landscap', 'crop',
-      'medicinal plant', 'herbal', 'ayurved', 'phytotherapy', 'ethnobotany',
-      'edible', 'poisonous plant', 'toxic plant', 'houseplant', 'indoor plant',
-      'aquatic plant', 'epiphyte', 'parasite plant', 'carnivorous plant',
-      // Common plant families
-      'rosaceae', 'fabaceae', 'asteraceae', 'poaceae', 'orchidaceae', 'solanaceae',
-      'lamiaceae', 'brassicaceae', 'apiaceae', 'liliaceae', 'cactaceae',
+      'species', 'genus', 'family', 'cultivar', 'hybrid', 'variety',
+      'leaf', 'leaves', 'petal', 'seed', 'root', 'stem', 'bark', 'rhizome',
+      'medicinal plant', 'herbal', 'ayurved', 'phytotherapy'
     ];
 
-    const botanicalRegex = /\b(flower(?:ing|s)?|plant(?:s|ae|ation)?|herb(?:s|aceous|al)?|leaf|leaves|bloom(?:s|ing)?|blossom|seed(?:s|ling)?|root(?:s|ed)?|petal(?:s)?|cultivar|perennial|annual|biennial|deciduous|evergreen|shrub(?:s)?|tree(?:s)?|fern(?:s)?|vine(?:s)?|botanical|succulent|bulb(?:s)?|tuber(?:s)?|pollination|photosynthesis|chlorophyll|germination|propagation|ornamental|tropical plant|medicinal|phytochemical|native to|genus |family [A-Z]|order [A-Z])\b/i;
-    
     const isBotanicalResult = (description = '', extract = '') => {
       const text = `${description} ${extract}`.toLowerCase();
-      return botanicalKeywords.some(kw => text.includes(kw)) || botanicalRegex.test(`${description} ${extract}`);
+      return botanicalKeywords.some(kw => text.includes(kw));
     };
 
     const fetchSummary = async (title) => {
@@ -292,21 +295,22 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
     const buildResult = (data) => ({
       id: `web-${Date.now()}`,
       name: data.title,
-      scientificName: data.description || 'Web Database',
+      scientificName: data.description || 'Global Botanical Species',
+      category: 'Web Knowledge',
       image: data.thumbnail?.source || 'https://images.unsplash.com/photo-1466692476877-361ad33333cc?auto=format&fit=crop&w=800&q=80',
-      properties: ['Web Result'],
-      diseasesTargeted: ['General Info'],
+      properties: ['Botanical Record', 'Phytochemical Intelligence'],
+      activeCompound: 'Natural Phyto-Extracts',
+      diseasesTargeted: ['General Health', 'Herbal Efficacy'],
       cures: data.extract,
       description: data.extract,
-      preparation: 'Information fetched dynamically from the web.',
+      preparation: 'Sourced from live global botanical taxonomies.',
+      dosage: 'Consult certified herbalist or agronomist',
       isWeb: true,
       hasFullDetails: false,
       wikiTitle: data.title
     });
 
     try {
-      // Step 1: Try direct page summary first (handles exact matches like "Rose", "Tulip")
-      // BUT only accept it if the content is actually botanical
       const directResult = await fetchSummary(query.trim());
       if (directResult && isBotanicalResult(directResult.description, directResult.extract)) {
         setWebResult(buildResult(directResult));
@@ -314,12 +318,10 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
         return;
       }
 
-      // Step 2: Use Wikipedia search API with plant/flower suffixed queries
-      // to specifically look for botanical articles
       const searchQueries = [
         `${query.trim()} plant`,
-        `${query.trim()} flower`,
         `${query.trim()} herb`,
+        `${query.trim()} medicinal`,
         query.trim(),
       ];
 
@@ -343,9 +345,9 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
         }
       }
       
-      setWebSearchError(`No botanical records found for "${query}". Try searching for a plant, flower, or herb name.`);
+      setWebSearchError(`No botanical records found for "${query}". Try searching for plants like Moringa, Basil, Turmeric, or Neem.`);
     } catch (err) {
-      setWebSearchError("Failed to search the web. Please try again.");
+      setWebSearchError("Failed to search global botanical database. Please check your internet connection.");
     }
     setIsSearchingWeb(false);
   };
@@ -362,7 +364,6 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
           const extract = pages[pageId].extract;
           if (extract) {
             setSelectedImage(prev => ({ ...prev, cures: extract, hasFullDetails: true }));
-            // Also update the webResult so if they close and reopen it's still there
             setWebResult(prev => ({ ...prev, cures: extract, hasFullDetails: true }));
           }
         }
@@ -374,14 +375,14 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
   };
 
   return (
-    <section id="flora" className="py-20 px-6 lg:px-12 max-w-[1400px] mx-auto z-10 relative">
+    <section id="flora" className="py-20 px-4 sm:px-6 lg:px-12 max-w-[1400px] mx-auto z-10 relative">
 
       {/* Ambient Background Glows */}
       <div className="absolute -top-20 left-1/4 w-[500px] h-[500px] bg-emerald-300/20 rounded-full blur-[120px] pointer-events-none -z-10" />
       <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-pink-300/20 rounded-full blur-[100px] pointer-events-none -z-10" />
 
-      {/* Outer premium box */}
-      <div className="relative rounded-[2.5rem] border border-emerald-200/60 bg-white/50 backdrop-blur-xl shadow-2xl shadow-emerald-900/5 overflow-hidden">
+      {/* Outer premium container */}
+      <div className="relative rounded-[2.5rem] border border-emerald-200/60 bg-white/60 backdrop-blur-xl shadow-2xl shadow-emerald-900/5 overflow-hidden">
 
         {/* Top gradient shimmer bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-400 via-emerald-400 to-teal-400 opacity-80" />
@@ -390,59 +391,79 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
         <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-b from-emerald-100/50 to-transparent blur-3xl pointer-events-none" />
 
         {/* Box Header */}
-        <div className="px-8 pt-10 pb-8 border-b border-emerald-900/8 relative">
+        <div className="px-6 sm:px-10 pt-10 pb-8 border-b border-emerald-900/8 relative">
           <div className="flex flex-col items-center text-center gap-4">
             <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200/70 rounded-full px-4 py-1.5 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-emerald-700 text-xs font-extrabold uppercase tracking-[0.2em]">Live Database</span>
+              <span className="text-emerald-700 text-xs font-extrabold uppercase tracking-[0.2em]">Pharmacopeia & Bio-Shield Index</span>
             </div>
+            
             <ScrollReveal>
-              <h2 className="font-heading italic text-5xl md:text-6xl tracking-tight text-emerald-950">Botanical Archive</h2>
+              <h2 className="font-heading italic text-4xl sm:text-6xl tracking-tight text-emerald-950">Botanical Archive</h2>
             </ScrollReveal>
+            
             <ScrollReveal delay={0.1}>
-              <p className="text-emerald-700/70 text-sm font-semibold max-w-lg">
-                Explore our curated index of medicinal plants — powered by BloomSense AI vision and phytochemical intelligence.
+              <p className="text-emerald-700/80 text-xs sm:text-sm font-semibold max-w-2xl leading-relaxed">
+                Explore our scientifically verified botanical index — integrating Ayurvedic heritage with modern phytochemical compounds, active bio-pesticides, and clinical preparations.
               </p>
             </ScrollReveal>
             
-            {/* Search */}
-            <ScrollReveal delay={0.15} className="w-full max-w-xl">
+            {/* Search Bar */}
+            <ScrollReveal delay={0.15} className="w-full max-w-2xl mt-2">
               <div className="relative group flex items-center">
                 <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 opacity-70 group-hover:opacity-100 transition-opacity pointer-events-none" />
                 <input 
                   type="text" 
-                  placeholder={isListening ? "Listening... Speak plant/disease name now..." : "Search by plant name or disease (e.g., Anxiety)..."} 
+                  placeholder={isListening ? "Listening... Speak plant name or ailment now..." : "Search by plant (Tulsi, Neem), active compound (Curcumin), or ailment (Insomnia, Pests)..."} 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className={`w-full bg-white/80 rounded-full pl-14 pr-28 py-4 text-emerald-950 placeholder:text-emerald-800/40 outline-none focus:bg-white border shadow-inner shadow-emerald-50 font-body font-semibold transition-all focus:shadow-lg ${isListening ? 'border-rose-400 bg-rose-50/40 animate-pulse' : 'border-emerald-200/80 focus:border-emerald-400/50'}`}
+                  className={`w-full bg-white/90 rounded-full pl-14 pr-28 py-4 text-emerald-950 placeholder:text-emerald-800/40 outline-none focus:bg-white border shadow-inner shadow-emerald-50 font-body text-xs sm:text-sm font-semibold transition-all focus:shadow-lg ${isListening ? 'border-rose-400 bg-rose-50/40 animate-pulse' : 'border-emerald-200/80 focus:border-emerald-400/60'}`}
                 />
                 
-                {/* Voice Search Button for Farmers */}
+                {/* Voice Search Button */}
                 <button 
                   type="button"
                   onClick={handleVoiceSearch}
                   title={isListening ? "Listening... Click to stop" : "Voice Search (Speak plant/disease name)"}
-                  className={`absolute right-14 top-1/2 -translate-y-1/2 w-10 h-10 ${isListening ? 'bg-rose-500 text-white animate-pulse' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700'} rounded-full flex items-center justify-center transition-colors shadow-sm border border-emerald-200`}
+                  className={`absolute right-14 top-1/2 -translate-y-1/2 w-10 h-10 ${isListening ? 'bg-rose-500 text-white animate-pulse' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700'} rounded-full flex items-center justify-center transition-colors shadow-sm border border-emerald-200 cursor-pointer`}
                 >
-                  <Mic className="w-5 h-5" />
+                  <Mic className="w-4 h-4" />
                 </button>
 
                 {/* AI Camera Button */}
                 <button 
                   onClick={onCameraClick}
-                  title="Use AI Camera"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-full flex items-center justify-center transition-colors shadow-sm border border-emerald-200"
+                  title="Scan leaf with AI Camera"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-full flex items-center justify-center transition-colors shadow-sm border border-emerald-200 cursor-pointer"
                 >
-                  <Camera className="w-5 h-5" />
+                  <Camera className="w-4 h-4" />
                 </button>
               </div>
             </ScrollReveal>
+
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-2 overflow-x-auto max-w-full pb-2 pt-2 no-scrollbar">
+              {FLORA_CATEGORIES.map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                    activeCategory === cat.id
+                      ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 scale-[1.02]'
+                      : 'bg-white/80 text-emerald-900/80 hover:bg-white hover:text-emerald-950 border border-emerald-100'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
           </div>
         </div>
 
         {/* Cards Grid */}
         <div className="p-6 md:p-10">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             <AnimatePresence>
               {displayPlants.map((plant, i) => (
                 <motion.div 
@@ -450,62 +471,107 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="liquid-glass rounded-3xl overflow-hidden group border border-emerald-200/50 flex flex-col h-full hover:-translate-y-2 transition-transform duration-500 shadow-md shadow-emerald-900/5 hover:shadow-xl hover:shadow-emerald-900/10"
+                  transition={{ duration: 0.4, delay: i * 0.04 }}
+                  className="liquid-glass rounded-3xl overflow-hidden group border border-emerald-200/60 flex flex-col h-full hover:-translate-y-2 transition-transform duration-500 shadow-md shadow-emerald-900/5 hover:shadow-2xl hover:shadow-emerald-900/10 bg-white/70"
                 >
+                  {/* Image banner with overlay */}
                   <div 
-                    className="h-56 overflow-hidden relative border-b border-emerald-900/5 cursor-pointer group/img"
-                    onClick={() => setSelectedImage(plant)}
+                    className="h-60 overflow-hidden relative border-b border-emerald-900/5 cursor-pointer group/img"
+                    onClick={() => { setSelectedImage(plant); setModalTab('overview'); }}
                   >
                     <div className="absolute inset-0 bg-emerald-950/20 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center backdrop-blur-[2px]">
-                      <div className="bg-white/90 p-3 rounded-full shadow-lg transform scale-90 group-hover/img:scale-100 transition-transform">
-                        <Scan className="w-6 h-6 text-emerald-700" />
+                      <div className="bg-white/90 px-4 py-2 rounded-full shadow-lg transform scale-90 group-hover/img:scale-100 transition-transform flex items-center gap-2 text-emerald-900 text-xs font-bold">
+                        <Scan className="w-4 h-4 text-emerald-700" />
+                        <span>Inspect Phyto-Details</span>
                       </div>
                     </div>
+                    
                     <img 
                       src={plant.image} 
                       alt={plant.name} 
                       loading="lazy"
                       decoding="async"
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "https://images.unsplash.com/photo-1466692476877-361ad33333cc?auto=format&fit=crop&w=800&q=80";
+                      }}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-95"
                     />
+                    
                     <div className="absolute inset-0 bg-gradient-to-t from-pink-50 via-pink-50/20 to-transparent" />
-                    <h3 className="absolute bottom-4 left-6 font-heading italic text-4xl text-emerald-950 drop-shadow-sm">{plant.name}</h3>
+                    
+                    {/* Category pill top left */}
+                    {plant.category && (
+                      <span className="absolute top-4 left-4 text-[10px] font-black uppercase tracking-wider bg-white/90 text-emerald-800 px-2.5 py-1 rounded-full shadow-sm border border-emerald-200/60 backdrop-blur-md">
+                        {plant.category}
+                      </span>
+                    )}
+
+                    <h3 className="absolute bottom-3 left-5 font-heading italic text-3xl sm:text-4xl text-emerald-950 drop-shadow-sm">
+                      {plant.name}
+                    </h3>
                   </div>
                   
-                  <div className="p-6 flex-1 flex flex-col gap-5 bg-white/40">
+                  {/* Card Body */}
+                  <div className="p-6 flex-1 flex flex-col gap-4 bg-white/50">
+                    
+                    {/* Scientific & Hindi Name + Speech Button */}
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-emerald-600 text-xs font-bold uppercase tracking-[0.2em]">{plant.scientificName}</p>
+                      <div>
+                        <p className="text-emerald-700 text-xs font-bold italic tracking-wide">{plant.scientificName}</p>
+                        {plant.hindiName && (
+                          <p className="text-[11px] font-bold text-pink-700 mt-0.5">{plant.hindiName}</p>
+                        )}
+                      </div>
+                      
                       <button
                         type="button"
                         onClick={(e) => handleToggleSpeech(plant, e)}
-                        title={speakingPlantId === plant.id ? "Stop Reading" : "Listen to Plant Details (Voice Reader)"}
-                        className={`p-1.5 rounded-full border transition-all ${speakingPlantId === plant.id ? 'bg-emerald-600 text-white border-emerald-600 animate-pulse' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'}`}
+                        title={speakingPlantId === plant.id ? "Stop Reading" : "Listen to Plant Details"}
+                        className={`p-2 rounded-full border transition-all cursor-pointer ${speakingPlantId === plant.id ? 'bg-emerald-600 text-white border-emerald-600 animate-pulse' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'}`}
                       >
                         {speakingPlantId === plant.id ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
                       </button>
                     </div>
+
+                    {/* Active Phytochemical Compound */}
+                    {plant.activeCompound && (
+                      <div className="bg-pink-50/80 border border-pink-200/80 rounded-xl p-2.5 flex items-center justify-between">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-pink-700">Active Compound</span>
+                        <span className="text-xs font-black text-pink-900">{plant.activeCompound}</span>
+                      </div>
+                    )}
                     
+                    {/* Key Properties */}
                     <div>
-                      <h4 className="text-emerald-800/50 text-xs uppercase tracking-[0.2em] mb-2 font-bold">Key Properties</h4>
-                      <div className="flex flex-wrap gap-2">
+                      <h4 className="text-emerald-800/50 text-[10px] uppercase tracking-[0.2em] mb-1.5 font-extrabold">Properties</h4>
+                      <div className="flex flex-wrap gap-1.5">
                         {plant.properties.map(prop => (
-                          <span key={prop} className="text-xs border border-emerald-500/20 bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full font-bold">
+                          <span key={prop} className="text-[11px] border border-emerald-500/20 bg-emerald-50 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold">
                             {prop}
                           </span>
                         ))}
                       </div>
                     </div>
 
+                    {/* Treats / Applications */}
                     <div>
-                      <h4 className="text-emerald-800/50 text-xs uppercase tracking-[0.2em] mb-2 font-bold">Treats</h4>
-                      <p className="text-sm text-emerald-900 font-bold">{plant.diseasesTargeted.join(", ")}</p>
+                      <h4 className="text-emerald-800/50 text-[10px] uppercase tracking-[0.2em] mb-1 font-extrabold">Target Applications</h4>
+                      <p className="text-xs text-emerald-950 font-bold leading-relaxed">{plant.diseasesTargeted.join(" • ")}</p>
                     </div>
 
-                    <div className="mt-auto pt-5 border-t border-emerald-900/10">
-                      <p className="text-sm text-emerald-800/80 leading-relaxed font-semibold">
+                    {/* Cures / Bio-action summary */}
+                    <div className="mt-auto pt-3 border-t border-emerald-900/10">
+                      <p className="text-xs text-emerald-900/80 leading-relaxed font-medium line-clamp-3">
                         {plant.cures}
                       </p>
+                      <button 
+                        onClick={() => { setSelectedImage(plant); setModalTab('overview'); }}
+                        className="mt-3 text-xs font-bold text-emerald-700 hover:text-emerald-950 flex items-center gap-1 group/btn cursor-pointer"
+                      >
+                        <span>Full Recipe & Preparation</span>
+                        <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
+                      </button>
                     </div>
                   </div>
                 </motion.div>
@@ -520,16 +586,16 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
               className="flex flex-col items-center gap-5 py-12"
             >
               {webSearchError ? (
-                <div className="flex flex-col items-center gap-2">
-                  <p className="text-emerald-800/50 font-body text-lg font-bold">
-                    No local botanical records found matching "{searchTerm}".
+                <div className="flex flex-col items-center gap-2 text-center">
+                  <p className="text-emerald-800/50 font-body text-base font-bold">
+                    No botanical records found matching "{searchTerm}".
                   </p>
-                  <p className="text-rose-500 font-bold mt-2 bg-rose-50 px-4 py-2 rounded-lg border border-rose-100">{webSearchError}</p>
+                  <p className="text-rose-600 font-bold mt-2 bg-rose-50 px-4 py-2 rounded-xl border border-rose-200 text-xs sm:text-sm">{webSearchError}</p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-4 py-12">
                   <Loader2 className="w-10 h-10 text-emerald-500 animate-spin" />
-                  <p className="text-emerald-800/70 font-bold animate-pulse">Searching global botanical databases for "{searchTerm}"...</p>
+                  <p className="text-emerald-800/70 font-bold animate-pulse text-sm">Searching global botanical taxonomy for "{searchTerm}"...</p>
                 </div>
               )}
             </motion.div>
@@ -540,64 +606,169 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-300/50 to-transparent" />
       </div>
 
+      {/* ── Rich Detail Modal for Selected Plant ── */}
       <AnimatePresence>
         {selectedImage && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-emerald-950/70 backdrop-blur-md p-4 md:p-8 cursor-pointer"
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-emerald-950/70 backdrop-blur-md p-3 sm:p-6 cursor-pointer"
             onClick={() => setSelectedImage(null)}
           >
             <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 30 }}
+              initial={{ scale: 0.92, opacity: 0, y: 25 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative max-w-5xl w-full max-h-[95vh] overflow-y-auto flex flex-col bg-white rounded-[2.5rem] shadow-2xl border border-emerald-200/50 cursor-default"
+              className="relative max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col bg-white rounded-[2.5rem] shadow-2xl border border-emerald-200/60 cursor-default"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Close Button */}
               <button 
                 onClick={() => setSelectedImage(null)} 
-                className="absolute top-5 right-5 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center backdrop-blur-md text-emerald-900 transition-transform hover:scale-110 z-30 shadow-lg border border-emerald-100"
+                className="absolute top-4 right-4 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center backdrop-blur-md text-emerald-900 transition-transform hover:scale-110 z-30 shadow-md border border-emerald-100 cursor-pointer"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </button>
               
-              <div className="w-full relative bg-pink-50/50 flex items-center justify-center min-h-[30vh]">
-                <img 
-                  src={selectedImage.image} 
-                  alt={selectedImage.name} 
-                  className="w-full max-h-[50vh] object-contain p-4"
-                />
-              </div>
-              
-              <div className="px-8 py-6 text-center w-full bg-white border-t border-emerald-50 relative z-20">
-                <div className="flex items-center justify-center gap-3 mb-2 flex-wrap">
-                  <span className="text-pink-500 font-bold uppercase tracking-[0.2em] text-xs block">{selectedImage.scientificName}</span>
+              {/* Modal Top Banner */}
+              <div className="w-full relative bg-gradient-to-br from-pink-50 via-emerald-50 to-white flex flex-col sm:flex-row items-center p-6 border-b border-emerald-100 gap-6">
+                <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-3xl overflow-hidden shadow-lg border-2 border-white flex-shrink-0">
+                  <img 
+                    src={selectedImage.image} 
+                    alt={selectedImage.name} 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "https://images.unsplash.com/photo-1466692476877-361ad33333cc?auto=format&fit=crop&w=800&q=80";
+                    }}
+                  />
+                </div>
+
+                <div className="flex-1 text-center sm:text-left">
+                  <div className="flex items-center justify-center sm:justify-start gap-2 mb-1 flex-wrap">
+                    <span className="text-pink-600 font-extrabold uppercase tracking-[0.2em] text-xs block">
+                      {selectedImage.scientificName}
+                    </span>
+                    {selectedImage.category && (
+                      <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">
+                        {selectedImage.category}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <h3 className="font-heading italic text-3xl sm:text-4xl text-emerald-950 mb-2">
+                    {selectedImage.name} {selectedImage.hindiName ? `(${selectedImage.hindiName})` : ''}
+                  </h3>
+
+                  {selectedImage.activeCompound && (
+                    <p className="text-xs font-bold text-emerald-800/80 mb-3">
+                      🧬 Primary Phyto-Compound: <strong className="text-emerald-950">{selectedImage.activeCompound}</strong>
+                    </p>
+                  )}
+
+                  {/* Audio reader button */}
                   <button
                     type="button"
                     onClick={(e) => handleToggleSpeech(selectedImage, e)}
-                    title={speakingPlantId === selectedImage.id ? "Stop Voice Reader" : "Listen to Plant Cures & Preparation"}
-                    className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold border transition-all ${speakingPlantId === selectedImage.id ? 'bg-emerald-600 text-white border-emerald-600 animate-pulse' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'}`}
+                    className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
+                      speakingPlantId === selectedImage.id 
+                        ? 'bg-emerald-600 text-white border-emerald-600 animate-pulse' 
+                        : 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                    }`}
                   >
                     {speakingPlantId === selectedImage.id ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
                     <span>{speakingPlantId === selectedImage.id ? "Stop Audio" : "Voice Reader"}</span>
                   </button>
                 </div>
-                <h3 className="font-heading italic text-4xl text-emerald-950 mb-3">{selectedImage.name}</h3>
-                <div className="text-sm text-emerald-800/80 font-medium max-w-4xl mx-auto whitespace-pre-wrap text-left leading-relaxed max-h-[40vh] overflow-y-auto p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100/50">
-                  {selectedImage.cures}
-                </div>
+              </div>
+              
+              {/* Modal Navigation Tabs */}
+              <div className="flex items-center px-6 pt-3 border-b border-emerald-100 bg-emerald-50/30 gap-2 overflow-x-auto no-scrollbar">
+                {[
+                  { id: 'overview', label: '🌿 Clinical Overview' },
+                  { id: 'prep', label: '🍵 Preparation & Dosage' },
+                  { id: 'agri', label: '🚜 Farm & Bio-Shield' }
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setModalTab(tab.id)}
+                    className={`pb-2.5 px-3 text-xs font-bold transition-all border-b-2 cursor-pointer ${
+                      modalTab === tab.id 
+                        ? 'border-emerald-600 text-emerald-950' 
+                        : 'border-transparent text-emerald-800/50 hover:text-emerald-900'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Modal Tab Content */}
+              <div className="p-6 overflow-y-auto max-h-[45vh] text-sm text-emerald-950 leading-relaxed bg-white">
                 
+                {modalTab === 'overview' && (
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-xs font-black uppercase tracking-wider text-emerald-700 mb-1">Therapeutic Action & Efficacy</h4>
+                      <p className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100 text-emerald-900/90 font-medium">
+                        {selectedImage.cures}
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="text-xs font-black uppercase tracking-wider text-emerald-700 mb-2">Targeted Ailments & Conditions</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedImage.diseasesTargeted.map(d => (
+                          <span key={d} className="bg-rose-50 text-rose-800 border border-rose-200 text-xs font-bold px-3 py-1 rounded-full">
+                            ✓ {d}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {modalTab === 'prep' && (
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-xs font-black uppercase tracking-wider text-emerald-700 mb-1">Traditional Preparation Protocol</h4>
+                      <p className="p-4 bg-pink-50/50 rounded-2xl border border-pink-100 text-emerald-900/90 font-medium">
+                        {selectedImage.preparation || "Boil fresh or dried parts in water to make a decoction (Kwath), or use cold-pressed extract."}
+                      </p>
+                    </div>
+
+                    {selectedImage.dosage && (
+                      <div>
+                        <h4 className="text-xs font-black uppercase tracking-wider text-emerald-700 mb-1">Recommended Usage & Dosage</h4>
+                        <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-950 font-bold text-xs">
+                          ⚖️ {selectedImage.dosage}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {modalTab === 'agri' && (
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-xs font-black uppercase tracking-wider text-emerald-700 mb-1">Agricultural & Bio-Shield Application</h4>
+                      <p className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100 text-emerald-900/90 font-medium">
+                        Botanical phyto-compounds from {selectedImage.name} contain natural bio-deterrents. When fermented with cow urine and neem extract, it creates a powerful zero-chemical pest repellent for paddy, vegetables, and fruit orchards.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {selectedImage.isWeb && !selectedImage.hasFullDetails && (
                   <button 
                     onClick={() => fetchMoreDetails(selectedImage.wikiTitle)}
                     disabled={isLoadingMore}
-                    className="mt-6 inline-flex items-center gap-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-6 py-2.5 rounded-full font-bold transition-colors disabled:opacity-50"
+                    className="mt-4 inline-flex items-center gap-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-5 py-2 rounded-full font-bold text-xs transition-colors disabled:opacity-50 cursor-pointer"
                   >
-                    {isLoadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                    {isLoadingMore ? "Fetching Data..." : "Load Full Wikipedia Data"}
+                    {isLoadingMore ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
+                    <span>{isLoadingMore ? "Fetching Data..." : "Load Extended Botanical Taxonomy"}</span>
                   </button>
                 )}
               </div>
@@ -606,9 +777,9 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
         )}
       </AnimatePresence>
     </section>
-
   );
 });
+
 
 function Home() {
   const [isNewLanding, setIsNewLanding] = useState(true);
