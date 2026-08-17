@@ -5,7 +5,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { db, auth } from './firebase';
 import { 
   Leaf, ArrowUpRight, Play, Zap, Shield, Microscope, 
-  Cpu, Cloud, Database, Scan, Beaker, ChevronDown, Camera,
+  Cpu, Cloud, Database, Scan, Beaker, ChevronDown, ChevronRight, Camera,
   Layers, Focus, Activity, X, Loader2, CheckCircle, AlertTriangle, Search, Sparkles, Map, Bell, LogIn, LogOut, Menu, Brain,
   Mic, MicOff, Volume2, VolumeX
 } from 'lucide-react';
