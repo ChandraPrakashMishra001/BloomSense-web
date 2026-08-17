@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { 
   Leaf, Calendar, Bell, BellOff, ChevronRight, 
   Check, Sprout, Wheat, Apple, CircleDot, Layers,
-  ArrowLeft, Sun, CloudRain, Thermometer, RefreshCw
+  ArrowLeft, Sun, CloudRain, Thermometer, RefreshCw, Volume2
 } from 'lucide-react';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
