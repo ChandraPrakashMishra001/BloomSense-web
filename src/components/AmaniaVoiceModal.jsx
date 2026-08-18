@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Mic, MicOff, Volume2, VolumeX, X, Sparkles, Send, 
-  RefreshCw, Bot, User, Radio, MessageSquare, AlertCircle, Camera, Trash2, Globe
+  RefreshCw, Bot, User, Radio, MessageSquare, AlertCircle, Camera, Trash2, Globe,
+  Image as ImageIcon, Upload, FileImage
 } from 'lucide-react';
 
 const LANGUAGES = [
@@ -474,8 +475,8 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
           style={{ height: 'min(88vh, 750px)' }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Hidden file input & canvas */}
-          <input ref={fileInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileUpload} />
+          {/* Hidden file input for uploading images from gallery/files & canvas */}
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
           <canvas ref={canvasRef} className="hidden" />
 
           {/* Header Bar */}
@@ -518,11 +519,20 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
                 ))}
               </div>
 
+              {/* Upload Image button in header */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="p-2 rounded-full border bg-pink-50 text-pink-700 border-pink-200 hover:bg-pink-100 transition-all cursor-pointer"
+                title="Upload leaf image from gallery / files"
+              >
+                <ImageIcon className="w-3.5 h-3.5" />
+              </button>
+
               {/* Camera button in header */}
               <button
                 onClick={startCameraStream}
-                className="p-2 rounded-full border bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 transition-all"
-                title="Snap leaf photo for AI diagnosis"
+                className="p-2 rounded-full border bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 transition-all cursor-pointer"
+                title="Snap leaf photo with camera"
               >
                 <Camera className="w-3.5 h-3.5" />
               </button>
@@ -530,7 +540,7 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
               {/* Clear chat */}
               <button
                 onClick={handleClearChat}
-                className="p-2 rounded-full border bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100 transition-all"
+                className="p-2 rounded-full border bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100 transition-all cursor-pointer"
                 title="Clear conversation"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -709,13 +719,24 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
 
           {/* Voice Input & Text Control Footer */}
           <div className="flex-shrink-0 p-3 bg-white border-t border-emerald-900/10 flex items-center gap-2">
+            {/* Upload Image button in footer */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => fileInputRef.current?.click()}
+              className="w-11 h-11 rounded-full bg-pink-50 hover:bg-pink-100 text-pink-700 flex items-center justify-center flex-shrink-0 border border-pink-200 shadow-sm cursor-pointer"
+              title="Upload leaf photo from gallery / files"
+            >
+              <ImageIcon className="w-5 h-5" />
+            </motion.button>
+
             {/* Camera button in footer */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={startCameraStream}
               className="w-11 h-11 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-700 flex items-center justify-center flex-shrink-0 border border-emerald-200 shadow-sm cursor-pointer"
-              title="Snap leaf photo for diagnosis"
+              title="Snap leaf photo with camera"
             >
               <Camera className="w-5 h-5" />
             </motion.button>
