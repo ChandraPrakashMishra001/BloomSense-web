@@ -693,21 +693,21 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
         </div>
 
         {/* Cards Grid */}
-        <div className="p-6 md:p-10">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="p-4 sm:p-6 md:p-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-8">
             <AnimatePresence>
               {displayPlants.map((plant, i) => (
                 <motion.div 
                   key={plant.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.4, delay: i * 0.04 }}
-                  className="liquid-glass rounded-3xl overflow-hidden group border border-emerald-200/60 flex flex-col h-full hover:-translate-y-2 transition-transform duration-500 shadow-md shadow-emerald-900/5 hover:shadow-2xl hover:shadow-emerald-900/10 bg-white/70"
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.35, delay: i * 0.03, ease: [0.16, 1, 0.3, 1] }}
+                  className="liquid-glass card-luxury-hover rounded-3xl overflow-hidden group border border-emerald-200/60 flex flex-col h-full bg-white/80 shadow-sm"
                 >
                   {/* Image banner with overlay */}
                   <div 
-                    className="h-60 overflow-hidden relative border-b border-emerald-900/5 cursor-pointer group/img"
+                    className="h-56 sm:h-60 overflow-hidden relative border-b border-emerald-900/5 cursor-pointer group/img"
                     onClick={() => { setSelectedImage(plant); setModalTab('overview'); }}
                   >
                     <div className="absolute inset-0 bg-emerald-950/20 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center backdrop-blur-[2px]">

@@ -256,14 +256,14 @@ export default function GovernmentSchemesHub({ onAskAmania }) {
         )}
 
         {/* Scheme Cards Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 mb-10">
           {filteredSchemes.map((scheme, i) => (
             <motion.div 
               key={scheme.id}
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: i * 0.04 }}
-              className="liquid-glass p-6 rounded-3xl border border-emerald-200/70 group hover:-translate-y-1.5 transition-all duration-300 flex flex-col h-full bg-white/80 shadow-sm hover:shadow-xl hover:shadow-emerald-900/5 relative cursor-pointer"
+              transition={{ duration: 0.35, delay: i * 0.03, ease: [0.16, 1, 0.3, 1] }}
+              className="liquid-glass card-luxury-hover p-6 rounded-3xl border border-emerald-200/70 flex flex-col h-full bg-white/85 shadow-sm relative cursor-pointer"
               onClick={() => setSelectedScheme(scheme)}
             >
               {/* Header Badges */}
