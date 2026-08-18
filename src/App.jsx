@@ -1803,6 +1803,19 @@ function Home() {
 
 export default function App() {
   const location = useLocation();
+  const [showSplash, setShowSplash] = useState(true);
+
+  // Prevent background scrolling while splash is active
+  useEffect(() => {
+    if (showSplash) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showSplash]);
 
   // Global Language Localization using Google Translate API
   useEffect(() => {
@@ -1846,18 +1859,32 @@ export default function App() {
   }, [location]);
 
   return (
-    <div className="w-full min-h-screen bg-pink-50 text-emerald-950">
-      <Suspense fallback={<div className="h-screen w-full bg-pink-50 flex flex-col items-center justify-center animate-pulse"><Leaf className="w-12 h-12 text-emerald-600 mb-4" /><p className="text-emerald-800 font-bold uppercase tracking-[0.2em] text-sm">Loading BloomSense...</p></div>}>
-        <RobotGuide />
-        <KisanEmergencyBar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/technology/hardware" element={<Hardware />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/calendar" element={<CropCalendar />} />
-          <Route path="/about" element={<About />} />
-        </Routes>
-      </Suspense>
-    </div>
+    <>
+      <AnimatePresence mode="wait">
+        {showSplash && (
+          <SplashScreen key="splash-screen" onComplete={() => setShowSplash(false)} />
+        )}
+      </AnimatePresence>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showSplash ? 0 : 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-full min-h-screen bg-pink-50 text-emerald-950"
+        style={{ pointerEvents: showSplash ? 'none' : 'auto' }}
+      >
+        <Suspense fallback={<div className="h-screen w-full bg-pink-50 flex flex-col items-center justify-center animate-pulse"><Leaf className="w-12 h-12 text-emerald-600 mb-4" /><p className="text-emerald-800 font-bold uppercase tracking-[0.2em] text-sm">Loading BloomSense...</p></div>}>
+          <RobotGuide />
+          <KisanEmergencyBar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/technology/hardware" element={<Hardware />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/calendar" element={<CropCalendar />} />
+            <Route path="/about" element={<About />} />
+          </Routes>
+        </Suspense>
+      </motion.div>
+    </>
   );
 }
