@@ -1246,7 +1246,7 @@ function Home() {
       <div className="grain-overlay" aria-hidden="true" />
 
 
-      <nav className="absolute top-4 left-4 right-4 lg:left-12 lg:right-12 z-50 px-6 lg:px-8 py-3 flex justify-between items-center bg-white/20 backdrop-blur-xl border border-white/50 rounded-[2.5rem] shadow-[0_8px_32px_rgba(0,0,0,0.1)] transition-all duration-300">
+      <nav className="absolute top-4 left-4 right-4 lg:left-12 lg:right-12 z-50 px-5 lg:px-8 py-2.5 sm:py-3 flex justify-between items-center bg-white/70 backdrop-blur-2xl border border-white/90 rounded-[2.5rem] shadow-xl shadow-emerald-950/5 transition-all duration-300">
         <div className="flex flex-col xl:flex-row items-start xl:items-center gap-2 xl:gap-6">
           <div className="flex items-center gap-4">
             <button onClick={() => setIsNewLanding(!isNewLanding)} className="liquid-glass w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-300 shadow-sm border border-emerald-200/50">
@@ -1270,7 +1270,7 @@ function Home() {
           <div id="google_translate_element" className="google-translate-container min-h-[36px] block mt-2 xl:mt-0 xl:ml-6 scale-75 origin-left sm:scale-100"></div>
         </div>
         
-        <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full liquid-glass">
+        <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full bg-emerald-50/60 border border-emerald-100/80 shadow-xs">
           {['Home', 'Community', 'Calendar', 'Technology', 'Map'].map((item) => {
             if (item === 'Technology') {
               return (
