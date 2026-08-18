@@ -1540,49 +1540,7 @@ function Home() {
           </div>
         </section>
 
-        <section id="lab" className="py-32 px-6 max-w-5xl mx-auto relative">
-          <ScrollReveal className="text-center mb-24">
-            <h2 className="font-heading italic text-6xl tracking-tight">The Analysis Pipeline</h2>
-          </ScrollReveal>
 
-          <div className="relative">
-            <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-pink-300 to-transparent hidden md:block" />
-
-            {[
-              { step: '01', title: 'Sample Preparation', desc: 'Raw material is placed in a standardized lightbox environment to eliminate shadows and stabilize color representation.' },
-              { step: '02', title: 'Microscopic Scanning', desc: 'High-fidelity macro lenses capture multispectral images, focusing on venation and surface anomalies.' },
-              { step: '03', title: 'Neural Processing', desc: 'Gemini-powered models cross-reference the visual data against millions of botanical records.' },
-              { step: '04', title: 'Quality Certification', desc: 'A verified digital certificate is generated in real-time, detailing the authenticated species and purity grade.' },
-            ].map((item, i) => {
-              const isEven = i % 2 === 0;
-              return (
-              <div key={i} className={`relative flex flex-col md:flex-row items-center mb-24 last:mb-0 ${isEven ? 'md:flex-row-reverse' : ''}`}>
-                <motion.div 
-                  initial={{ scale: 0, opacity: 0 }}
-                  whileInView={{ scale: 1, opacity: 1 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ type: 'spring', delay: 0.1 }}
-                  className="hidden md:block absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-white border-4 border-pink-400 shadow-[0_0_20px_rgba(244,114,182,0.6)] z-10" 
-                />
-                
-                <motion.div 
-                  initial={{ x: isEven ? 60 : -60, opacity: 0 }}
-                  whileInView={{ x: 0, opacity: 1 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className={`w-full md:w-1/2 ${isEven ? 'md:pl-16' : 'md:pr-16'} mb-8 md:mb-0`}
-                >
-                  <div className="liquid-glass p-10 rounded-[2.5rem]">
-                    <span className="text-pink-500 text-sm font-black tracking-[0.25em] mb-4 inline-block bg-pink-100 px-3 py-1 rounded-full">PHASE {item.step}</span>
-                    <h3 className="text-4xl font-heading italic mb-4 tracking-tight text-emerald-950">{item.title}</h3>
-                    <p className="text-emerald-800/80 leading-relaxed font-medium">{item.desc}</p>
-                  </div>
-                </motion.div>
-              </div>
-              );
-            })}
-          </div>
-        </section>
 
         {/* Predictive Disease Spread Interface Component */}
         <section id="network" className="py-32 px-6 lg:px-12 max-w-[1400px] mx-auto relative z-10">
