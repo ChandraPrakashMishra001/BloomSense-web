@@ -1246,14 +1246,14 @@ function Home() {
       <div className="grain-overlay" aria-hidden="true" />
 
 
-      <nav className="absolute top-4 left-4 right-4 lg:left-12 lg:right-12 z-50 px-5 lg:px-8 py-2.5 sm:py-3 flex justify-between items-center bg-white/70 backdrop-blur-2xl border border-white/90 rounded-[2.5rem] shadow-xl shadow-emerald-950/5 transition-all duration-300">
+      <nav className="absolute top-4 left-4 right-4 lg:left-12 lg:right-12 z-50 px-5 lg:px-8 py-2.5 sm:py-3 flex justify-between items-center bg-white/45 backdrop-blur-2xl backdrop-saturate-150 border border-white/70 rounded-[2.5rem] shadow-[0_8px_32px_rgba(6,78,59,0.08),inset_0_1px_2px_rgba(255,255,255,0.95)] transition-all duration-300">
         <div className="flex flex-col xl:flex-row items-start xl:items-center gap-2 xl:gap-6">
           <div className="flex items-center gap-4">
-            <button onClick={() => setIsNewLanding(!isNewLanding)} className="liquid-glass w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-300 shadow-sm border border-emerald-200/50">
-              <Leaf className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
+            <button onClick={() => setIsNewLanding(!isNewLanding)} className="w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-300 shadow-sm border border-white/80 bg-white/50 backdrop-blur-md">
+              <Leaf className="w-5 h-5 md:w-6 md:h-6 text-emerald-600 drop-shadow-xs" />
             </button>
             <div className="flex flex-col drop-shadow-sm">
-              <span className="font-heading italic  text-2xl md:text-3xl xl:text-4xl text-[#D4AF37] leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]">BloomSense</span>
+              <span className="font-heading italic text-2xl md:text-3xl xl:text-4xl text-[#D4AF37] leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]">BloomSense</span>
               <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 mt-1 pl-1">
                 <a 
                   href="https://neural-leaf.vercel.app" 
@@ -1270,7 +1270,7 @@ function Home() {
           <div id="google_translate_element" className="google-translate-container min-h-[36px] block mt-2 xl:mt-0 xl:ml-6 scale-75 origin-left sm:scale-100"></div>
         </div>
         
-        <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full bg-emerald-50/60 border border-emerald-100/80 shadow-xs">
+        <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full bg-white/40 backdrop-blur-xl border border-white/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
           {['Home', 'Community', 'Calendar', 'Technology', 'Map'].map((item) => {
             if (item === 'Technology') {
               return (
@@ -1296,38 +1296,38 @@ function Home() {
           })}
           
           {user ? (
-            <InteractiveHoverButton onClick={() => signOut(auth)} text="Log Out" className="border-rose-200/50 bg-rose-50/30 [&_span]:text-rose-600 [&>div:last-child]:bg-rose-500 [&>div.absolute:nth-child(2)]:text-white" />
+            <InteractiveHoverButton onClick={() => signOut(auth)} text="Log Out" className="border-rose-200/60 bg-rose-50/40 backdrop-blur-md [&_span]:text-rose-600 [&>div:last-child]:bg-rose-500 [&>div.absolute:nth-child(2)]:text-white" />
           ) : (
             <InteractiveHoverButton onClick={() => setShowAuthModal(true)} text="Log In" />
           )}
 
           <button 
             onClick={() => setShowVoiceModal(true)} 
-            className="liquid-glass border border-pink-200/80 bg-white/60 text-pink-700 px-3.5 lg:px-4 py-2 lg:py-2.5 rounded-full text-xs lg:text-sm font-bold flex items-center gap-1.5 hover:bg-white transition-all shadow-sm hover:shadow-pink-500/20"
+            className="border border-pink-200/80 bg-white/50 backdrop-blur-md text-pink-700 px-3.5 lg:px-4 py-2 lg:py-2.5 rounded-full text-xs lg:text-sm font-bold flex items-center gap-1.5 hover:bg-white/80 transition-all shadow-sm hover:shadow-pink-500/20"
             title="Talk with Amania Voice AI"
           >
             <Mic className="w-4 h-4 text-pink-500" />
             <span className="hidden sm:inline">Voice AI</span>
           </button>
 
-          <button onClick={handleScanClick} className="ml-1 bg-[#D4AF37] text-black px-4 lg:px-7 py-2 lg:py-2.5 rounded-full text-sm font-bold flex items-center gap-1.5 lg:gap-2 hover:bg-[#C5A028] transition-colors shadow-lg hover:shadow-[#D4AF37]/30">
+          <button onClick={handleScanClick} className="ml-1 bg-[#D4AF37] text-black px-4 lg:px-7 py-2 lg:py-2.5 rounded-full text-sm font-bold flex items-center gap-1.5 lg:gap-2 hover:bg-[#C5A028] transition-colors shadow-lg shadow-[#D4AF37]/25">
             <span className="hidden lg:inline">Scan Sample</span><span className="lg:hidden">Scan</span> <ArrowUpRight className="w-4 h-4" />
           </button>
         </div>
 
         <div className="md:hidden flex items-center gap-2">
           {user ? (
-            <button onClick={() => signOut(auth)} className="p-2 rounded-full focus:bg-rose-50 border border-rose-900/10 shadow-sm transition-colors text-rose-600">
+            <button onClick={() => signOut(auth)} className="p-2 rounded-full focus:bg-rose-50 border border-rose-900/10 shadow-sm transition-colors text-rose-600 bg-white/50 backdrop-blur-md">
                <LogOut className="w-5 h-5" />
             </button>
           ) : (
-            <button onClick={() => setShowAuthModal(true)} className="p-2 rounded-full focus:bg-emerald-50 border border-emerald-900/10 shadow-sm transition-colors text-emerald-800">
+            <button onClick={() => setShowAuthModal(true)} className="p-2 rounded-full focus:bg-emerald-50 border border-emerald-900/10 shadow-sm transition-colors text-emerald-800 bg-white/50 backdrop-blur-md">
                <LogIn className="w-5 h-5" />
             </button>
           )}
           <button 
             onClick={() => setShowVoiceModal(true)} 
-            className="w-11 h-11 rounded-full bg-pink-100 text-pink-700 flex items-center justify-center border border-pink-200 shadow-sm"
+            className="w-11 h-11 rounded-full bg-pink-100/80 backdrop-blur-md text-pink-700 flex items-center justify-center border border-pink-200 shadow-sm"
             title="Voice AI"
           >
             <Mic className="w-5 h-5" />
@@ -1335,7 +1335,7 @@ function Home() {
           <button onClick={handleScanClick} className="bg-[#D4AF37] text-black w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-[#C5A028] transition-colors">
             <Scan className="w-5 h-5" />
           </button>
-          <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 ml-1 rounded-full focus:bg-emerald-50 border border-emerald-900/10 shadow-sm transition-colors text-emerald-800">
+          <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 ml-1 rounded-full focus:bg-emerald-50 border border-emerald-900/10 shadow-sm transition-colors text-emerald-800 bg-white/50 backdrop-blur-md">
             <Menu className="w-6 h-6" />
           </button>
         </div>
