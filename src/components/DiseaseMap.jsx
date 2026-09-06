@@ -8,30 +8,96 @@ import {
 
 // High-performance direct tile layer styles for MapLibre GL with overscaling protection
 const MAP_STYLES = {
-  cartoVoyager: {
-    name: '3D Clean Street',
+  esriStreet: {
+    name: '3D Clean Street & Agro',
     dark: false,
     style: {
       version: 8,
       sources: {
-        'voyager-tiles': {
+        'esri-street-tiles': {
           type: 'raster',
           tiles: [
-            'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-            'https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-            'https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-            'https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png'
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'
           ],
           tileSize: 256,
-          maxzoom: 18,
-          attribution: '&copy; CARTO &copy; OpenStreetMap'
+          maxzoom: 19,
+          attribution: '&copy; Esri &copy; HERE, Garmin, USGS'
         }
       },
       layers: [
         {
-          id: 'voyager-layer',
+          id: 'esri-street-layer',
           type: 'raster',
-          source: 'voyager-tiles',
+          source: 'esri-street-tiles',
+          minzoom: 0,
+          maxzoom: 24
+        }
+      ]
+    }
+  },
+  satellite: {
+    name: '3D Satellite Hybrid',
+    dark: true,
+    style: {
+      version: 8,
+      sources: {
+        'esri-satellite': {
+          type: 'raster',
+          tiles: [
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+          ],
+          tileSize: 256,
+          maxzoom: 19,
+          attribution: '&copy; Esri &copy; Maxar, Earthstar Geographics'
+        },
+        'esri-labels': {
+          type: 'raster',
+          tiles: [
+            'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
+          ],
+          tileSize: 256,
+          maxzoom: 19
+        }
+      },
+      layers: [
+        {
+          id: 'satellite-layer',
+          type: 'raster',
+          source: 'esri-satellite',
+          minzoom: 0,
+          maxzoom: 24
+        },
+        {
+          id: 'labels-layer',
+          type: 'raster',
+          source: 'esri-labels',
+          minzoom: 0,
+          maxzoom: 24
+        }
+      ]
+    }
+  },
+  esriTopo: {
+    name: '3D Topographic Relief',
+    dark: false,
+    style: {
+      version: 8,
+      sources: {
+        'esri-topo-tiles': {
+          type: 'raster',
+          tiles: [
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'
+          ],
+          tileSize: 256,
+          maxzoom: 19,
+          attribution: '&copy; Esri &copy; USGS, FAO, NOAA'
+        }
+      },
+      layers: [
+        {
+          id: 'esri-topo-layer',
+          type: 'raster',
+          source: 'esri-topo-tiles',
           minzoom: 0,
           maxzoom: 24
         }
@@ -61,81 +127,6 @@ const MAP_STYLES = {
           id: 'osm-layer',
           type: 'raster',
           source: 'osm-tiles',
-          minzoom: 0,
-          maxzoom: 24
-        }
-      ]
-    }
-  },
-  satellite: {
-    name: '3D Satellite Hybrid',
-    dark: true,
-    style: {
-      version: 8,
-      sources: {
-        'esri-satellite': {
-          type: 'raster',
-          tiles: [
-            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-          ],
-          tileSize: 256,
-          maxzoom: 18,
-          attribution: '&copy; Esri &copy; Maxar'
-        },
-        'carto-labels': {
-          type: 'raster',
-          tiles: [
-            'https://a.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png',
-            'https://b.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png',
-            'https://c.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png',
-            'https://d.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png'
-          ],
-          tileSize: 256,
-          maxzoom: 18
-        }
-      },
-      layers: [
-        {
-          id: 'satellite-layer',
-          type: 'raster',
-          source: 'esri-satellite',
-          minzoom: 0,
-          maxzoom: 24
-        },
-        {
-          id: 'labels-layer',
-          type: 'raster',
-          source: 'carto-labels',
-          minzoom: 0,
-          maxzoom: 24
-        }
-      ]
-    }
-  },
-  positron: {
-    name: '3D Minimal Light',
-    dark: false,
-    style: {
-      version: 8,
-      sources: {
-        'positron-tiles': {
-          type: 'raster',
-          tiles: [
-            'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
-            'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
-            'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
-            'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png'
-          ],
-          tileSize: 256,
-          maxzoom: 18,
-          attribution: '&copy; CARTO &copy; OpenStreetMap'
-        }
-      },
-      layers: [
-        {
-          id: 'positron-layer',
-          type: 'raster',
-          source: 'positron-tiles',
           minzoom: 0,
           maxzoom: 24
         }
@@ -237,7 +228,7 @@ const DiseaseMap = ({ diseasePoints = [], userLocation = null }) => {
   const mapRef = useRef(null);
   const markersRef = useRef([]);
 
-  const [activeStyleKey, setActiveStyleKey] = useState('cartoVoyager');
+  const [activeStyleKey, setActiveStyleKey] = useState('esriStreet');
   const [is3DMode, setIs3DMode] = useState(true);
   const [selectedSeverity, setSelectedSeverity] = useState('all');
   const [selectedDiseaseFilter, setSelectedDiseaseFilter] = useState('all');
@@ -285,7 +276,7 @@ const DiseaseMap = ({ diseasePoints = [], userLocation = null }) => {
       ? [userLocation.lng, userLocation.lat] 
       : [85.8245, 20.2961];
 
-    const currentStyle = MAP_STYLES[activeStyleKey]?.style || MAP_STYLES.cartoVoyager.style;
+    const currentStyle = MAP_STYLES[activeStyleKey]?.style || MAP_STYLES.esriStreet.style;
 
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
