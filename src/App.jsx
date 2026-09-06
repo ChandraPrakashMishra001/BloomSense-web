@@ -21,6 +21,7 @@ import { Routes, Route, Link, useLocation } from 'react-router-dom';
 const Hardware = lazy(() => import('./pages/Hardware'));
 const Community = lazy(() => import('./pages/Community'));
 const CropCalendar = lazy(() => import('./pages/CropCalendar'));
+const MandiTracker = lazy(() => import('./pages/MandiTracker'));
 const About = lazy(() => import('./pages/About'));
 import { initialAlerts, initialDiseasePoints, floraDatabase } from './data/constants';
 import RobotGuide from './components/RobotGuide';
@@ -1331,7 +1332,7 @@ function Home() {
         </div>
         
         <div className="hidden md:flex items-center gap-2 p-1.5 rounded-full bg-white/40 backdrop-blur-xl border border-white/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
-          {['Home', 'Community', 'Calendar', 'Technology', 'Map'].map((item) => {
+          {['Home', 'Community', 'Calendar', 'Mandi', 'Technology', 'Map'].map((item) => {
             if (item === 'Technology') {
               return (
                 <InteractiveHoverLink key={item} as={Link} to="/technology/hardware" text="Technology" />
@@ -1347,6 +1348,10 @@ function Home() {
             } else if (item === 'Calendar') {
               return (
                 <InteractiveHoverLink key={item} as={Link} to="/calendar" text="Calendar" />
+              );
+            } else if (item === 'Mandi') {
+              return (
+                <InteractiveHoverLink key={item} as={Link} to="/mandi" text="Mandi" />
               );
             } else {
               return (
@@ -1415,7 +1420,7 @@ function Home() {
             </button>
             
             <div className="flex flex-col gap-6 mt-8">
-              {['Home', 'Community', 'Calendar', 'Technology', 'Map'].map((item) => {
+              {['Home', 'Community', 'Calendar', 'Mandi', 'Technology', 'Map'].map((item) => {
                 if (item === 'Technology') {
                   return (
                     <Link key={item} to="/technology/hardware" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
@@ -1438,6 +1443,12 @@ function Home() {
                   return (
                     <Link key={item} to="/calendar" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
                       Calendar
+                    </Link>
+                  );
+                } else if (item === 'Mandi') {
+                  return (
+                    <Link key={item} to="/mandi" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-heading italic text-emerald-950 border-b border-emerald-900/10 pb-4 tracking-wide">
+                      Mandi Prices
                     </Link>
                   );
                 } else {
@@ -1699,6 +1710,7 @@ function Home() {
             <div className="lg:col-span-3">
               <h4 className="text-emerald-900/50 uppercase tracking-[0.25em] text-xs font-black mb-8">Technology</h4>
               <ul className="space-y-4 text-sm text-emerald-800 font-semibold">
+                <li><Link to="/mandi" className="hover:text-pink-500 transition-colors text-emerald-950 font-bold">🌾 Mandi Price Tracker</Link></li>
                 <li><Link to="/technology/hardware" className="hover:text-pink-500 transition-colors">Computer Vision</Link></li>
                 <li><Link to="/technology/hardware" className="hover:text-pink-500 transition-colors">Phyto-AI Models</Link></li>
                 <li><Link to="/technology/hardware" className="hover:text-pink-500 transition-colors">Edge Processing</Link></li>
@@ -1941,6 +1953,7 @@ export default function App() {
             <Route path="/technology/hardware" element={<Hardware />} />
             <Route path="/community" element={<Community />} />
             <Route path="/calendar" element={<CropCalendar />} />
+            <Route path="/mandi" element={<MandiTracker />} />
             <Route path="/about" element={<About />} />
           </Routes>
         </Suspense>
