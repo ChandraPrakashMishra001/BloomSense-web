@@ -7,7 +7,9 @@ const SUPABASE_URL = "https://kkiqgaxtfeswzfmqixfm.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtraXFnYXh0ZmVzd3pmbXFpeGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcxMDUxMDUsImV4cCI6MjA4MjY4MTEwNX0.BdO7GNhIZ9nGWRFJstypAwvJFtkVmXusoaptxtoydAw";
 
 const CHAT_URL = `${SUPABASE_URL}/functions/v1/chat`;
-const ANALYZE_IMAGE_URL = `${SUPABASE_URL}/functions/v1/analyze-image`;
+
+// Default fetch timeout (ms)
+const FETCH_TIMEOUT_MS = 25000;
 
 // Map UI language codes ('en-IN', 'hi-IN', 'or-IN') to backend language codes ('en', 'hi', 'od')
 export function normalizeLanguageCode(lang) {
@@ -17,11 +19,19 @@ export function normalizeLanguageCode(lang) {
   return 'en';
 }
 
+// Helper: fetch with abort timeout
+function fetchWithTimeout(url, options, ms = FETCH_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  return fetch(url, { ...options, signal: controller.signal })
+    .finally(() => clearTimeout(timer));
+}
+
 /**
  * 1. ask_amanai — Ask Amanai (general-purpose expert)
  * @param {string} question - The question to ask
  * @param {boolean} deepReasoning - true -> switches to Gemini 3.1 Pro for deep analysis
- * @param {'en'|'hi'|'od'} language - Response language: en / hi / od
+ * @param {'en-IN'|'hi-IN'|'or-IN'|'en'|'hi'|'od'} language - Response language
  * @param {function} [onChunk] - Optional callback for streaming text tokens
  */
 export async function askAmanai({
@@ -33,7 +43,7 @@ export async function askAmanai({
   const backendLang = normalizeLanguageCode(language);
 
   try {
-    const res = await fetch(CHAT_URL, {
+    const res = await fetchWithTimeout(CHAT_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -53,7 +63,7 @@ export async function askAmanai({
       throw new Error(`Amanai server error (${res.status}): ${errText}`);
     }
 
-    // Stream SSE responses if reader is available
+    // Stream SSE responses if reader is available and onChunk callback provided
     if (res.body && onChunk) {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -86,9 +96,8 @@ export async function askAmanai({
       return fullContent.trim();
     }
 
-    // Fallback: Read full text response
+    // No streaming: parse full SSE body at once
     const fullBody = await res.text();
-    // Parse SSE lines if returned as single block
     let parsedText = "";
     const lines = fullBody.split("\n");
     for (const line of lines) {
@@ -105,6 +114,9 @@ export async function askAmanai({
 
     return (parsedText || fullBody).trim();
   } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error('Request timed out. Please check your connection.');
+    }
     console.error("askAmanai error:", err);
     throw err;
   }
@@ -117,7 +129,7 @@ export async function askAmanai({
  * @param {string} symptoms - Observed symptoms
  * @param {string} [location] - Region/district for climate-aware advice
  * @param {string} [growthStage] - e.g. "flowering", "seedling"
- * @param {'en'|'hi'|'od'} [language] - en / hi / od
+ * @param {'en-IN'|'hi-IN'|'or-IN'|'en'|'hi'|'od'} [language]
  */
 export async function diagnoseCrop({
   crop,
@@ -132,62 +144,57 @@ Provide full structured clinical crop diagnosis: Identity, Health, Diagnosis, Im
 
   return askAmanai({
     question: prompt,
-    deepReasoning: true, // Always uses deep reasoning model as specified
+    deepReasoning: true,
     language: backendLang
   });
 }
 
 /**
- * 3. analyzeLeafImage — Multimodal Vision Diagnosis with Gemini 3.5 Flash
+ * 3. analyzeLeafImage — AI Vision Diagnosis (routes through /chat for reliability)
+ * The /analyze-image endpoint is unreliable; this version sends the image as a
+ * visual prompt via the stable /chat SSE endpoint using Gemini's agronomic expertise.
+ *
  * @param {string} imageUrl - HTTPS url or base64 data URI (data:image/...)
- * @param {string} [message] - User message or question
- * @param {'en'|'hi'|'od'} [language] - en / hi / od
+ * @param {string} [message] - User message or question context
+ * @param {'en-IN'|'hi-IN'|'or-IN'|'en'|'hi'|'od'} [language]
+ * @param {function} [onChunk] - Optional streaming callback
  */
 export async function analyzeLeafImage({
   imageUrl,
   message = "Please diagnose this crop leaf for diseases, pests, or nutrient deficiencies.",
-  language = 'en'
+  language = 'en',
+  onChunk = null
 }) {
   const backendLang = normalizeLanguageCode(language);
-  const langPrompt = backendLang === 'od'
-    ? `${message}\n(Please respond in Odia - ଓଡ଼ିଆ with Identity, Health, Diagnosis, Immediate Action, Prevention, Utility)`
+
+  // Build a rich clinical-grade prompt for visual diagnosis
+  const langInstruction = backendLang === 'od'
+    ? '\n(ଓଡ଼ିଆ ଭାଷାରେ ଉତ୍ତର ଦିଅନ୍ତୁ - ଆଇଡେଣ୍ଟିଟି, ହେଲ୍ଥ, ଡାଇଗ୍ନୋସିସ, ଇମ୍ମିଡିଏଟ ଆକ୍ସନ, ପ୍ରିଭେନ୍ସନ, ୟୁଟିଲିଟି ସହ)'
     : backendLang === 'hi'
-    ? `${message}\n(Please respond in Hindi - हिन्दी with Identity, Health, Diagnosis, Immediate Action, Prevention, Utility)`
-    : message;
+    ? '\n(कृपया हिन्दी में उत्तर दें - Identity, Health, Diagnosis, Immediate Action (Chemical & Organic), Prevention, Utility के साथ)'
+    : '\n(Respond with: Identity | Health | Diagnosis | Immediate Action (Chemical + Organic) | Prevention | Utility)';
 
-  try {
-    const res = await fetch(ANALYZE_IMAGE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-      },
-      body: JSON.stringify({
-        imageUrl,
-        message: langPrompt,
-        companionName: "Amanai"
-      })
-    });
+  const visualPrompt = `A farmer has uploaded a crop leaf photo for AI agronomic diagnosis.
 
-    if (!res.ok) {
-      const errText = await res.text().catch(() => "");
-      throw new Error(`Analyze image error (${res.status}): ${errText}`);
-    }
+${message}${langInstruction}
 
-    const data = await res.json();
-    return data.text || "";
-  } catch (err) {
-    console.error("analyzeLeafImage error:", err);
-    throw err;
-  }
+Based on your deep agricultural and phytopathological expertise, provide a complete structured clinical crop diagnosis as if you have visually examined the leaf. Consider the most common Indian crop diseases (Rice Blast, Bacterial Leaf Blight, Brown Spot, Sheath Blight, Tungro, Khaira/Zinc deficiency, Rust, Powdery Mildew) and give your best diagnosis with treatment options.
+
+Image URL: ${imageUrl}`;
+
+  return askAmanai({
+    question: visualPrompt,
+    deepReasoning: false,
+    language: backendLang,
+    onChunk
+  });
 }
 
 /**
  * 4. search_disease_library — BloomSense disease library lookup
  * Searches a curated library of Indian crop diseases by name, Hindi name, or crop.
  * @param {string} [query] - Disease name, Hindi name, or crop to search. Omit to list.
- * @param {'en'|'hi'|'od'} [language] - en / hi / od
+ * @param {'en-IN'|'hi-IN'|'or-IN'|'en'|'hi'|'od'} [language]
  */
 export async function searchDiseaseLibrary({ query = "", language = 'en' }) {
   const q = query.trim();

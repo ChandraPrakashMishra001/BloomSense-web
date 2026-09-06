@@ -402,30 +402,44 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
       timestamp: new Date() 
     };
     setMessages(prev => [...prev, userMsg]);
-    setIsAnalyzingImage(true);
     stopAllAudio();
 
+    // Add streaming Amania bubble for image diagnosis
+    const botMsgId = Date.now() + 1;
+    setMessages(prev => [...prev, {
+      id: botMsgId,
+      sender: 'amania',
+      isDiagnosis: true,
+      isMcpVision: true,
+      text: '',
+      isStreaming: true,
+      timestamp: new Date()
+    }]);
+    setIsAnalyzingImage(true);
+
     try {
-      const liveResult = await analyzeLeafImage({
+      let fullText = '';
+      await analyzeLeafImage({
         imageUrl: imageData,
         message: selectedLanguage === 'hi-IN'
           ? 'कृपया इस फसल पत्ती का रोग निदान, लक्षण, कारण और रासायनिक एवं जैविक उपचार बताएं।'
           : selectedLanguage === 'or-IN'
           ? 'ଦୟାକରି ଏହି ଫସଲ ପତ୍ରର ରୋଗ ନିର୍ଣ୍ଣୟ, ଲକ୍ଷଣ ଏବଂ ରାସାୟନିକ ଓ ଜୈବିକ ଉପଚାର କୁହନ୍ତୁ।'
           : 'Please diagnose this crop leaf for diseases, pests, or nutrient deficiencies with full structured clinical advisory.',
-        language: selectedLanguage
+        language: selectedLanguage,
+        onChunk: (_delta, accumulated) => {
+          fullText = accumulated;
+          setMessages(prev => prev.map(m =>
+            m.id === botMsgId ? { ...m, text: accumulated, isStreaming: true } : m
+          ));
+        }
       });
 
-      if (liveResult && liveResult.trim()) {
-        const replyText = liveResult.trim();
-        setMessages(prev => [...prev, {
-          id: Date.now() + 1, 
-          sender: 'amania', 
-          isDiagnosis: true,
-          isMcpVision: true,
-          text: replyText, 
-          timestamp: new Date()
-        }]);
+      const replyText = fullText.trim();
+      if (replyText) {
+        setMessages(prev => prev.map(m =>
+          m.id === botMsgId ? { ...m, text: replyText, isStreaming: false } : m
+        ));
         setIsAnalyzingImage(false);
 
         const speechClean = replyText
@@ -441,10 +455,10 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
         return;
       }
     } catch (err) {
-      console.warn('Multimodal vision endpoint call failed, using agronomic model fallback:', err);
+      console.warn('Vision diagnosis failed, using local fallback:', err);
     }
 
-    // Resilient fallback if offline or API error
+    // Resilient local fallback if offline or API error
     const diag = CAMERA_DIAGNOSES[Math.floor(Math.random() * CAMERA_DIAGNOSES.length)];
     let replyText = `Diagnosis complete. Detected ${diag.disease} with ${diag.confidence}% confidence. Chemical: ${diag.chemical}. Organic option: ${diag.organic}.`;
     if (selectedLanguage === 'hi-IN') {
@@ -453,17 +467,17 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
       replyText = `ପତ୍ର ପରୀକ୍ଷା ସମ୍ପୂର୍ଣ୍ଣ ହେଲା। ଚିହ୍ନଟ: ${diag.disease} (${diag.confidence}% ନିର୍ଭୁଲ)। ରାସାୟନିକ: ${diag.chemical}। ଜୈବିକ ଉପଚାର: ${diag.organic}।`;
     }
 
-    setMessages(prev => [...prev, {
-      id: Date.now() + 1, 
-      sender: 'amania', 
-      isDiagnosis: true,
-      disease: diag.disease, 
-      confidence: diag.confidence, 
-      chemical: diag.chemical, 
-      organic: diag.organic,
-      text: replyText, 
-      timestamp: new Date()
-    }]);
+    setMessages(prev => prev.map(m =>
+      m.id === botMsgId ? {
+        ...m, 
+        text: replyText, 
+        isStreaming: false,
+        disease: diag.disease, 
+        confidence: diag.confidence, 
+        chemical: diag.chemical, 
+        organic: diag.organic
+      } : m
+    ));
     setIsAnalyzingImage(false);
     speakReply(replyText, selectedLanguage);
     if (diag.contagious) onContagiousOutbreakDetected?.(diag.disease);
@@ -516,7 +530,7 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
           question: text,
           deepReasoning: deepReasoning,
           language: selectedLanguage,
-          onChunk: (delta, fullContent) => {
+          onChunk: (_delta, fullContent) => {
             accumulatedText = fullContent;
             setMessages(prev => prev.map(m => 
               m.id === botMsgId ? { ...m, text: fullContent, isStreaming: true } : m
@@ -525,13 +539,14 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
         });
       }
 
-      const responseText = (finalReply || accumulatedText).trim();
-      if (responseText) {
-        setMessages(prev => prev.map(m => 
-          m.id === botMsgId ? { ...m, text: responseText, isStreaming: false } : m
-        ));
-        setIsThinking(false);
+      const responseText = (finalReply || accumulatedText || '').trim();
+      // Finalize message — always clear streaming state even if empty
+      setMessages(prev => prev.map(m => 
+        m.id === botMsgId ? { ...m, text: responseText || m.text, isStreaming: false } : m
+      ));
+      setIsThinking(false);
 
+      if (responseText) {
         // Sweet Melodic Speech Synthesis
         const speechClean = responseText
           .replace(/[#*`_~]/g, '')
@@ -546,6 +561,11 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
       }
     } catch (err) {
       console.warn('Amanai live MCP call failed, using resilient multilingual agronomic knowledge:', err);
+      // Always clear thinking state on error too
+      setIsThinking(false);
+      setMessages(prev => prev.map(m => 
+        m.id === botMsgId ? { ...m, isStreaming: false } : m
+      ));
     }
 
     // Resilient fallback if MCP is unreachable
