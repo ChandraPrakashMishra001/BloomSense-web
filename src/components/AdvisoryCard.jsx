@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Droplets, Zap, AlertTriangle, Leaf, CheckCircle2, Circle, 
-  Info, Volume2, Sparkles, Shield, Wheat, Sprout
+  Info, Volume2, VolumeX, Sparkles, Shield, Wheat, Sprout
 } from 'lucide-react';
+import { safeSpeak, safeStopSpeech, isSpeechAvailable } from '../utils/speechUtils';
 
 const URGENCY_CONFIG = {
   high:   { border: 'border-rose-300', bg: 'bg-rose-50/90', icon: AlertTriangle, iconColor: 'text-rose-600', badge: 'bg-rose-100 text-rose-700 border-rose-200' },
@@ -44,15 +45,26 @@ export default function AdvisoryCard({
   const Icon = config.icon;
   const category = getCategory(tip);
 
+  const [isSpeakingLocal, setIsSpeakingLocal] = useState(false);
+
   const handleSpeak = (e) => {
     e.stopPropagation();
     if (onSpeak) {
       onSpeak(tip);
-    } else if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utt = new SpeechSynthesisUtterance(tip);
-      utt.rate = 0.95;
-      window.speechSynthesis.speak(utt);
+    } else if (isSpeechAvailable()) {
+      if (isSpeakingLocal) {
+        safeStopSpeech();
+        setIsSpeakingLocal(false);
+        return;
+      }
+      safeStopSpeech();
+      safeSpeak(tip, {
+        rate: 0.95,
+        pitch: 1.1,
+        onStart: () => setIsSpeakingLocal(true),
+        onEnd: () => setIsSpeakingLocal(false),
+        onError: () => setIsSpeakingLocal(false)
+      });
     }
   };
 

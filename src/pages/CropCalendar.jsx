@@ -12,6 +12,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import advisories from '../data/advisories.json';
 import CropPhaseCalendar from '../components/CropPhaseCalendar';
 import AdvisoryCard from '../components/AdvisoryCard';
+import { safeSpeak, safeStopSpeech, isSpeechAvailable } from '../utils/speechUtils';
 
 const CROPS = [
   { id: 'Rice',   label: 'Rice / Paddy', icon: '🌾', desc: 'Kharif staple, Odisha & Eastern India', hint: 'Oryza sativa' },
@@ -433,30 +434,34 @@ export default function CropCalendar() {
     localStorage.setItem('bloomsense_completed_tasks', JSON.stringify(updated));
   };
 
-  // Text-to-speech voice reader
+  // Text-to-speech voice reader with safe stop
   const handleSpeakText = (text) => {
-    if (!('speechSynthesis' in window)) return;
+    if (!isSpeechAvailable()) return;
     if (isSpeaking) {
-      window.speechSynthesis.cancel();
+      safeStopSpeech();
       setIsSpeaking(false);
       return;
     }
 
-    window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.rate = 0.92;
-    utt.pitch = 1.05;
-
-    const voices = window.speechSynthesis.getVoices();
-    const pref = voices.find(v => (v.lang.startsWith(voiceLang.split('-')[0])) && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google')))
-      || voices.find(v => v.lang.startsWith('en'));
-    if (pref) utt.voice = pref;
-
-    utt.onstart = () => setIsSpeaking(true);
-    utt.onend = () => setIsSpeaking(false);
-    utt.onerror = () => setIsSpeaking(false);
-    window.speechSynthesis.speak(utt);
+    safeStopSpeech();
+    safeSpeak(text, {
+      lang: voiceLang || 'en-IN',
+      rate: 0.94,
+      pitch: 1.08,
+      onStart: () => setIsSpeaking(true),
+      onEnd: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false)
+    });
   };
+
+  useEffect(() => {
+    const handleStopped = () => setIsSpeaking(false);
+    window.addEventListener('bloomsense-speech-stopped', handleStopped);
+    return () => {
+      window.removeEventListener('bloomsense-speech-stopped', handleStopped);
+      safeStopSpeech();
+    };
+  }, []);
 
   const handleSetupComplete = async ({ crop, sowingMonth }) => {
     const profileData = { crop, sowingMonth };

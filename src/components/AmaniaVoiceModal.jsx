@@ -5,6 +5,7 @@ import {
   RefreshCw, Bot, User, Radio, MessageSquare, AlertCircle, Camera, Trash2, Globe,
   Image as ImageIcon, Upload, FileImage
 } from 'lucide-react';
+import { safeSpeak, safeStopSpeech, isSpeechAvailable } from '../utils/speechUtils';
 
 const LANGUAGES = [
   { id: 'en-IN', label: 'English', flag: '🇬🇧', voicePrefix: 'en' },
@@ -223,22 +224,14 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
     }
   }, [messages, isSpeaking, isListening, isAnalyzingImage]);
 
-  // Load speech synthesis voices
+  // Load speech synthesis voices & listen to global speech events
   useEffect(() => {
-    const loadVoices = () => {
-      if ('speechSynthesis' in window) {
-        setAvailableVoices(window.speechSynthesis.getVoices());
-      }
-    };
-    loadVoices();
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
-    }
+    const handleStopped = () => setIsSpeaking(false);
+    window.addEventListener('bloomsense-speech-stopped', handleStopped);
+
     return () => {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.removeEventListener('voiceschanged', loadVoices);
-        window.speechSynthesis.cancel();
-      }
+      window.removeEventListener('bloomsense-speech-stopped', handleStopped);
+      safeStopSpeech();
       if (recognitionRef.current) recognitionRef.current.abort();
       stopCameraStream();
     };
@@ -252,48 +245,23 @@ export default function AmaniaVoiceModal({ isOpen, onClose, onContagiousOutbreak
     setIsCameraActive(false);
   }, []);
 
-  // Sweet Melodic Text-to-Speech Engine
+  // Sweet Melodic Text-to-Speech Engine with Native Odia & Phonetic Devanagari playback
   const speakReply = useCallback((text, langCode = selectedLanguage) => {
-    if (!voiceEnabled || !('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
+    if (!voiceEnabled || !isSpeechAvailable()) return;
+    safeStopSpeech();
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    // Sweet, melodic, gentle voice settings
-    utterance.rate = 0.92;
-    utterance.pitch = 1.16; // Sweet pleasant tone
-
-    const voices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
-    
-    let preferredVoice = null;
-
-    if (langCode === 'hi-IN') {
-      // Find sweetest Hindi voice
-      preferredVoice = voices.find(v => (v.lang.startsWith('hi') || v.lang === 'hi_IN') && (v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('swara') || v.name.toLowerCase().includes('kalpana') || v.name.toLowerCase().includes('female')))
-        || voices.find(v => v.lang.startsWith('hi'));
-    } else if (langCode === 'or-IN') {
-      // Find Odia voice if available, else sweet Indian voice
-      preferredVoice = voices.find(v => v.lang.startsWith('or') || v.lang.startsWith('ori'))
-        || voices.find(v => v.lang.startsWith('hi') && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google')))
-        || voices.find(v => v.lang.startsWith('en-IN') && v.name.toLowerCase().includes('female'));
-    } else {
-      // Sweetest English voice (Google UK English Female / Microsoft Sonia / Samantha / Neerja)
-      preferredVoice = voices.find(v => 
-        (v.name.toLowerCase().includes('uk english female') || v.name.toLowerCase().includes('sonia') || v.name.toLowerCase().includes('neerja') || v.name.toLowerCase().includes('samantha') || v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('karen'))
-      ) || voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female'))
-        || voices.find(v => v.lang.startsWith('en-IN'))
-        || voices.find(v => v.lang.startsWith('en'));
-    }
-
-    if (preferredVoice) utterance.voice = preferredVoice;
-
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-    window.speechSynthesis.speak(utterance);
-  }, [voiceEnabled, availableVoices, selectedLanguage]);
+    safeSpeak(text, {
+      lang: langCode,
+      rate: 0.92,
+      pitch: 1.16,
+      onStart: () => setIsSpeaking(true),
+      onEnd: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false)
+    });
+  }, [voiceEnabled, selectedLanguage]);
 
   const stopAllAudio = useCallback(() => {
-    window.speechSynthesis?.cancel();
+    safeStopSpeech();
     setIsSpeaking(false);
   }, []);
 

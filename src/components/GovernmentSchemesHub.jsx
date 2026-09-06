@@ -5,6 +5,7 @@ import {
   PhoneCall, FileText, CheckCircle2, ShieldCheck, Calculator, 
   ChevronRight, Volume2, VolumeX, Search, X, Award, HelpCircle, ArrowUpRight
 } from 'lucide-react';
+import { safeSpeak, safeStopSpeech, isSpeechAvailable } from '../utils/speechUtils';
 
 const SCHEME_CATEGORIES = [
   { id: 'all', label: '🌟 All Schemes' },
@@ -62,34 +63,48 @@ export default function GovernmentSchemesHub({ onAskAmania }) {
     fetchSchemes();
   }, []);
 
-  // Audio Speech synthesis for scheme details
+  // Audio Speech synthesis for scheme details with cross-browser support
   const handleToggleSpeech = (scheme, e) => {
     if (e) e.stopPropagation();
-    if (!('speechSynthesis' in window)) return;
+    if (!isSpeechAvailable()) return;
 
     if (speakingSchemeId === scheme.id) {
-      window.speechSynthesis.cancel();
+      safeStopSpeech();
       setSpeakingSchemeId(null);
       return;
     }
 
-    window.speechSynthesis.cancel();
+    safeStopSpeech();
     const textToSpeak = `${scheme.nameEn}. In Odia: ${scheme.nameOr || ''}. Benefit: ${scheme.benefit}. Financial support: ${scheme.subsidyAmount || ''}. Eligibility: ${scheme.eligibility || ''}. Required documents: ${scheme.documents ? scheme.documents.join(', ') : 'Aadhaar and Land Record'}. Helpline: ${scheme.helpline || '1800-180-1551'}.`;
     
-    const utterance = new SpeechSynthesisUtterance(textToSpeak);
-    utterance.rate = 0.92;
-    utterance.pitch = 1.14;
-    utterance.onend = () => setSpeakingSchemeId(null);
-    utterance.onerror = () => setSpeakingSchemeId(null);
     setSpeakingSchemeId(scheme.id);
-    window.speechSynthesis.speak(utterance);
+    safeSpeak(textToSpeak, {
+      lang: 'en-IN',
+      rate: 0.94,
+      pitch: 1.14,
+      onStart: () => setSpeakingSchemeId(scheme.id),
+      onEnd: () => setSpeakingSchemeId(null),
+      onError: () => setSpeakingSchemeId(null)
+    });
   };
 
+  // Sync with global speech stop events
   useEffect(() => {
+    const handleStopped = () => setSpeakingSchemeId(null);
+    window.addEventListener('bloomsense-speech-stopped', handleStopped);
     return () => {
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      window.removeEventListener('bloomsense-speech-stopped', handleStopped);
+      safeStopSpeech();
     };
   }, []);
+
+  // Stop scheme voice if modal is closed or changed
+  useEffect(() => {
+    if (!selectedScheme && speakingSchemeId) {
+      safeStopSpeech();
+      setSpeakingSchemeId(null);
+    }
+  }, [selectedScheme]);
 
   // Filter schemes
   const filteredSchemes = useMemo(() => {

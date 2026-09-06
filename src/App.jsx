@@ -26,6 +26,7 @@ import { initialAlerts, initialDiseasePoints, floraDatabase } from './data/const
 import RobotGuide from './components/RobotGuide';
 import SplashScreen from './components/SplashScreen';
 import { InteractiveHoverButton, InteractiveHoverLink } from './components/ui/interactive-hover-button';
+import { safeSpeak, safeStopSpeech, isSpeechAvailable } from './utils/speechUtils';
 
 
 
@@ -370,36 +371,47 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
     }
   };
 
-  // Text-to-speech Audio Reader for farmers
+  // Text-to-speech Audio Reader for farmers with reliable stop & cross-browser support
   const handleToggleSpeech = (plant, e) => {
     if (e) e.stopPropagation();
-    if (!('speechSynthesis' in window)) return;
+    if (!isSpeechAvailable()) return;
 
     if (speakingPlantId === plant.id) {
-      window.speechSynthesis.cancel();
+      safeStopSpeech();
       setSpeakingPlantId(null);
       return;
     }
 
-    window.speechSynthesis.cancel();
+    safeStopSpeech();
     const curesText = typeof plant.cures === 'string' ? plant.cures : '';
     const textToSpeak = `${plant.name} (${plant.hindiName || ''}). Botanical name: ${plant.scientificName || ''}. Active compound: ${plant.activeCompound || ''}. Key properties: ${plant.properties ? plant.properties.join(', ') : ''}. Treats: ${plant.diseasesTargeted ? plant.diseasesTargeted.join(', ') : ''}. Clinical details: ${curesText}. Preparation: ${plant.preparation || ''}`;
-    const utterance = new SpeechSynthesisUtterance(textToSpeak);
-    utterance.rate = 0.92;
-    utterance.pitch = 1.12;
-    utterance.onend = () => setSpeakingPlantId(null);
-    utterance.onerror = () => setSpeakingPlantId(null);
+
     setSpeakingPlantId(plant.id);
-    window.speechSynthesis.speak(utterance);
+    safeSpeak(textToSpeak, {
+      lang: 'en-IN',
+      rate: 0.94,
+      pitch: 1.12,
+      onStart: () => setSpeakingPlantId(plant.id),
+      onEnd: () => setSpeakingPlantId(null),
+      onError: () => setSpeakingPlantId(null)
+    });
   };
 
+  // Sync with global speech stop events
   useEffect(() => {
+    const handleStopped = () => setSpeakingPlantId(null);
+    window.addEventListener('bloomsense-speech-stopped', handleStopped);
     return () => {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
+      window.removeEventListener('bloomsense-speech-stopped', handleStopped);
+      safeStopSpeech();
     };
   }, []);
+
+  // Stop speech if user changes category or search term
+  useEffect(() => {
+    safeStopSpeech();
+    setSpeakingPlantId(null);
+  }, [activeCategory, searchTerm]);
 
   useEffect(() => {
     setWebResult(null);
@@ -424,8 +436,15 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
+      // STOP voice immediately if modal was closed
+      safeStopSpeech();
+      setSpeakingPlantId(null);
     }
-    return () => { document.body.style.overflow = 'unset'; };
+    return () => { 
+      document.body.style.overflow = 'unset';
+      safeStopSpeech();
+      setSpeakingPlantId(null);
+    };
   }, [selectedImage]);
 
   const filteredPlants = useMemo(() => {
@@ -845,7 +864,11 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[200] flex items-center justify-center bg-emerald-950/70 backdrop-blur-md p-3 sm:p-6 cursor-pointer"
-            onClick={() => setSelectedImage(null)}
+            onClick={() => {
+              safeStopSpeech();
+              setSpeakingPlantId(null);
+              setSelectedImage(null);
+            }}
           >
             <motion.div 
               initial={{ scale: 0.92, opacity: 0, y: 25 }}
@@ -857,7 +880,11 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
             >
               {/* Close Button */}
               <button 
-                onClick={() => setSelectedImage(null)} 
+                onClick={() => {
+                  safeStopSpeech();
+                  setSpeakingPlantId(null);
+                  setSelectedImage(null);
+                }} 
                 className="absolute top-4 right-4 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center backdrop-blur-md text-emerald-900 transition-transform hover:scale-110 z-30 shadow-md border border-emerald-100 cursor-pointer"
               >
                 <X className="w-5 h-5" />
@@ -1004,6 +1031,39 @@ const FloraArchive = React.memo(({ onCameraClick }) => {
                 )}
               </div>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating Global Audio Controller for Botanical Archive */}
+      <AnimatePresence>
+        {speakingPlantId && (
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[250] flex items-center gap-3 px-5 py-2.5 rounded-full bg-emerald-950/95 text-white shadow-2xl backdrop-blur-xl border border-emerald-400/40 select-none"
+          >
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+              <Volume2 className="w-4 h-4 text-emerald-300 animate-pulse" />
+            </div>
+            <span className="text-xs font-bold tracking-wide">
+              Voice Reader Active: <strong className="text-emerald-200">{floraDatabase.find(p => p.id === speakingPlantId)?.name || 'Plant'}</strong>
+            </span>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                safeStopSpeech();
+                setSpeakingPlantId(null);
+              }}
+              className="ml-2 px-3 py-1 rounded-full bg-rose-500 hover:bg-rose-600 active:scale-95 text-white text-[11px] font-extrabold flex items-center gap-1 shadow-md cursor-pointer transition-all"
+              title="Stop voice immediately"
+            >
+              <VolumeX className="w-3.5 h-3.5" />
+              <span>Stop Voice</span>
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
