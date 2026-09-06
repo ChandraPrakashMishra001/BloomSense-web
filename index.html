@@ -39,6 +39,24 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Suppress Vercel Toolbar -->
+    <script>
+      window.__VERCEL_TOOLBAR_DISABLED__ = true;
+      (function() {
+        const removeVercelToolbar = function() {
+          const els = document.querySelectorAll('vercel-live-feedback, vercel-toolbar, #vercel-toolbar, [data-vercel-toolbar], .__vercel_toolbar');
+          els.forEach(function(el) { el.remove(); });
+        };
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', removeVercelToolbar);
+        } else {
+          removeVercelToolbar();
+        }
+        if (window.MutationObserver) {
+          new MutationObserver(removeVercelToolbar).observe(document.documentElement, { childList: true, subtree: true });
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

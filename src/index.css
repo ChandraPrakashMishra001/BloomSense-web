@@ -340,4 +340,21 @@ body {
 .maplibregl-ctrl-attrib a {
   color: rgba(255, 255, 255, 0.85) !important;
 }
+
+/* --- Completely Disable & Hide Vercel Toolbar & Live Feedback Elements --- */
+vercel-live-feedback,
+vercel-toolbar,
+#vercel-toolbar,
+[data-vercel-toolbar],
+.__vercel_toolbar,
+div[id^="__vercel"],
+div[class*="vercel-toolbar"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  max-width: 0px !important;
+  max-height: 0px !important;
+  overflow: hidden !important;
+}
 
