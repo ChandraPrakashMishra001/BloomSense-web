@@ -97,6 +97,11 @@ export default function RobotGuide() {
     );
   }
 
+  const handleSkip = () => {
+    setIsVisible(false);
+    setCurrentStep(0);
+  };
+
   const step = steps[currentStep];
 
   return (
@@ -134,20 +139,32 @@ export default function RobotGuide() {
           <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-white/95 border-b border-r border-emerald-200/60 transform rotate-45 backdrop-blur-xl"></div>
 
           <button 
-            onClick={() => setIsVisible(false)}
-            className="absolute 3 -top-3 -right-3 bg-white border border-rose-100 text-rose-500 rounded-full p-1.5 hover:bg-rose-50 hover:text-rose-600 transition-colors shadow-sm"
+            onClick={handleSkip}
+            className="absolute -top-3 -right-3 bg-white border border-rose-100 text-rose-500 rounded-full p-1.5 hover:bg-rose-50 hover:text-rose-600 transition-colors shadow-sm"
+            title="Close guide"
           >
             <X size={14} strokeWidth={3} />
           </button>
           
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-400 to-emerald-600 flex items-center justify-center shadow-inner">
-              <span className="text-white font-heading italic text-sm">B</span>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-400 to-emerald-600 flex items-center justify-center shadow-inner">
+                <span className="text-white font-heading italic text-sm">B</span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-emerald-600/80 uppercase tracking-[0.2em] block leading-none mb-1">Guide</span>
+                <span className="text-sm font-bold text-emerald-950 leading-none">Beej</span>
+              </div>
             </div>
-            <div>
-              <span className="text-[10px] font-bold text-emerald-600/80 uppercase tracking-[0.2em] block leading-none mb-1">Guide</span>
-              <span className="text-sm font-bold text-emerald-950 leading-none">Beej</span>
-            </div>
+
+            {/* Top Skip Pill */}
+            <button
+              onClick={handleSkip}
+              className="text-[11px] font-bold text-emerald-700/70 hover:text-rose-600 hover:bg-rose-50 px-2 py-0.5 rounded-full border border-emerald-900/10 transition-colors"
+              title="Skip Beej tour"
+            >
+              Skip
+            </button>
           </div>
           
           <p className="text-sm text-emerald-900 font-medium leading-relaxed mb-5">
@@ -155,8 +172,17 @@ export default function RobotGuide() {
           </p>
           
           <div className="flex justify-between items-center pt-3 border-t border-emerald-100/50">
-            <span className="text-[10px] text-emerald-600/50 font-bold tracking-widest">{currentStep + 1} / {steps.length}</span>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-1.5">
+              <button 
+                onClick={handleSkip}
+                className="text-xs font-bold text-emerald-700/60 hover:text-rose-600 hover:bg-rose-50/80 px-2 py-1 rounded-full transition-colors"
+                title="Skip tour"
+              >
+                Skip
+              </button>
+              <span className="text-[10px] text-emerald-600/40 font-bold tracking-widest">{currentStep + 1} / {steps.length}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
               <button 
                 onClick={() => {
                   const prevStep = Math.max(0, currentStep - 1);
@@ -167,6 +193,7 @@ export default function RobotGuide() {
                 }}
                 disabled={currentStep === 0}
                 className="p-2 rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 disabled:opacity-30 disabled:hover:bg-emerald-50 transition-colors"
+                title="Previous step"
               >
                 <ChevronLeft size={16} strokeWidth={3} />
               </button>
@@ -179,11 +206,10 @@ export default function RobotGuide() {
                       navigate(steps[nextStep].path);
                     }
                   } else {
-                    setIsVisible(false);
-                    setCurrentStep(0);
+                    handleSkip();
                   }
                 }}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors shadow-md shadow-emerald-600/20"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors shadow-md shadow-emerald-600/20"
               >
                 {currentStep === steps.length - 1 ? "Finish" : "Next"} <ChevronRight size={14} strokeWidth={3} />
               </button>
